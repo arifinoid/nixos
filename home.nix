@@ -1,71 +1,36 @@
 { config, pkgs, ... }:
 
 {
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
   home.username = "arifinoid";
   home.homeDirectory = "/home/arifinoid";
-
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
   home.stateVersion = "23.05"; # Please read the comment before changing.
 
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
-  home.packages = [
-    pkgs.curl
-    pkgs.tmux
-    pkgs.neovim
-    pkgs.neofetch
-    pkgs.ripgrep
-    pkgs.htop
-    pkgs.exa
-    pkgs.trash-cli
-    pkgs.openvpn
-    pkgs.openvpn3
-    pkgs.alacritty
-    pkgs.starship
-    pkgs.nodejs_20
-    pkgs.go
-    pkgs.gcc9
-    pkgs.libstdcxx5
-    pkgs.python39
-    pkgs.git
-    pkgs.lazygit
-    pkgs.fish
-    pkgs.nerdfonts
-    pkgs.rustc
-    pkgs.cargo
-    pkgs.zig
-    pkgs.fishPlugins.z
-    pkgs.fishPlugins.bass
-
-
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
-
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    (pkgs.nerdfonts.override { fonts = [ "FiraCode" ]; })
-
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
+  home.packages = with pkgs; [
+    curl
+    neofetch
+    ripgrep
+    htop
+    trash-cli
+    openvpn
+    openvpn3
+    alacritty
+    nodejs_20
+    go
+    gcc9
+    libstdcxx5
+    python39
+    git
+    lazygit
+    nerdfonts
+    rustc
+    cargo
+    zig
+    fishPlugins.bass
+    speedtest-cli
+    (nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
+
   home.file = {
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
@@ -93,7 +58,79 @@
     # EDITOR = "emacs";
   };
 
-  # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  programs.fish.enable = true;
+  programs.tmux = {
+    enable = true;
+    shortcut = "t";
+    mouse = true;
+    plugins = with pkgs.tmuxPlugins; [
+      cpu
+      {
+        plugin = resurrect;
+        extraConfig = "set -g @resurrect-strategy-nvim 'session'";
+      }
+      sensible
+      yank
+      better-mouse-mode
+    ];
+  };
+  programs.fish = {
+    enable = true;
+    shellAbbrs = {
+      rm = "trash";
+      cat = "bat";
+    };
+    shellAliases = {
+      cl = "clear";
+    };
+    plugins = [
+      {
+        name = "z";
+        src = pkgs.fetchFromGitHub {
+          owner = "jethrokuan";  
+          repo = "z";
+          rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
+          sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
+        };
+      }
+    ];
+  };
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+    plugins = with pkgs.vimPlugins; [
+      neovim-sensible
+      nvim-surround
+      nvim-treesitter
+      dracula-nvim
+      vim-fugitive
+      vim-commentary
+    ];
+    # extraConfig = ''
+      # syntax enable
+      # colorscheme dracula
+    # '';
+  };
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+    enableFishIntegration = true;
+  };
+  programs.bat = {
+    enable = true;
+    config = {
+      pager = "less -FR";
+      theme = "Dracula";
+    };
+  };
+  programs.exa = {
+    enable = true;
+    enableAliases = true;
+  };
+  programs.zoxide = {
+    enable = true;
+    enableBashIntegration = true;
+    enableFishIntegration = true;
+  };
 }
