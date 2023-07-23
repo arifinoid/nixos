@@ -24,6 +24,11 @@
             # the path to your home.nix.
             modules = [ 
              ./home.nix
+             ./home/dev.nix
+             ./home/git.nix
+             ./home/nvim.nix
+             ./home/packages.nix
+             ./home/shells.nix
              ./home/tmux.nix
             ];
             # Optionally use extraSpecialArgs
