@@ -14,8 +14,8 @@
     openvpn
     openvpn3
     alacritty
-    nodejs_20
-    yarn
+    nodejs_18 # currently defined in devShells.nix
+    yarn # currently defined in devShells.nix
     go
     gcc9
     libstdcxx5
