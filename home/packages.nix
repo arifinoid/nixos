@@ -8,6 +8,7 @@
     ack
     neofetch
     ripgrep
+    stow
     trash-cli
     xclip
     xsel

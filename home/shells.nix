@@ -41,31 +41,42 @@ let
   };
 
   shellAbbrs = {
-    rm = "trash";
     cat = "bat";
     pbcopy = "xclip -selection clipboard";
     pbpaste = "xclip -selection clipboard -o";
+    rm = "trash";
     # git
     gaa = "git add .";
-    gpo = "git pull origin";
-    ggpo = "git push origin";
-    gcm = "git checkout master";
+    gb = "git branch";
     gc = "git checkout";
+    gcl = "git clone";
+    gcm = "git checkout master";
+    gs = "git diff";
+    gf = "git fetch";
+    ggpo = "git push origin";
+    gm = "git merge";
+    gpo = "git pull origin";
+    gpom = "git pull origin master";
     gr = "git restore";
+    grv = "git remote -v";
     gst = "git status";
     gsta = "git stash";
     gstl = "git stash list";
     gstp = "git stash pop";
-    gf = "git fetch";
-    gb = "git branch";
-    gm = "git merge";
-    gpom = "git pull origin master";
-    grv = "git remote -v";
 
     # node related
     clearnode = "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +";
     findnode = "find . -name 'node_modules' -type d -prune";
     fixnodegyp = "npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@latest";
+
+    # warp
+    wcc = "warp-cli connect";
+    wccheck = "curl https://www.cloudflare.com/cdn-cgi/trace";
+    wcd = "warp-cli disconnect";
+
+    # vpn
+    ovpnall = "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_allaccess.ovpn";
+    ovpnpre = "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_pre-production.ovpn";
   };
 in
 {
