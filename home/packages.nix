@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   home.packages = with pkgs; [
     asciiquarium
@@ -13,13 +13,10 @@
     xclip
     xsel
     openvpn
-    openvpn3
     alacritty
     nodejs_18 # currently defined in devShells.nix
     yarn # currently defined in devShells.nix
     go
-    gcc9
-    libstdcxx5
     python39
     nerdfonts
     rustc
@@ -27,7 +24,17 @@
     zig
     fishPlugins.bass
     speedtest-cli
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
+    # Add packages only for Linux
+    openvpn3
+    gcc9
+    libstdcxx5
     (nerdfonts.override { fonts = [ "FiraCode" ]; })
+  ] ++ lib.optionals pkgs.stdenv.isDarwin [
+    # Add packages only for Darwin (MacOS)
+    cocoapods
+    m-cli # useful macOS CLI commands
+    xcode-install
   ];
   programs.home-manager.enable = true;
   programs.direnv.enable = true;

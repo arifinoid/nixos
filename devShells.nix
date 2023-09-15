@@ -1,11 +1,8 @@
-{ pkgs, precommit }:
+{ pkgs }:
 {
   # `nix develop my`.
   default = pkgs.mkShell {
     description = "arifinoid/nixpkgs development environment";
-    shellHook = precommit.shellHook or '''';
-    buildInputs = precommit.buildInputs or [ ];
-    packages = precommit.packages or [ ];
   };
 
   node18 = pkgs.mkShell {
