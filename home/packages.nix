@@ -24,6 +24,10 @@
     zig
     fishPlugins.bass
     speedtest-cli
+    docker
+    colima
+    slack
+    zoom-us
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
     openvpn3

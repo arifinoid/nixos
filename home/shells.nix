@@ -38,12 +38,12 @@ let
     prd = "pnpm run dev";
 
     cl = "clear";
+
+    vim = "nvim";
   };
 
   shellAbbrs = {
     cat = "bat";
-    pbcopy = "xclip -selection clipboard";
-    pbpaste = "xclip -selection clipboard -o";
     rm = "trash";
     # git
     gaa = "git add .";
@@ -101,6 +101,33 @@ in
           sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
         };
       }
+      {
+        name = "done";
+        src = pkgs.fetchFromGitHub {
+          owner = "franciscolourenco";
+          repo = "done";
+          rev = "1.16.5";
+          sha256 = "E0wveeDw1VzEH2kzn63q9hy1xkccfxQHBV2gVpu2IdQ=";
+        };
+      }
+      {
+        name = "pisces";
+        src = pkgs.fetchFromGitHub {
+          owner = "laughedelic";
+          repo = "pisces";
+          rev = "v0.7.0";
+          sha256 = "sha256-Oou2IeNNAqR00ZT3bss/DbhrJjGeMsn9dBBYhgdafBw=";
+        };
+      }
+      {
+        name = "foreign-env";
+        src = pkgs.fetchFromGitHub {
+          owner = "oh-my-fish";
+          repo = "plugin-foreign-env";
+          rev = "dddd9213272a0ab848d474d0cbde12ad034e65bc";
+          sha256 = "00xqlyl3lffc5l0viin1nyp819wf81fncqyz87jx8ljjdhilmgbs";
+        };
+      }
     ];
     functions = {
       envsource = ''
@@ -111,6 +138,16 @@ in
         end
       '';
     };
+    loginShellInit = ''
+      if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+        fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+      end
+    '';
+    interactiveShellInit = ''
+      if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+        fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+      end
+    '';
   };
   programs.starship = {
     enable = true;
