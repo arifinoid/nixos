@@ -40,7 +40,11 @@
       "inputs": {
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
-        "utils": "utils"
+        "utils": "utils",
+        "vimPlugins_codeium": "vimPlugins_codeium",
+        "vimPlugins_git": "vimPlugins_git",
+        "vimPlugins_git-conflict-nvim": "vimPlugins_git-conflict-nvim",
+        "vimPlugins_mason-null-ls": "vimPlugins_mason-null-ls"
       }
     },
     "systems": {
@@ -73,6 +77,70 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "vimPlugins_codeium": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1695327957,
+        "narHash": "sha256-UsofTHPG8K7UqO0rJGHS2Ecbv+oVOYQ23Zk6SnshfOs=",
+        "owner": "Exafunction",
+        "repo": "codeium.nvim",
+        "rev": "b65443d114d3c3c9dcc59ecd8a7dbb3a35320607",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Exafunction",
+        "repo": "codeium.nvim",
+        "type": "github"
+      }
+    },
+    "vimPlugins_git": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1694357231,
+        "narHash": "sha256-LPSS/76pMxWyB9dsGmHb06iER2ctWSLHyD+RV+2n+xs=",
+        "owner": "dinhhuy258",
+        "repo": "git.nvim",
+        "rev": "741696687486f25f8b73d9e4c76ab2ede9998f39",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dinhhuy258",
+        "repo": "git.nvim",
+        "type": "github"
+      }
+    },
+    "vimPlugins_git-conflict-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1695032334,
+        "narHash": "sha256-yHbBIUXiKornF/YNoETm86ZgcAPG+pYT29YctwKFe94=",
+        "owner": "akinsho",
+        "repo": "git-conflict.nvim",
+        "rev": "896261933afe2fddf6fb043d9cd4d88301b151a9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akinsho",
+        "repo": "git-conflict.nvim",
+        "type": "github"
+      }
+    },
+    "vimPlugins_mason-null-ls": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1688497561,
+        "narHash": "sha256-KDVoxE9vD6Zfq0bTB/dSsyMxoT+h0/OPzl7P8xgvBTs=",
+        "owner": "jay-babu",
+        "repo": "mason-null-ls.nvim",
+        "rev": "ae0c5fa57468ac65617f1bf821ba0c3a1e251f0c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jay-babu",
+        "repo": "mason-null-ls.nvim",
         "type": "github"
       }
     }

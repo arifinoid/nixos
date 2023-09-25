@@ -8,6 +8,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     utils.url = "github:numtide/flake-utils";
+
+    # neovim
+    vimPlugins_git = { url = "github:dinhhuy258/git.nvim"; flake = false; };
+    vimPlugins_git-conflict-nvim = { url = "github:akinsho/git-conflict.nvim"; flake = false; };
+    vimPlugins_mason-null-ls = { url = "github:jay-babu/mason-null-ls.nvim"; flake = false; };
+    vimPlugins_codeium = { url = "github:Exafunction/codeium.nvim"; flake = false; };
   };
 
   outputs = { self, nixpkgs, home-manager, utils, ... } @inputs:
@@ -42,6 +48,27 @@
                   home.shellAliases = {
                     nxb = "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
                     nxa = "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
+                  };
+
+                  nixpkgs = {
+                    overlays = [
+                      (final: prev: {
+                        vimPlugins = prev.vimPlugins // {
+                          mason-null-ls = prev.vimUtils.buildVimPlugin {
+                            name = "mason-null-ls";
+                            src = inputs.vimPlugins_mason-null-ls;
+                          };
+                          git = prev.vimUtils.buildVimPlugin {
+                            name = "git";
+                            src = inputs.vimPlugins_git;
+                          };
+                          codeium = prev.vimUtils.buildVimPlugin {
+                            name = "codeium";
+                            src = inputs.vimPlugins_codeium;
+                          };
+                        };
+                      })
+                    ];
                   };
                 })
 

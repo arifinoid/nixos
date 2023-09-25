@@ -16,6 +16,7 @@
     alacritty
     nodejs_18 # currently defined in devShells.nix
     yarn # currently defined in devShells.nix
+    bun
     go
     python39
     nerdfonts
@@ -28,8 +29,11 @@
     colima
     slack
     zoom-us
+    postman
+    dbeaver
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
+    cloudflare-warp
     openvpn3
     gcc9
     libstdcxx5
