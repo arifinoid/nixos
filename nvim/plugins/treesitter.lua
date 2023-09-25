@@ -66,6 +66,7 @@ ts.setup({
 		enable = true,
 		disable = {},
 	},
+	ensure_installed = {},
 	incremental_selection = {
 		enable = true,
 		keymaps = {

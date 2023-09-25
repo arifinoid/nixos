@@ -12,6 +12,9 @@ in
     withPython3 = true;
     withNodeJs = true;
     plugins = with pkgs.vimPlugins; [
+      # package manager
+      lazy-nvim
+
       # LSP
       {
         plugin = lspkind-nvim;
@@ -44,7 +47,7 @@ in
       }
       { plugin = indent-blankline-nvim; config = toLuaFile ../nvim/plugins/indentline.lua; }
       lualine-lsp-progress
-# snippets
+      # snippets
       {
         plugin = cmp_luasnip;
         config = toLuaFile ../nvim/plugins/cmp_luasnip.lua;
@@ -107,7 +110,7 @@ in
       vim-obsession
       mini-nvim
 
-# misc
+      # misc
       { plugin = nvim-web-devicons; config = toLuaFile ../nvim/plugins/nvim-web-devicons.lua; }
       { plugin = nvim-tree-lua; config = toLuaFile ../nvim/plugins/nvim-tree.lua; }
       barbar-nvim
@@ -135,12 +138,11 @@ in
       { plugin = project-nvim; config = toLuaFile ../nvim/plugins/project.lua; }
 
       { plugin = impatient-nvim; config = toLua "require(\"impatient\").enable_profile()"; }
-      # { plugin = nvim-colorizer-lua; config = toLua "required(\"colorizer\").setup({ " * " })"; }
-      # { plugin = nvim-ts-autotag; config = toLua "require(\"nvim-ts-autotag\").setup({})"; }
     ];
     extraPackages = with pkgs; [
       luajitPackages.lua-lsp
       rnix-lsp
+
       xclip
       wl-clipboard
     ];
@@ -150,7 +152,6 @@ in
       ${builtins.readFile ../nvim/options.lua}
       ${builtins.readFile ../nvim/keymaps.lua}
       ${builtins.readFile ../nvim/autocommands.lua}
-      ${builtins.readFile ../nvim/bufferline.lua}
     '';
   };
 }
