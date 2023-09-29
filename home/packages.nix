@@ -16,6 +16,7 @@
     alacritty
     nodejs_18 # currently defined in devShells.nix
     yarn # currently defined in devShells.nix
+    bun
     go
     python39
     nerdfonts
@@ -28,12 +29,15 @@
     colima
     slack
     zoom-us
+    postman
+    dbeaver
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
     openvpn3
     gcc9
     libstdcxx5
     (nerdfonts.override { fonts = [ "FiraCode" ]; })
+    cloudflare-warp
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     # Add packages only for Darwin (MacOS)
     cocoapods

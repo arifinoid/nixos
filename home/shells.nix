@@ -1,5 +1,6 @@
 { pkgs, ... }:
 let
+  commandFoldl' = builtins.foldl' (a: b: a + b + '' &&'') '''';
   shellAliases = {
     lenv = "nix-env --list-generations";
     senv = "nix-env --switch-generation";
@@ -11,6 +12,15 @@ let
     ns = "nix-shell";
     nq = "nix search";
     ngd = "nix-collect-garbage -d";
+    nclean = commandFoldl' [
+      "nix profile wipe-history"
+      "nix-collect-garbage"
+      "nix-collect-garbage -d"
+      "nix-collect-garbage --delete-old"
+      "nix store gc"
+      "nix store optimise"
+      "nix-store --verify --repair --check-contents"
+    ];
 
     # node related
     ys = "yarn start";
@@ -38,7 +48,7 @@ let
     prd = "pnpm run dev";
 
     cl = "clear";
-
+    cds = "find . -name '.DS_Store' -type f -delete";
     vim = "nvim";
   };
 
