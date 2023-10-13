@@ -39,11 +39,6 @@ let
     yco = "yarn cypress:open";
     ytc = "yarn test:chrome";
     ytf = "yarn test:firefox";
-    # nvm12 = "nvm use 12";
-    # nvm14 = "nvm use 14";
-    # nvm16 = "nvm use 16";
-    # nvmfix14 = "set --universal nvm_default_version v14.20.0";
-    # nvmfix16 = "set --universal nvm_default_version v16.16.0";
 
     prd = "pnpm run dev";
 
@@ -95,89 +90,119 @@ in
     sessionPath = [
       "$HOME/.yarn/bin"
     ];
+    packages = with fishPlugins;[
+      thefuck
+      foreign-env
+      forgit # https://github.com/wfxr/forgit
+      pisces # Paired symbols in the command line
+    ];
   };
 
-  programs.fish = {
-    enable = true;
-    shellAbbrs = shellAbbrs;
-    shellAliases = shellAliases;
-    plugins = [
-      {
-        name = "z";
-        src = pkgs.fetchFromGitHub {
-          owner = "jethrokuan";
-          repo = "z";
-          rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
-          sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
-        };
-      }
-      {
-        name = "done";
-        src = pkgs.fetchFromGitHub {
-          owner = "franciscolourenco";
-          repo = "done";
-          rev = "1.16.5";
-          sha256 = "E0wveeDw1VzEH2kzn63q9hy1xkccfxQHBV2gVpu2IdQ=";
-        };
-      }
-      {
-        name = "pisces";
-        src = pkgs.fetchFromGitHub {
-          owner = "laughedelic";
-          repo = "pisces";
-          rev = "v0.7.0";
-          sha256 = "sha256-Oou2IeNNAqR00ZT3bss/DbhrJjGeMsn9dBBYhgdafBw=";
-        };
-      }
-      {
-        name = "foreign-env";
-        src = pkgs.fetchFromGitHub {
-          owner = "oh-my-fish";
-          repo = "plugin-foreign-env";
-          rev = "dddd9213272a0ab848d474d0cbde12ad034e65bc";
-          sha256 = "00xqlyl3lffc5l0viin1nyp819wf81fncqyz87jx8ljjdhilmgbs";
-        };
-      }
-    ];
-    functions = {
-      envsource = ''
-        for line in (cat $argv | grep -v '^#' | grep -v '^\s*$')
-          set item (string split -m 1 '=' $line)
-          set -gx $item[1] $item[2]
-          echo "Exported key $item[1]"
+  programs = {
+    dircolors.enable = true;
+    fish = {
+      enable = true;
+      shellAbbrs = shellAbbrs;
+      shellAliases = shellAliases;
+      plugins = [
+        {
+          name = "z";
+          src = pkgs.fetchFromGitHub {
+            owner = "jethrokuan";
+            repo = "z";
+            rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
+            sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
+          };
+        }
+        {
+          name = "done";
+          src = pkgs.fetchFromGitHub {
+            owner = "franciscolourenco";
+            repo = "done";
+            rev = "1.16.5";
+            sha256 = "E0wveeDw1VzEH2kzn63q9hy1xkccfxQHBV2gVpu2IdQ=";
+          };
+        }
+        {
+          name = "pisces";
+          src = pkgs.fetchFromGitHub {
+            owner = "laughedelic";
+            repo = "pisces";
+            rev = "v0.7.0";
+            sha256 = "sha256-Oou2IeNNAqR00ZT3bss/DbhrJjGeMsn9dBBYhgdafBw=";
+          };
+        }
+        {
+          name = "foreign-env";
+          src = pkgs.fetchFromGitHub {
+            owner = "oh-my-fish";
+            repo = "plugin-foreign-env";
+            rev = "dddd9213272a0ab848d474d0cbde12ad034e65bc";
+            sha256 = "00xqlyl3lffc5l0viin1nyp819wf81fncqyz87jx8ljjdhilmgbs";
+          };
+        }
+        {
+          name = "nix-env";
+          src = pkgs.fetchFromGitHub {
+            owner = "lilyball";
+            repo = "nix-env.fish";
+            rev = "7b65bd228429e852c8fdfa07601159130a818cfa";
+            sha256 = "069ybzdj29s320wzdyxqjhmpm9ir5815yx6n522adav0z2nz8vs4";
+          };
+        }
+        {
+          name = "thefuck";
+          src = pkgs.fetchFromGitHub
+            {
+              owner = "oh-my-fish";
+              repo = "plugin-thefuck";
+              rev = "6c9a926d045dc404a11854a645917b368f78fc4d";
+              sha256 = "1n6ibqcgsq1p8lblj334ym2qpdxwiyaahyybvpz93c8c9g4f9ipl";
+            };
+        }
+      ];
+      functions = {
+        envsource = ''
+          for line in (cat $argv | grep -v '^#' | grep -v '^\s*$')
+            set item (string split -m 1 '=' $line)
+            set -gx $item[1] $item[2]
+            echo "Exported key $item[1]"
+          end
+        '';
+      };
+      loginShellInit = ''
+        if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+          fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+        end
+      '';
+      interactiveShellInit = ''
+        ${pkgs.thefuck}/bin/thefuck --alias | source
+
+        if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+          fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end
       '';
     };
-    loginShellInit = ''
-      if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-        fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-      end
-    '';
-    interactiveShellInit = ''
-      if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-        fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-      end
-    '';
-  };
-  programs.starship = {
-    enable = true;
-    enableBashIntegration = true;
-    enableFishIntegration = true;
-  };
-  programs.bat = {
-    enable = true;
-    config = {
-      pager = "less -FR";
-      theme = "Dracula";
+    starship = {
+      enable = true;
+      enableBashIntegration = true;
+      enableFishIntegration = true;
     };
-  };
-  programs.exa = {
-    enable = true;
-    enableAliases = true;
-  };
-  programs.zoxide = {
-    enable = true;
-    enableBashIntegration = true;
-    enableFishIntegration = true;
+    bat = {
+      enable = true;
+      config = {
+        pager = "less -FR";
+        theme = "Dracula";
+      };
+    };
+    exa = {
+      enable = true;
+      enableAliases = true;
+    };
+    zoxide = {
+      enable = true;
+      enableBashIntegration = true;
+      enableFishIntegration = true;
+    };
   };
 }
