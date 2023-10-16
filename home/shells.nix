@@ -1,6 +1,5 @@
 { pkgs, ... }:
 let
-  commandFoldl' = builtins.foldl' (a: b: a + b + '' &&'') '''';
   shellAliases = {
     lenv = "nix-env --list-generations";
     senv = "nix-env --switch-generation";
@@ -12,15 +11,6 @@ let
     ns = "nix-shell";
     nq = "nix search";
     ngd = "nix-collect-garbage -d";
-    nclean = commandFoldl' [
-      "nix profile wipe-history"
-      "nix-collect-garbage"
-      "nix-collect-garbage -d"
-      "nix-collect-garbage --delete-old"
-      "nix store gc"
-      "nix store optimise"
-      "nix-store --verify --repair --check-contents"
-    ];
 
     # node related
     ys = "yarn start";
@@ -169,6 +159,30 @@ in
             echo "Exported key $item[1]"
           end
         '';
+        nix-clean = ''
+          nix-env --delete-generations old
+          nix-store --gc
+          nix-channel --update
+          nix-env -u --always
+          if test -f /etc/NIXOS
+              for link in /nix/var/nix/gcroots/auto/*
+                  rm $(readlink "$link")
+              end
+          end
+          nix-collect-garbage -d
+        '';
+        nix-shell = {
+          wraps = "nix-shell";
+          body = ''
+            for ARG in $argv
+              if [ "$ARG" = --run ]
+                command nix-shell $argv
+                return $status
+              end
+            end
+            command nix-shell $argv --run "exec fish"
+          '';
+        };
       };
       loginShellInit = ''
         if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'

@@ -19,7 +19,6 @@
     bun
     go
     python39
-    nerdfonts
     rustc
     cargo
     zig
@@ -29,15 +28,14 @@
     colima
     slack
     zoom-us
-    postman
+    # postman
     dbeaver
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
     openvpn3
     gcc9
     libstdcxx5
-    (nerdfonts.override { fonts = [ "FiraCode" ]; })
-    cloudflare-warp
+    (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     # Add packages only for Darwin (MacOS)
     cocoapods

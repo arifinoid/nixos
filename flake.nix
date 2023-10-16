@@ -8,6 +8,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     utils.url = "github:numtide/flake-utils";
+    neovim-flake = {
+      url = "github:neovim/neovim?dir=contrib";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, utils, ... } @inputs:
@@ -45,6 +49,7 @@
                   };
                 })
 
+              ./home/common.nix
               ./home/git.nix
               ./home/nvim.nix
               ./home/packages.nix
