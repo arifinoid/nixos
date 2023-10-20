@@ -2,9 +2,11 @@
 {
   home.packages = with pkgs; [
     asciiquarium
+    asciinema
     openssh
     curl
     wget
+    fzf
     ack
     neofetch
     ripgrep

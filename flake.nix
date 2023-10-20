@@ -49,7 +49,6 @@
                   };
                 })
 
-              ./home/common.nix
               ./home/git.nix
               ./home/nvim.nix
               ./home/packages.nix
