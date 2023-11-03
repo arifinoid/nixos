@@ -12,6 +12,7 @@
     ripgrep
     stow
     trash-cli
+    pass
     xclip
     xsel
     openvpn
@@ -27,10 +28,11 @@
     fishPlugins.bass
     speedtest-cli
     docker
+    docker-compose
     colima
     slack
     zoom-us
-    # postman
+    postman
     dbeaver
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
