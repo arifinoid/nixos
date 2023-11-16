@@ -35,6 +35,7 @@ let
     cl = "clear";
     cds = "find . -name '.DS_Store' -type f -delete";
     vim = "nvim";
+    absen = "colima start && docker compose up";
   };
 
   shellAbbrs = {

@@ -33,15 +33,15 @@
         };
         includes = [
             {
-                condition = "gitdir:~/work/";
+                condition = "gitdir:~/Documents/work/";
                 contents.user = work;
             }
             {
-                condition = "gitdir:~/personal/";
+                condition = "gitdir:~/Documents/personal/";
                 contents.user = personal;
             }
             {
-                condition = "gitdir:~/.config/home-manager/";
+                condition = "gitdir:~/.config/";
                 contents.user = personal;
             }
         ];

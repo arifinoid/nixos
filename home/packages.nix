@@ -34,12 +34,14 @@
     zoom-us
     postman
     dbeaver
+    redis
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
     openvpn3
     gcc9
     libstdcxx5
     (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
+    blackbox-terminal
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     # Add packages only for Darwin (MacOS)
     cocoapods
