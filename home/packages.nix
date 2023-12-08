@@ -42,6 +42,7 @@
     libstdcxx5
     (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
     blackbox-terminal
+    gparted
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     # Add packages only for Darwin (MacOS)
     cocoapods

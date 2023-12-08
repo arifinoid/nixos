@@ -1,7 +1,7 @@
 { pkgs, ...}:
  let
      work = {
-        name = "Rohmad Arifin";
+        name = "rohmadarifin";
         email = "rohmad.arifin@efishery.com";
      };
      personal = {
@@ -42,6 +42,10 @@
             }
             {
                 condition = "gitdir:~/.config/";
+                contents.user = personal;
+            }
+            {
+                condition = "gitdir:~/telekasten-notes/";
                 contents.user = personal;
             }
         ];
