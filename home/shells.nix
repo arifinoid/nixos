@@ -1,5 +1,8 @@
 { pkgs, ... }:
 let
+  pullhead = "git pull origin (git rev-parse --abbrev-ref HEAD)";
+  pushhead = "git push origin (git rev-parse --abbrev-ref HEAD)";
+
   shellAliases = {
     lenv = "nix-env --list-generations";
     senv = "nix-env --switch-generation";
@@ -41,10 +44,14 @@ let
   shellAbbrs = {
     cat = "bat";
     rm = "trash";
+
     # git
     gaa = "git add .";
     gb = "git branch";
     gc = "git checkout";
+    gca = "git commit --amend";
+    gcan = "git commit --amend --no-edit";
+    gcano = "git commit --amend --no-edit --no-verify";
     gcl = "git clone";
     gcm = "git checkout master";
     gs = "git diff";
@@ -59,6 +66,9 @@ let
     gsta = "git stash";
     gstl = "git stash list";
     gstp = "git stash pop";
+    tarek = pullhead;
+    gas = pushhead;
+    gascok = "${pushhead} --force";
 
     # node related
     clearnode = "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +";
