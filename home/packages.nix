@@ -19,6 +19,7 @@
     alacritty
     nodejs_18 # currently defined in devShells.nix
     yarn # currently defined in devShells.nix
+    quick-lint-js
     bun
     go
     python39
@@ -35,6 +36,8 @@
     postman
     dbeaver
     redis
+    google-authenticator
+    zbar
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
     openvpn3

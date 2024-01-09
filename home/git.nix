@@ -48,6 +48,10 @@
                 condition = "gitdir:~/telekasten-notes/";
                 contents.user = personal;
             }
+            {
+                condition = "gitdir:~/";
+                contents.user = personal;
+            }
         ];
     };
 
