@@ -1,4 +1,9 @@
 { pkgs, lib, ... }:
+let
+  nixConfigDirectory = "~/.config/nixpkgs";
+  username = "arifinoid";
+  homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${username}";
+in
 {
   home.packages = with pkgs; [
     asciiquarium
@@ -20,8 +25,9 @@
     nodejs_18 # currently defined in devShells.nix
     yarn # currently defined in devShells.nix
     quick-lint-js
+    nixfmt
     bun
-    go
+    gopls
     python39
     rustc
     cargo
@@ -52,6 +58,16 @@
     m-cli # useful macOS CLI commands
     xcode-install
   ];
+
+  programs.go.enable = true;
+  programs.go.package = pkgs.go;
+  programs.go.goPath = "${homeDirectory}/go";
+  programs.go.goBin = "${homeDirectory}/go/bin/";
+
+  home.sessionVariables = {
+    RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+  };
+
   programs.home-manager.enable = true;
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;

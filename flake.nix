@@ -44,6 +44,9 @@
                   home.username = username;
                   home.homeDirectory = homeDirectory;
                   home.shellAliases = {
+                    flakeup =
+                      # example flakeup nixpkgs-unstable
+                      "nix flake lock ${nixConfigDirectory} --update-input";
                     nxb = "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
                     nxa = "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
                   };
