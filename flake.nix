@@ -8,13 +8,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     utils.url = "github:numtide/flake-utils";
-    neovim-flake = {
-      url = "github:neovim/neovim?dir=contrib";
+    nixvim = {
+      url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, utils, ... } @inputs:
+  outputs = { self, nixpkgs, home-manager, utils, nixvim, ... } @inputs:
     utils.lib.eachDefaultSystem (system:
       let
         config = { allowUnfree = true; };
@@ -66,5 +66,22 @@
         devShells = import ./devShells.nix {
           pkgs = self.legacyPackages.${system};
         };
+
+        environment.systemModules = [
+          (nixvim.legacyPackages."${system}".makeNixvim {
+            colorschemes.gruvbox.enable = true;
+          })
+        ];
+
+        imports = [
+          # For home-manager
+          nixvim.homeManagerModules.nixvim
+          # For NixOS
+          nixvim.nixosModules.nixvim
+          # For nix-darwin
+          nixvim.nixDarwinModules.nixvim
+        ];
+
+        programs.nixvim.enable = true;
       });
 }

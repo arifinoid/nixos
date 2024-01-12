@@ -170,6 +170,10 @@ in
             echo "Exported key $item[1]"
           end
         '';
+        nix-update = ''
+          	  nix-channel --update
+          	  nix flake update
+          	'';
         nix-clean = ''
           nix-env --delete-generations old
           nix-store --gc
@@ -225,7 +229,7 @@ in
         theme = "Dracula";
       };
     };
-    exa = {
+    eza = {
       enable = true;
       enableAliases = true;
     };

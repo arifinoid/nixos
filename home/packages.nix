@@ -39,11 +39,13 @@ in
     colima
     slack
     zoom-us
-    postman
+    # postman # this is not working now on new version
+    insomnia
     dbeaver
     redis
     google-authenticator
     zbar
+    obs-studio
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
     openvpn3
