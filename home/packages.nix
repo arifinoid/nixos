@@ -40,12 +40,10 @@ in
     slack
     zoom-us
     # postman # this is not working now on new version
-    insomnia
     dbeaver
     redis
-    google-authenticator
     zbar
-    obs-studio
+    git-filter-repo
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     # Add packages only for Linux
     openvpn3
@@ -54,6 +52,9 @@ in
     (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
     blackbox-terminal
     gparted
+    insomnia
+    google-authenticator
+    # obs-studio
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     # Add packages only for Darwin (MacOS)
     cocoapods
@@ -73,7 +74,6 @@ in
   programs.home-manager.enable = true;
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
-
 
   programs.htop.enable = true;
   programs.htop.settings.show_program_path = true;
