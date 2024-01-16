@@ -2,20 +2,22 @@
   description = "Home Manager configuration of arifinoid";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     utils.url = "github:numtide/flake-utils";
     nixvim = {
       url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, utils, nixvim, ... } @inputs:
-    utils.lib.eachDefaultSystem (system:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, nixvim, utils, ... }:
+    utils.lib.eachDefaultSystem (
+      system:
       let
         config = { allowUnfree = true; };
         pkgs = import nixpkgs {
@@ -26,9 +28,24 @@
         defaultNixpkgs = {
           inherit config;
         };
+
+        overlay-unstable = final: prev: {
+          unstable = inputs.nixpkgs.legacyPackages.${system};
+        };
       in
       {
+        nixpkgs.overlays = [ overlay-unstable ];
+        nixpkgs.config = {
+          allowUnfree = true;
+        };
         homeConfigurations = {
+          nixvimUser = home-manager.lib.homeManagerConfiguration {
+            inherit pkgs;
+            modules = [
+              nixvim.homeManagerModules.nixvim
+              ./home/nixvim/default.nix
+            ];
+          };
           arifinoid = home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
             modules = [
@@ -39,19 +56,22 @@
                   homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${username}";
                 in
                 {
-
-                  home.stateVersion = "23.05";
-                  home.username = username;
-                  home.homeDirectory = homeDirectory;
-                  home.shellAliases = {
-                    flakeup =
-                      # example flakeup nixpkgs-unstable
-                      "nix flake lock ${nixConfigDirectory} --update-input";
-                    nxb = "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
-                    nxa = "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
+                  home = {
+                    stateVersion = "23.11";
+                    username = username;
+                    homeDirectory = homeDirectory;
+                    shellAliases = {
+                      flakeup =
+                        # example flakeup nixpkgs-unstable
+                        "nix flake lock ${nixConfigDirectory} --update-input";
+                      nxb = "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
+                      nxa = "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
+                    };
                   };
-                })
 
+                  fonts.fontconfig.enable = true;
+                }
+              )
               ./home/git.nix
               ./home/nvim.nix
               ./home/packages.nix
@@ -66,22 +86,6 @@
         devShells = import ./devShells.nix {
           pkgs = self.legacyPackages.${system};
         };
-
-        environment.systemModules = [
-          (nixvim.legacyPackages."${system}".makeNixvim {
-            colorschemes.gruvbox.enable = true;
-          })
-        ];
-
-        imports = [
-          # For home-manager
-          nixvim.homeManagerModules.nixvim
-          # For NixOS
-          nixvim.nixosModules.nixvim
-          # For nix-darwin
-          nixvim.nixDarwinModules.nixvim
-        ];
-
-        programs.nixvim.enable = true;
-      });
+      }
+    );
 }

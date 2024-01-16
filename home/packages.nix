@@ -21,7 +21,7 @@ in
     xclip
     xsel
     openvpn
-    alacritty
+    # alacritty
     nodejs_18 # currently defined in devShells.nix
     yarn # currently defined in devShells.nix
     quick-lint-js
