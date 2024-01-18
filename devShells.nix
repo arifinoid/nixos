@@ -1,14 +1,13 @@
-{ pkgs }:
-{
+{ pkgs }: {
   # `nix develop my`.
   default = pkgs.mkShell {
     description = "arifinoid/nixpkgs development environment";
-    shellHook =
-      let tmuxConf = pkgs.writeText "tmux.conf" "set-option -g default-shell ${pkgs.fish}/bin/fish";
-      in
-      ''
-        tmux -f ${tmuxConf}
-      '';
+    shellHook = let
+      tmuxConf = pkgs.writeText "tmux.conf"
+        "set-option -g default-shell ${pkgs.fish}/bin/fish";
+    in ''
+      tmux -f ${tmuxConf}
+    '';
   };
 
   node18 = pkgs.mkShell {

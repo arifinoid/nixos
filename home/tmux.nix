@@ -1,9 +1,9 @@
-{ pkgs, libs, ... }:
-{
+{ pkgs, libs, ... }: {
   home.shellAliases = {
     tms = "tmux source-file ~/.config/.tmux.conf";
     tmk = "tmux kill-session -a";
-    ide = "tmux split-window -v -p 30;tmux split-window -h -p 66;tmux split-window -h -p 50";
+    ide =
+      "tmux split-window -v -p 30;tmux split-window -h -p 66;tmux split-window -h -p 50";
   };
   programs.tmux = {
     enable = true;
@@ -99,7 +99,6 @@
     '';
   };
 
-  home.packages = with pkgs; lib.optionals stdenv.isDarwin [
-    reattach-to-user-namespace
-  ];
+  home.packages = with pkgs;
+    lib.optionals stdenv.isDarwin [ reattach-to-user-namespace ];
 }

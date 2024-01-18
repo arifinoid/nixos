@@ -21,8 +21,10 @@ let
     yd = "yarn dev";
     yd- = "yarn develop --watch-admin";
     yb = "yarn build";
-    yof = "yarn build && yarn workspace @efishery/theme build && yarn workspace @efishery/onefish build && yarn workspace @efishery/onefish-docs dev";
-    yall = "yarn workspace @efishery/onefish build && yarn workspace @efishery/theme build && yarn workspace @efishery/components build && yarn workspace @efishery/onefish-docs dev";
+    yof =
+      "yarn build && yarn workspace @efishery/theme build && yarn workspace @efishery/onefish build && yarn workspace @efishery/onefish-docs dev";
+    yall =
+      "yarn workspace @efishery/onefish build && yarn workspace @efishery/theme build && yarn workspace @efishery/components build && yarn workspace @efishery/onefish-docs dev";
     yt = "yarn test";
     yse = "yarn server";
     yw = "yarn workspace";
@@ -71,9 +73,11 @@ let
     gascok = "${pushhead} --force";
 
     # node related
-    clearnode = "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +";
+    clearnode =
+      "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +";
     findnode = "find . -name 'node_modules' -type d -prune";
-    fixnodegyp = "npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@latest";
+    fixnodegyp =
+      "npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@latest";
 
     # warp
     wcc = "warp-cli connect";
@@ -81,17 +85,16 @@ let
     wcd = "warp-cli disconnect";
 
     # vpn
-    ovpnall = "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_allaccess.ovpn";
-    ovpnpre = "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_pre-production.ovpn";
+    ovpnall =
+      "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_allaccess.ovpn";
+    ovpnpre =
+      "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_pre-production.ovpn";
   };
-in
-{
+in {
   home = with pkgs; {
     shellAliases = shellAliases;
-    sessionPath = [
-      "$HOME/.yarn/bin"
-    ];
-    packages = with fishPlugins;[
+    sessionPath = [ "$HOME/.yarn/bin" ];
+    packages = with fishPlugins; [
       thefuck
       foreign-env
       forgit # https://github.com/wfxr/forgit
@@ -153,13 +156,12 @@ in
         }
         {
           name = "thefuck";
-          src = pkgs.fetchFromGitHub
-            {
-              owner = "oh-my-fish";
-              repo = "plugin-thefuck";
-              rev = "6c9a926d045dc404a11854a645917b368f78fc4d";
-              sha256 = "1n6ibqcgsq1p8lblj334ym2qpdxwiyaahyybvpz93c8c9g4f9ipl";
-            };
+          src = pkgs.fetchFromGitHub {
+            owner = "oh-my-fish";
+            repo = "plugin-thefuck";
+            rev = "6c9a926d045dc404a11854a645917b368f78fc4d";
+            sha256 = "1n6ibqcgsq1p8lblj334ym2qpdxwiyaahyybvpz93c8c9g4f9ipl";
+          };
         }
       ];
       functions = {
@@ -170,10 +172,7 @@ in
             echo "Exported key $item[1]"
           end
         '';
-        nix-update = ''
-          	  nix-channel --update
-          	  nix flake update
-          	'';
+        nix-update = "  nix-channel --update\n  nix flake update\n";
         nix-clean = ''
           nix-env --delete-generations old
           nix-store --gc

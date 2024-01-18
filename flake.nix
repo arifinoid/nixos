@@ -15,9 +15,9 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, nixvim, utils, ... }:
-    utils.lib.eachDefaultSystem (
-      system:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, nixvim
+    , utils, ... }:
+    utils.lib.eachDefaultSystem (system:
       let
         config = { allowUnfree = true; };
         pkgs = import nixpkgs {
@@ -25,26 +25,19 @@
           config = config;
         };
 
-        defaultNixpkgs = {
-          inherit config;
-        };
+        defaultNixpkgs = { inherit config; };
 
         overlay-unstable = final: prev: {
           unstable = inputs.nixpkgs.legacyPackages.${system};
         };
-      in
-      {
+      in {
         nixpkgs.overlays = [ overlay-unstable ];
-        nixpkgs.config = {
-          allowUnfree = true;
-        };
+        nixpkgs.config = { allowUnfree = true; };
         homeConfigurations = {
           nixvimUser = home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
-            modules = [
-              nixvim.homeManagerModules.nixvim
-              ./home/nixvim/default.nix
-            ];
+            modules =
+              [ nixvim.homeManagerModules.nixvim ./home/nixvim/default.nix ];
           };
           arifinoid = home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
@@ -53,9 +46,10 @@
                 let
                   nixConfigDirectory = "~/.config/nixpkgs";
                   username = "arifinoid";
-                  homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${username}";
-                in
-                {
+                  homeDirectory = "/${
+                      if pkgs.stdenv.isDarwin then "Users" else "home"
+                    }/${username}";
+                in {
                   home = {
                     stateVersion = "23.11";
                     username = username;
@@ -64,14 +58,15 @@
                       flakeup =
                         # example flakeup nixpkgs-unstable
                         "nix flake lock ${nixConfigDirectory} --update-input";
-                      nxb = "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
-                      nxa = "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
+                      nxb =
+                        "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
+                      nxa =
+                        "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
                     };
                   };
 
                   fonts.fontconfig.enable = true;
-                }
-              )
+                })
               ./home/git.nix
               ./home/nvim.nix
               ./home/packages.nix
@@ -81,11 +76,10 @@
           };
         };
 
-        legacyPackages = import inputs.nixpkgs (defaultNixpkgs // { inherit system; });
+        legacyPackages =
+          import inputs.nixpkgs (defaultNixpkgs // { inherit system; });
 
-        devShells = import ./devShells.nix {
-          pkgs = self.legacyPackages.${system};
-        };
-      }
-    );
+        devShells =
+          import ./devShells.nix { pkgs = self.legacyPackages.${system}; };
+      });
 }
