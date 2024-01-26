@@ -58,6 +58,7 @@ let
     gcm = "git checkout master";
     gs = "git diff";
     gf = "git fetch";
+    gfp = "git fetch --prune-tags --prune";
     ggpo = "git push origin";
     gm = "git merge";
     gpo = "git pull origin";
