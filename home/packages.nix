@@ -4,7 +4,8 @@ let
   username = "arifinoid";
   homeDirectory =
     "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${username}";
-in {
+in
+{
   home.packages = with pkgs;
     [
       asciiquarium
@@ -45,6 +46,8 @@ in {
       redis
       zbar
       git-filter-repo
+      postgresql
+      rabbitmq-c
     ] ++ lib.optionals pkgs.stdenv.isLinux [
       # Add packages only for Linux
       openvpn3
@@ -55,6 +58,7 @@ in {
       gparted
       insomnia
       google-authenticator
+      nettools
       # obs-studio
     ] ++ lib.optionals pkgs.stdenv.isDarwin [
       # Add packages only for Darwin (MacOS)
