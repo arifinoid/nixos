@@ -90,8 +90,14 @@ let
       "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_allaccess.ovpn";
     ovpnpre =
       "sudo openvpn --config ~/Downloads/efi-rohmad/efi-platform_efi-rohmad_pre-production.ovpn";
+    gcpvpnpre = "sudo openvpn --config ~/Downloads/efi-rohmad/gcp-platform-preproduction_efi-rohmad_eng-preproduction.ovpn";
+
+    # container
+    drnt = "docker rmi $(docker images --filter \"dangling=true\" -q --no-trunc)";
+    dpf = "docker system prune --all --force";
   };
-in {
+in
+{
   home = with pkgs; {
     shellAliases = shellAliases;
     sessionPath = [ "$HOME/.yarn/bin" ];
