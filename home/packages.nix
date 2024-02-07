@@ -42,7 +42,6 @@ in
       slack
       zoom-us
       # postman # this is not working now on new version
-      dbeaver
       redis
       zbar
       git-filter-repo
@@ -59,6 +58,7 @@ in
       insomnia
       google-authenticator
       nettools
+      stacer
       # obs-studio
     ] ++ lib.optionals pkgs.stdenv.isDarwin [
       # Add packages only for Darwin (MacOS)
