@@ -30,10 +30,6 @@ in {
     };
     includes = [
       {
-        condition = "gitdir:~/Documents/work/";
-        contents.user = work;
-      }
-      {
         condition = "gitdir:~/Documents/personal/";
         contents.user = personal;
       }
@@ -48,6 +44,10 @@ in {
       {
         condition = "gitdir:~/";
         contents.user = personal;
+      }
+      {
+        condition = "gitdir:~/Documents/work/";
+        contents.user = work;
       }
     ];
   };

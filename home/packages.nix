@@ -11,6 +11,7 @@ in
       asciiquarium
       asciinema
       openssh
+      # openvpn
       curl
       wget
       fzf
@@ -22,7 +23,6 @@ in
       pass
       xclip
       xsel
-      openvpn
       # alacritty
       nodejs_18 # currently defined in devShells.nix
       yarn # currently defined in devShells.nix
@@ -49,7 +49,6 @@ in
       rabbitmq-c
     ] ++ lib.optionals pkgs.stdenv.isLinux [
       # Add packages only for Linux
-      openvpn3
       gcc9
       libstdcxx5
       (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Hack" ]; })
