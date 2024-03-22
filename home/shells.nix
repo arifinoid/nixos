@@ -95,6 +95,9 @@ let
     # container
     drnt = "docker rmi $(docker images --filter \"dangling=true\" -q --no-trunc)";
     dpf = "docker system prune --all --force";
+
+    # notes
+    obside = "~/Downloads/Obsidian-1.5.8.AppImage";
   };
 in
 {

@@ -49,6 +49,10 @@ in {
         condition = "gitdir:~/Documents/work/";
         contents.user = work;
       }
+      {
+        condition = "gitdir:~/Documents/obsidian";
+        contents.user = personal;
+      }
     ];
   };
 
