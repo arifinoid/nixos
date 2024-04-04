@@ -47,6 +47,7 @@ in
       git-filter-repo
       postgresql
       rabbitmq-c
+      silicon
     ] ++ lib.optionals pkgs.stdenv.isLinux [
       # Add packages only for Linux
       gcc9
