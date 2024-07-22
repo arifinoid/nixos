@@ -60,6 +60,15 @@ in
       nettools
       stacer
       # obs-studio
+      lua5_4_compat
+      jq
+
+      mesa_drivers # OpenGL drivers for most systems
+      intel-media-driver
+      mesa
+      libdrm
+      libglvnd
+      egl-wayland
     ] ++ lib.optionals pkgs.stdenv.isDarwin [
       # Add packages only for Darwin (MacOS)
       cocoapods

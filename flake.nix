@@ -15,71 +15,86 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, nixvim
-    , utils, ... }:
+  outputs =
+    inputs@{ self
+    , nixpkgs
+    , nixpkgs-unstable
+    , home-manager
+    , nixvim
+    , utils
+    , ...
+    }:
     utils.lib.eachDefaultSystem (system:
-      let
-        config = { allowUnfree = true; };
-        pkgs = import nixpkgs {
-          inherit system;
-          config = config;
-        };
+    let
+      config = { allowUnfree = true; };
+      pkgs = import nixpkgs {
+        inherit system;
+        config = config;
+      };
 
-        defaultNixpkgs = { inherit config; };
+      defaultNixpkgs = { inherit config; };
 
-        overlay-unstable = final: prev: {
-          unstable = inputs.nixpkgs.legacyPackages.${system};
+      overlay-unstable = final: prev: {
+        unstable = inputs.nixpkgs.legacyPackages.${system};
+      };
+    in
+    {
+      nixpkgs.overlays = [ overlay-unstable ];
+      nixpkgs.config = { allowUnfree = true; };
+      homeConfigurations = {
+        nixvimUser = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules =
+            [ nixvim.homeManagerModules.nixvim ./home/nixvim/default.nix ];
         };
-      in {
-        nixpkgs.overlays = [ overlay-unstable ];
-        nixpkgs.config = { allowUnfree = true; };
-        homeConfigurations = {
-          nixvimUser = home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            modules =
-              [ nixvim.homeManagerModules.nixvim ./home/nixvim/default.nix ];
-          };
-          arifinoid = home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            modules = [
-              ({ pkgs, ... }:
-                let
-                  nixConfigDirectory = "~/.config/nixpkgs";
-                  username = "arifinoid";
-                  homeDirectory = "/${
+        arifinoid = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [
+            ({ pkgs, ... }:
+              let
+                nixConfigDirectory = "~/.config/nixpkgs";
+                username = "arifinoid";
+                homeDirectory = "/${
                       if pkgs.stdenv.isDarwin then "Users" else "home"
                     }/${username}";
-                in {
-                  home = {
-                    stateVersion = "23.11";
-                    username = username;
-                    homeDirectory = homeDirectory;
-                    shellAliases = {
-                      flakeup =
-                        # example flakeup nixpkgs-unstable
-                        "nix flake lock ${nixConfigDirectory} --update-input";
-                      nxb =
-                        "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
-                      nxa =
-                        "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
-                    };
+              in
+              {
+                home = {
+                  stateVersion = "23.11";
+                  username = username;
+                  homeDirectory = homeDirectory;
+                  shellAliases = {
+                    flakeup =
+                      # example flakeup nixpkgs-unstable
+                      "nix flake lock ${nixConfigDirectory} --update-input";
+                    nxb =
+                      "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
+                    nxa =
+                      "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
                   };
+                };
 
-                  fonts.fontconfig.enable = true;
-                })
-              ./home/git.nix
-              ./home/nvim.nix
-              ./home/packages.nix
-              ./home/shells.nix
-              ./home/tmux.nix
-            ];
-          };
+                fonts.fontconfig.enable = true;
+
+                home.sessionVariables = {
+                  LIBGL_ALWAYS_SOFTWARE = "1";
+                  LIBGL_DRIVERS_PATH = "/usr/lib/x86_64-linux-gnu/dri";
+                  MESA_LOADER_DRIVER_OVERRIDE = "iris";
+                };
+              })
+            ./home/git.nix
+            ./home/nvim.nix
+            ./home/packages.nix
+            ./home/shells.nix
+            ./home/tmux.nix
+          ];
         };
+      };
 
-        legacyPackages =
-          import inputs.nixpkgs (defaultNixpkgs // { inherit system; });
+      legacyPackages =
+        import inputs.nixpkgs (defaultNixpkgs // { inherit system; });
 
-        devShells =
-          import ./devShells.nix { pkgs = self.legacyPackages.${system}; };
-      });
+      devShells =
+        import ./devShells.nix { pkgs = self.legacyPackages.${system}; };
+    });
 }
