@@ -1,0 +1,7 @@
+keys:
+  - &arifinoid age1k08s3lcfr7nek9skvjjyfausmpd65lwa4u5h562aqtwxmfd5uvcq4756u7
+creation_rules:
+  - path_regex: secrets/[^/]+\.(yaml|json|env)$
+    key_groups:
+      - age:
+          - *arifinoid

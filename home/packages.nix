@@ -48,6 +48,8 @@ in
       postgresql
       rabbitmq-c
       silicon
+      sops
+      age
     ] ++ lib.optionals pkgs.stdenv.isLinux [
       # Add packages only for Linux
       gcc9

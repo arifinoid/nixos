@@ -2,16 +2,32 @@
   description = "Home Manager configuration of arifinoid";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nix.url = "github:nixos/nix";
+    nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    ## -- nixpkgs 
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/release-22.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.follows = "nixpkgs-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
     utils.url = "github:numtide/flake-utils";
+
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # secret management 
+    sops = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-stable.follows = "nixpkgs-stable";
     };
   };
 
@@ -22,6 +38,7 @@
     , home-manager
     , nixvim
     , utils
+    , sops
     , ...
     }:
     utils.lib.eachDefaultSystem (system:
@@ -50,6 +67,7 @@
         arifinoid = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [
+            sops.homeManagerModules.sops
             ({ pkgs, ... }:
               let
                 nixConfigDirectory = "~/.config/nixpkgs";
