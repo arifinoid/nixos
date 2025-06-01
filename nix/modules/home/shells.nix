@@ -105,7 +105,7 @@ in
     shellAliases = shellAliases;
     sessionPath = [ "$HOME/.yarn/bin" ];
     packages = with fishPlugins; [
-      thefuck
+      pay-respects # the fuck replacement
       foreign-env
       forgit # https://github.com/wfxr/forgit
       pisces # Paired symbols in the command line
@@ -164,15 +164,6 @@ in
             sha256 = "069ybzdj29s320wzdyxqjhmpm9ir5815yx6n522adav0z2nz8vs4";
           };
         }
-        {
-          name = "thefuck";
-          src = pkgs.fetchFromGitHub {
-            owner = "oh-my-fish";
-            repo = "plugin-thefuck";
-            rev = "6c9a926d045dc404a11854a645917b368f78fc4d";
-            sha256 = "1n6ibqcgsq1p8lblj334ym2qpdxwiyaahyybvpz93c8c9g4f9ipl";
-          };
-        }
       ];
       functions = {
         envsource = ''
@@ -214,8 +205,6 @@ in
         end
       '';
       interactiveShellInit = ''
-        ${pkgs.thefuck}/bin/thefuck --alias | source
-
         if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end
@@ -240,7 +229,6 @@ in
     };
     eza = {
       enable = true;
-      enableAliases = true;
     };
     zoxide = {
       enable = true;

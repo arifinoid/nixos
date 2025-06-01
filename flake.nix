@@ -1,118 +1,68 @@
 {
-  description = "Home Manager configuration of arifinoid";
-
-  inputs = {
-    nix.url = "github:nixos/nix";
-    nix.inputs.nixpkgs.follows = "nixpkgs";
-
-    ## -- nixpkgs 
-    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/release-22.11";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs.follows = "nixpkgs-unstable";
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    utils.url = "github:numtide/flake-utils";
-
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    # secret management 
-    sops = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nixpkgs-stable.follows = "nixpkgs-stable";
-    };
-  };
+  description = "NixOS flake of arifinoid";
 
   outputs =
-    inputs@{ self
-    , nixpkgs
-    , nixpkgs-unstable
-    , home-manager
-    , nixvim
-    , utils
-    , sops
-    , ...
-    }:
-    utils.lib.eachDefaultSystem (system:
-    let
-      config = { allowUnfree = true; };
-      pkgs = import nixpkgs {
-        inherit system;
-        config = config;
-      };
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
 
-      defaultNixpkgs = { inherit config; };
+      imports = [
+        inputs.git-hooks-nix.flakeModule
+        ./nix
+      ];
+    };
 
-      overlay-unstable = final: prev: {
-        unstable = inputs.nixpkgs.legacyPackages.${system};
-      };
-    in
-    {
-      nixpkgs.overlays = [ overlay-unstable ];
-      nixpkgs.config = { allowUnfree = true; };
-      homeConfigurations = {
-        nixvimUser = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules =
-            [ nixvim.homeManagerModules.nixvim ./home/nixvim/default.nix ];
-        };
-        arifinoid = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [
-            sops.homeManagerModules.sops
-            ({ pkgs, ... }:
-              let
-                nixConfigDirectory = "~/.config/nixpkgs";
-                username = "arifinoid";
-                homeDirectory = "/${
-                      if pkgs.stdenv.isDarwin then "Users" else "home"
-                    }/${username}";
-              in
-              {
-                home = {
-                  stateVersion = "23.11";
-                  username = username;
-                  homeDirectory = homeDirectory;
-                  shellAliases = {
-                    flakeup =
-                      # example flakeup nixpkgs-unstable
-                      "nix flake lock ${nixConfigDirectory} --update-input";
-                    nxb =
-                      "nix build ${nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${nixConfigDirectory}/result ";
-                    nxa =
-                      "${nixConfigDirectory}/result/activate switch --flake ${nixConfigDirectory}/#homeConfigurations.${system}.${username}";
-                  };
-                };
+  inputs = {
+    nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.follows = "nixpkgs-unstable";
 
-                fonts.fontconfig.enable = true;
+    # utils
+    flake-parts.url = "github:hercules-ci/flake-parts";
 
-                home.sessionVariables = {
-                  LIBGL_ALWAYS_SOFTWARE = "1";
-                  LIBGL_DRIVERS_PATH = "/usr/lib/x86_64-linux-gnu/dri";
-                  MESA_LOADER_DRIVER_OVERRIDE = "iris";
-                };
-              })
-            ./home/git.nix
-            ./home/nvim.nix
-            ./home/packages.nix
-            ./home/shells.nix
-            ./home/tmux.nix
-          ];
-        };
-      };
+    # pre-commit
+    git-hooks-nix.url = "github:cachix/git-hooks.nix";
 
-      legacyPackages =
-        import inputs.nixpkgs (defaultNixpkgs // { inherit system; });
+    # nix darwin
+    nix-darwin.url = "github:LnL7/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-      devShells =
-        import ./devShells.nix { pkgs = self.legacyPackages.${system}; };
-    });
+    # home manager
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    # development env
+    devenv.url = "github:cachix/devenv";
+    devenv.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Secret Ops
+    sops.url = "github:Mic92/sops-nix";
+    sops.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Ez
+    ez-configs.url = "github:ehllie/ez-configs";
+    ez-configs.inputs.nixpkgs.follows = "nixpkgs";
+    ez-configs.inputs.flake-parts.follows = "flake-parts";
+
+    # Nixvim
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    snacks-nvim = {
+      url = "github:folke/snacks.nvim";
+      flake = false;
+    };
+
+    # Browser
+    zen-browser = {
+      url = "github:MarceColl/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
 }
