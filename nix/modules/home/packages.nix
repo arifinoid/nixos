@@ -21,7 +21,7 @@
     nodejs # currently defined in devShells.nix
     yarn # currently defined in devShells.nix
     quick-lint-js
-    nixfmt
+    nixfmt-classic
     bun
     gopls
     python314

@@ -2,8 +2,6 @@
   lib,
   ezModules,
   osConfig,
-  pkgs,
-  inputs,
   ...
 }:
 

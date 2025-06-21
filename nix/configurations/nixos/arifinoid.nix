@@ -2,18 +2,25 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ ezModules, config, pkgs, ... }:
+{
+  ezModules,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ezModules.arifinoid-hardware # ./hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ezModules.arifinoid-hardware # ./hardware-configuration.nix
+  ];
 
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
-  ];  # Bootloader.
+  ];
+
+  # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -73,15 +80,37 @@
   users.users.arifinoid = {
     isNormalUser = true;
     description = "Rohmad Arifin";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "docker"
+    ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
+      #  thunderbird
     ];
+    shell = pkgs.fish;
   };
 
-  # Install firefox.
   programs.firefox.enable = true;
+  programs.fish.enable = true; # see modules/home/shells.nix for more info
+  programs.tmux.enable = true; # see modules/home/tmux.nix for more info
+  programs.starship = {
+    enable = true;
+    settings = { };
+  };
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true;
+    package = pkgs.steam.override {
+      extraPkgs = pkgs: [
+        pkgs.vulkan-tools
+        pkgs.mesa
+      ];
+    };
+  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -89,10 +118,56 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    fish
+    starship
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    zoxide
     wget
     git
+    alacritty
+    neofetch
+    catppuccin-cursors.mochaMauve
+    (discord.override {
+      withOpenASAR = true;
+      withVencord = true;
+    })
+    chromium
+    zoom-us
+    unzip
+    code-cursor
+    vscode
+
+    typescript
+    typescript-language-server
+    nodePackages.typescript
+    nodePackages.typescript-language-server
+    nodePackages.vercel
+    pyright
+    eslint
+    pgsync
+    cmake
+    meson
+    marksman
+    pnpm
+
+    nixd
+    nix-search
+
+    go
+    gcc
+    gofumpt
+    goimports-reviser
+    golines
+    gopls
+    golangci-lint
+
+    inputs.self.packages.${pkgs.system}.nixvim
+    inputs.zen-browser.packages.${pkgs.system}.default
   ];
+  environment.shells = with pkgs; [ fish ];
+  environment.variables = {
+    MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -121,10 +196,13 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
 
-  nix = {
-    package = pkgs.nix;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-  };
+  # Bluetooth
+  services.blueman.enable = true;
+
+  # XDG
+  xdg.portal.enable = true;
+  xdg.icons.enable = true;
+  xdg.menus.enable = true;
+  xdg.sounds.enable = true;
+
 }
