@@ -2,16 +2,20 @@
 {
   plugins.lsp = {
     servers = {
+      asm_lsp.enable = true;
       bashls.enable = true;
       clangd.enable = true;
       cmake.enable = true;
       cssls.enable = true;
+      dockerls.enable = true;
       gopls.enable = true;
       html.enable = true;
       jsonls.enable = true;
       lua_ls.enable = true;
+      marksman.enable = true;
       nixd.enable = true;
       prismals.enable = true;
+      pyright.enable = true;
       ruff.enable = true;
       rust_analyzer = {
         enable = true;
@@ -19,6 +23,7 @@
         installRustc = true;
       };
       ts_ls.enable = true;
+      terraformls.enable = true;
       yamlls.enable = true;
       zls.enable = true;
     };

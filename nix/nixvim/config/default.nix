@@ -22,7 +22,6 @@
 
       which-key.enable = true;
       toggleterm.enable = true;
-      vim-surround.enable = true;
       comment.enable = true;
       ts-autotag.enable = true;
       indent-blankline.enable = true;
@@ -62,6 +61,13 @@
       mini.enable = true;
       # Add llm
       llm.enable = true;
+      # Add missing plugins that are referenced in configs
+      lsp-signature.enable = true;
+      trouble.enable = true;
+      # Add debugging support
+      dap.enable = true;
+      # Add autopairs for better editing experience
+      nvim-autopairs.enable = true;
     };
 
     extraPackages = with pkgs; [

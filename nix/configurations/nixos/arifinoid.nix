@@ -163,6 +163,8 @@
 
     inputs.self.packages.${pkgs.system}.nixvim
     inputs.zen-browser.packages.${pkgs.system}.default
+
+    kdePackages.partitionmanager
   ];
   environment.shells = with pkgs; [ fish ];
   environment.variables = {
