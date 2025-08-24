@@ -24,21 +24,20 @@
     description = "Rohmad Arifin";
     extraGroups = [ "wheel" ];
     packages = [];
-    shell = pkgs.bash;
+    shell = pkgs.fish;
   };
 
-  # No programs for now - avoid all builds
-  # programs.fish.enable = false;
-  # programs.tmux.enable = false;
-  # programs.starship.enable = false;
-  # programs.zoxide.enable = false;
+  programs.fish.enable = true;
+  programs.tmux.enable = true;
+  programs.starship.enable = true;
+  programs.zoxide.enable = true;
 
-  # Minimal services
-  # services.openssh.enable = false;
+
+  services.openssh.enable = true;
   services.getty.autologinUser = "arifinoid";
 
   # Minimal environment
-  environment.shells = with pkgs; [ bash ];
+  environment.shells = with pkgs; [ fish ];
   
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";
