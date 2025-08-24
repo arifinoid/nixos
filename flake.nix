@@ -31,6 +31,9 @@
     nix-darwin.url = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
+    # nixos wsl
+    nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
+
     # home manager
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
