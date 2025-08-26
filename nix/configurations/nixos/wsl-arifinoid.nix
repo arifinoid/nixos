@@ -15,6 +15,14 @@
     inputs.nixos-wsl.nixosModules.wsl
   ];
 
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
   wsl.enable = true;
   wsl.defaultUser = "arifinoid"; # Changed from "nixos" to "arifinoid"
 
@@ -50,4 +58,28 @@
 
   # System settings
   system.stateVersion = "25.05"; # Did you read the comment?
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
+    git
+    kdePackages.partitionmanager
+    
+    nixd
+    nix-search
+    fzf
+  ];
+
+  fonts.packages = with pkgs; [
+    sketchybar-app-font
+    
+    # name of nerdfonts see {https://github.com/NixOS/nixpkgs/blob/nixos-24.11/pkgs/data/fonts/nerdfonts/shas.nix}
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+    nerd-fonts.hack
+    nerd-fonts.symbols-only
+    geist-font
+  ];
 }
