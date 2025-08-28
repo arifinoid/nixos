@@ -1,7 +1,9 @@
-{ pkgs, inputs, ... }:
+{ pkgs, osConfig, lib, ... }:
+let
+  isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
+in
 {
   home.packages = with pkgs; [
-    alacritty
     bun
     cargo
     cmake
@@ -16,11 +18,14 @@
     goimports-reviser
     golangci-lint
     golines
+    go-migrate
     gopls
     jq
+    k9s
     lua5_4_compat
     marksman
     meson
+    minikube
     nixfmt-classic
     nodejs
     nodePackages.typescript
@@ -28,6 +33,8 @@
     nodePackages.vercel
     pgsync
     pnpm
+    podman
+    podman-compose
     postgresql
     pyright
     python314
@@ -39,7 +46,7 @@
     typescript-language-server
     yarn
     zig
-  ];
+  ] ++ lib.optionals (!isWSLHost) [ alacritty ];
 
   programs.go.enable = true;
   programs.go.package = pkgs.go;

@@ -1,5 +1,8 @@
-{ ... }:
+{ osConfig, lib, ... }:
+let
+  isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
+in
 {
-  programs.firefox.enable = true;
-  programs.chromium.enable = true;
+  programs.firefox.enable = !isWSLHost;
+  programs.chromium.enable = !isWSLHost;
 }

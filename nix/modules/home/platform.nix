@@ -1,9 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, osConfig, ... }:
+let
+  isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
+in
 {
   home.packages = with pkgs; [
     asciiquarium
     asciinema
-    openssh
     openvpn
     curl
     wget
@@ -11,24 +13,24 @@
     ack
     neofetch
     ripgrep
-    stow
     trash-cli
     pass
     xclip
     xsel
     speedtest-cli
-    blackbox-terminal
-    gparted
-    insomnia
     google-authenticator
     nettools
     stacer
     obs-studio
     unzip
-
+  ] ++ lib.optionals (!isWSLHost) [ 
+    openssh
+    stow
+    blackbox-terminal
+    gparted
+    insomnia
     mesa # OpenGL drivers for most systems
     intel-media-driver
-    mesa
     libdrm
     libglvnd
   ];
