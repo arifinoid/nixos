@@ -57,11 +57,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    snacks-nvim = {
-      url = "github:folke/snacks.nvim";
-      flake = false;
-    };
-
     # Browser
     zen-browser = {
       url = "github:MarceColl/zen-browser-flake";

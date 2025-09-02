@@ -1,5 +1,8 @@
 { inputs, lib, ... }: {
-  imports = [ inputs.ez-configs.flakeModule ./nixvim ];
+  imports = [ 
+    inputs.ez-configs.flakeModule
+    ./nixvim
+  ];
 
   ezConfigs = {
     root = ./.;
@@ -25,14 +28,6 @@
     pre-commit.settings.hooks = lib.mkIf (system == "x86_64-linux") {
       deadnix.enable = true;
       nixfmt-rfc-style.enable = true;
-    };
-
-    packages = {
-      nixvim = inputs.nixvim.legacyPackages.${system}.makeNixvimWithModule {
-        inherit system;
-        module = import ./nixvim/config;
-        extraSpecialArgs = { inherit inputs; };
-      };
     };
 
     devShells = {
