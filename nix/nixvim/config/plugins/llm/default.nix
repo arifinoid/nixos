@@ -1,5 +1,0 @@
-{
-  plugins.llm = {
-    enable = true;
-  };
-} 
