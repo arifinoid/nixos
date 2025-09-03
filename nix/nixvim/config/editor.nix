@@ -11,8 +11,8 @@
   colorschemes.catppuccin.enable = true;
 
   opts = {
-    list = true;
-    listchars = "eol:${icons.eol},nbsp:+,tab:${icons.tab} ,trail:-";
+    list = false;
+    listchars = "nbsp:+,tab:${icons.tab} ,trail:-";
 
     # --- this fold configurations it depends on treesitter
     foldmethod = "expr";
@@ -186,15 +186,6 @@
 
     wakatime.enable = true;
     wakatime.autoLoad = false;
-
-    image = {
-      enable = true;
-      settings = {
-        integrations.neorg.enabled = true;
-        editor_only_render_when_focused = true;
-        tmux_show_only_in_active_window = true;
-      };
-    };
 
     presence-nvim = {
       enable = true;
@@ -448,6 +439,16 @@
             "xml"
             "yaml"
           ];
+    };
+
+    bufferline = {
+      enable = true;
+      settings = {
+        options = {
+          buffer_close_icon = icons.close;
+          separator_style = "thin";
+        };
+      };
     };
   };
 }

@@ -39,7 +39,7 @@
 
       packages = {
         # Let you run `nix run .` to start nixvim
-        nixvim = nvim;
+        inherit nvim;
       };
     };
 }

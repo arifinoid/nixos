@@ -96,6 +96,10 @@
       # allow the title bar to adapt to whatever host you connect to
       set -g set-titles on
       set -g set-titles-string "#T"
+
+      # Workaround for image
+      set -gq allow-passthrough on
+      set -g visual-activity off
     '';
   };
 

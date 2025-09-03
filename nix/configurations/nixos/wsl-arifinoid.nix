@@ -71,7 +71,7 @@
     nixd
     nix-search
     fzf
-    inputs.self.packages.${pkgs.system}.nixvim
+    inputs.self.packages.${pkgs.system}.nvim
   ];
 
   fonts.packages = with pkgs; [

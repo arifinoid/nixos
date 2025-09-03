@@ -45,92 +45,160 @@ in
     };
 
     which-key.enable = true;
-    which-key.settings.triggers = [
-      {
-        __unkeyed-1 = "<leader>";
-        mode = "n";
-      }
-
-      {
-        __unkeyed-1 = "g";
-        mode = "n";
-      }
-
-      {
-        __unkeyed-1 = "z";
-        mode = "n";
-      }
-
-      {
-        __unkeyed-1 = "f";
-        mode = "n";
-      }
-
-      {
-        __unkeyed-1 = "t";
-        mode = "n";
-      }
-
-    ];
     which-key.settings.spec = [
       {
-        __unkeyed-1 = "<leader>nn";
+        __unkeyed-1 = "<c-c>";
+        __unkeyed-2 = "<esc>";
+        desc = "Escape";
+      }
+      {
+        __unkeyed-1 = "<c-a>";
+        __unkeyed-2 = "gg<S-v>G";
+        desc = "Select all";
+      }
+
+      {
+        __unkeyed-1 = "<c-n>";
         __unkeyed-2 = "<cmd>new<cr>";
         desc = "New Buffer Horizontal";
         icon = icons.horizontal;
       }
       {
-        __unkeyed-1 = "<leader>ns";
+        __unkeyed-1 = "<c-N>";
         __unkeyed-2 = "<cmd>vnew<cr>";
         desc = "New Buffer Vertical";
         icon = icons.vertical;
       }
       {
-        __unkeyed-1 = "<c-a>";
+        __unkeyed-1 = "<leader>ss";
         __unkeyed-2 = "<cmd>sp<cr>";
         desc = "Split Horizontal";
         icon = icons.horizontal;
       }
       {
-        __unkeyed-1 = "<c-s>";
+        __unkeyed-1 = "<leader>sv";
         __unkeyed-2 = "<cmd>vsp<cr>";
         desc = "Split Vertical";
         icon = icons.vertical;
       }
       {
-        __unkeyed-1 = "ft";
+        __unkeyed-1 = "<c-T>";
         __unkeyed-2 = "<cmd>Telescope<cr>";
         desc = "Open Telescope";
         icon = icons.telescope;
       }
+      {
+        __unkeyed-1 = "<c-p>";
+        __unkeyed-2 = "<cmd>Telescope find_files<cr>";
+        desc = "Telescope find files";
+        icon = icons.file;
+      }
+      {
+        __unkeyed-1 = "<c-f>";
+        __unkeyed-2 = "<cmd>Telescope live_grep<cr>";
+        desc = "Telescope grep text";
+        icon = icons.telescope;
+      }
+      {
+        __unkeyed-1 = "gb";
+        __unkeyed-2 = "<cmd>Telescope git_branches<cr>";
+        desc = "Telescope git branches";
+        icon = icons.git;
+      }
+      {
+        __unkeyed-1 = "gc";
+        __unkeyed-2 = "<cmd>Telescope git_commits<cr>";
+        desc = "Telescope git commits";
+        icon = icons.git;
+      }
+      {
+        __unkeyed-1 = "gc";
+        __unkeyed-2 = "<cmd>Telescope git_status<cr>";
+        desc = "Telescope git status";
+        icon = icons.git;
+      }
 
       {
-        __unkeyed-1 = "<leader>w";
+        __unkeyed-1 = "<c-s>";
         __unkeyed-2 = "<cmd>w<cr>";
         desc = "Write current buffer";
         icon = icons.save;
       }
 
-      {
-        __unkeyed-1 = "<leader>W";
-        __unkeyed-2 = "<cmd>w!<cr>";
-        desc = "Write current buffer forced";
-        icon = icons.save;
-      }
+      # {
+      #   __unkeyed-1 = "<c-S>";
+      #   __unkeyed-2 = "<cmd>wq<cr>";
+      #   desc = "Write current buffer and quit";
+      #   icon = icons.save;
+      # }
 
       {
-        __unkeyed-1 = "<leader>q";
-        __unkeyed-2 = "<cmd>wq<cr>";
-        desc = "Write current buffer and quit";
-        icon = icons.save;
+        __unkeyed-1 = "<c-w>";
+        __unkeyed-2 = "<cmd>BufferLinePickClose<cr>";
+        desc = "Close current buffer";
+        icon = icons.close;
       }
-
       {
-        __unkeyed-1 = "<leader>Q";
-        __unkeyed-2 = "<cmd>wq<cr>";
-        desc = "Write & quit forced";
-        icon = icons.save;
+        __unkeyed-1 = "<S-Tab>";
+        __unkeyed-2 = "<cmd>BufferLineCyclePrev<cr>";
+        desc = "Go to previous buffer";
       }
+      {
+        __unkeyed-1 = "<Tab>";
+        __unkeyed-2 = "<cmd>BufferLineCycleNext<cr>";
+        desc = "Go to next buffer";
+      }
+      {
+        __unkeyed-1 = "<c-1>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 1<cr>";
+        desc = "Go to buffer 1";
+      }
+      {
+        __unkeyed-1 = "<c-2>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 2<cr>";
+        desc = "Go to buffer 2";
+      }
+      {
+        __unkeyed-1 = "<c-3>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 3<cr>";
+        desc = "Go to buffer 3";
+      }
+      {
+        __unkeyed-1 = "<c-4>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 4<cr>";
+        desc = "Go to buffer 4";
+      }
+      {
+        __unkeyed-1 = "<c-5>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 5<cr>";
+        desc = "Go to buffer 5";
+      }
+      {
+        __unkeyed-1 = "<c-6>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 6<cr>";
+        desc = "Go to buffer 6";
+      }
+      {
+        __unkeyed-1 = "<c-7>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 7<cr>";
+        desc = "Go to buffer 7";
+      }
+      {
+        __unkeyed-1 = "<c-8>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 8<cr>";
+        desc = "Go to buffer 8";
+      }
+      {
+        __unkeyed-1 = "<c-9>";
+        __unkeyed-2 = "<cmd>BufferLineGoToBuffer 9<cr>";
+        desc = "Go to buffer 9";
+      }
+      {
+        __unkeyed-1 = "<c-0>";
+        __unkeyed-2 = "<cmd>BufferLast<cr>";
+        desc = "Go to last buffer";
+      }
+      
 
       {
         __unkeyed-1 = "Y";
@@ -147,15 +215,15 @@ in
       }
 
       {
-        __unkeyed-1 = "<c-h>";
-        __unkeyed-2 = "<c-w>h";
+        __unkeyed-1 = "<c-d>";
+        __unkeyed-2 = "<c-d>zz";
         desc = "Move top";
         icon = icons.top;
       }
 
       {
-        __unkeyed-1 = "<c-j>";
-        __unkeyed-2 = "<c-w>j";
+        __unkeyed-1 = "<c-u>";
+        __unkeyed-2 = "<c-u>zz";
         desc = "Move down";
         icon = icons.bottom;
       }

@@ -112,7 +112,7 @@
       withOpenASAR = true;
       withVencord = true;
     })
-    inputs.self.packages.${pkgs.system}.nixvim
+    inputs.self.packages.${pkgs.system}.nvim
     inputs.zen-browser.packages.${pkgs.system}.default
   ];
   environment.shells = with pkgs; [ fish ];
