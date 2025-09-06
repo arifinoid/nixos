@@ -1,5 +1,8 @@
 [x] nixvim navigation n which key
-[ ] merge dashboard and editor
+[x] merge dashboard and editor, change the ascii art
+[x] ai
+[x] pass, secret, etc
+[ ] cachix
 [ ] tmux config
 [ ] icons
 [ ] etc

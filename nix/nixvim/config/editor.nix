@@ -450,5 +450,49 @@
         };
       };
     };
+
+    snacks = {
+      enable = true;
+      settings = {
+         bigfile = {
+          enabled = true;
+        };
+        notifier = {
+          enabled = true;
+          timeout = 3000;
+        };
+        quickfile = {
+          enabled = false;
+        };
+        statuscolumn = {
+          enabled = false;
+        };
+        words = {
+          debounce = 100;
+          enabled = true;
+        };
+      };
+    };
+
+    noice = {
+      enable = true;
+      settings = {
+        lsp = {
+          override = {
+            "cmp.entry.get_documentation" = true;
+            "vim.lsp.util.convert_input_to_markdown_lines" = true;
+            "vim.lsp.util.stylize_markdown" = true;
+          };
+        };
+        presets = {
+          bottom_search = true;
+          command_palette = true;
+          inc_rename = true;
+          long_message_to_split = true;
+          lsp_doc_border = true;
+        };
+      };
+    };
+
   };
 }
