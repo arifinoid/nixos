@@ -13,6 +13,7 @@
     ezModules.wsl-hardware
     # Include NixOS-WSL configuration
     inputs.nixos-wsl.nixosModules.wsl
+    inputs.sops.nixosModules.sops
   ];
 
   nix.settings.experimental-features = [
@@ -59,6 +60,24 @@
 
   # System settings
   system.stateVersion = "25.05"; # Did you read the comment?
+
+  # SOPS secrets management
+  sops = {
+    defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
+    age.keyFile = "/var/lib/sops-nix/key.txt";
+    secrets = {
+      openai_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
+    };
+  };
+
+  # Environment variables for API keys
+  environment.sessionVariables = {
+    OPENAI_API_KEY = "$(cat ${config.sops.secrets.openai_api_key.path})";
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

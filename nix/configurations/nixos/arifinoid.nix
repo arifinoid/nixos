@@ -13,6 +13,7 @@
   imports = [
     # Include the results of the hardware scan.
     ezModules.arifinoid-hardware # ./hardware-configuration.nix
+    inputs.sops.nixosModules.sops
   ];
 
   nix.settings.experimental-features = [
@@ -143,5 +144,23 @@
   xdg.icons.enable = true;
   xdg.menus.enable = true;
   xdg.sounds.enable = true;
+
+  # SOPS secrets management
+  sops = {
+    defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
+    age.keyFile = "/var/lib/sops-nix/key.txt";
+    secrets = {
+      openai_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
+    };
+  };
+
+  # Environment variables for API keys
+  environment.sessionVariables = {
+    OPENAI_API_KEY = "$(cat ${config.sops.secrets.openai_api_key.path})";
+  };
 
 }
