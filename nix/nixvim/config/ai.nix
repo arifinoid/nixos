@@ -55,7 +55,7 @@ rec {
       enable = true;
       lazyLoad.enable = false;
       settings = {
-        provider = "local-qwen";
+        provider = "ollama";
 
         diff = {
           autojump = true;
@@ -87,12 +87,28 @@ rec {
             temperature = 0.3;
             max_tokens = 20000;
           };
-          local-qwen = {
+          groq = {
+            api_key_name = "GROQ_API_KEY";
+            __inherited_from = "openai";
+            endpoint = "https://api.groq.com/openai/v1";
+            model = "llama-3.1-70b-versatile";
+            temperature = 0.2;
+            max_tokens = 20000;
+          };
+          deepseek = {
+            api_key_name = "DEEPSEEK_API_KEY";
+            __inherited_from = "openai";
+            endpoint = "https://api.deepseek.com/v1";
+            model = "deepseek-coder";
+            temperature = 0.2;
+            max_tokens = 20000;
+          };
+          ollama = {
             api_key_name = "";
             __inherited_from = "openai";
             endpoint = "http://localhost:11434/v1";
-            model = "qwen2.5-coder";
-            temperature = 0;
+            model = "qwen2.5-coder:7b";
+            temperature = 0.2;
             max_tokens = 4096;
           };
         };
@@ -126,6 +142,11 @@ rec {
         icon = icons.robotFace;
         desc = "Edit with instruction";
       }
+      { __unkeyed-1 = "<leader>cpo"; __unkeyed-2 = "<cmd>AvanteSwitchProvider openai<cr>"; icon = icons.robotFace; desc = "Provider: OpenAI"; }
+      { __unkeyed-1 = "<leader>cpa"; __unkeyed-2 = "<cmd>AvanteSwitchProvider anthropic<cr>"; icon = icons.robotFace; desc = "Provider: Anthropic"; }
+      { __unkeyed-1 = "<leader>cpg"; __unkeyed-2 = "<cmd>AvanteSwitchProvider groq<cr>"; icon = icons.robotFace; desc = "Provider: Groq"; }
+      { __unkeyed-1 = "<leader>cpd"; __unkeyed-2 = "<cmd>AvanteSwitchProvider deepseek<cr>"; icon = icons.robotFace; desc = "Provider: DeepSeek"; }
+      { __unkeyed-1 = "<leader>cpl"; __unkeyed-2 = "<cmd>AvanteSwitchProvider ollama<cr>"; icon = icons.robotFace; desc = "Provider: Ollama"; }
     ];
   };
 }
