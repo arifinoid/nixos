@@ -53,20 +53,9 @@ rec {
     };
     avante = {
       enable = true;
-      lazyLoad.enable = true;
-      lazyLoad.settings.cmd = [
-        "AvanteAsk"
-        "AvanteBuild"
-        "AvanteChat"
-        "AvanteEdit"
-        "AvanteFocus"
-        "AvanteRefresh"
-        "AvanteSwitchProvider"
-        "AvanteShowRepoMap"
-        "AvanteToggle"
-      ];
+      lazyLoad.enable = false;
       settings = {
-        provider = "copilot";
+        provider = "local-qwen";
 
         diff = {
           autojump = true;
@@ -85,18 +74,16 @@ rec {
           enabled = true;
         };
 
-        copilot.model = "claude-3.5-sonnet";
-        copilot.temperature = 0.3;
-        copilot.max_tokens = 20000;
-
         providers = rec {
-          copilot37 = {
-            model = "claude-3.7-sonnet";
-            __inherited_from = "copilot";
-          };
           openai = {
-            api_key_name = "cmd:pass show arifinoid/openai.api.key";
+            api_key_name = "OPENAI_API_KEY";
             model = "gpt-4";
+            temperature = 0.3;
+            max_tokens = 20000;
+          };
+          anthropic = {
+            api_key_name = "ANTHROPIC_API_KEY";
+            model = "claude-3.5-sonnet";
             temperature = 0.3;
             max_tokens = 20000;
           };
@@ -111,14 +98,6 @@ rec {
         };
       };
     };
-
-    copilot-lua.enable = true;
-    copilot-lua.settings.suggestion.enabled = false;
-    copilot-lua.settings.panel.enabled = false;
-
-    cmp.settings.sources = lib.optionals plugins.copilot-lua.enable [
-      { name = "copilot"; }
-    ];
 
     which-key.settings.spec = [
       {

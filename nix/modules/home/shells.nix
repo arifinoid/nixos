@@ -15,6 +15,8 @@ let
     ns = "nix-shell";
     nq = "nix search";
     ngd = "nix-collect-garbage -d";
+    nxbw = "sudo nixos-rebuild switch --flake .#wsl-arifinoid";
+    nxb = "sudo nixos-rebuild switch --flake .#arifinoid";
 
     # node related
     ys = "yarn start";
@@ -109,6 +111,7 @@ in
   programs = {
     dircolors.enable = true;
     fish = {
+      enable = true;
       shellAbbrs = shellAbbrs;
       shellAliases = shellAliases;
       shellInit = ''
@@ -117,6 +120,16 @@ in
               tmux attach-session -t default 2>/dev/null; or tmux new-session -s default
             end
           end
+
+        # Load API keys from pass if not already set
+        if type -q pass
+          if not set -q OPENAI_API_KEY
+            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
+          end
+          if not set -q ANTHROPIC_API_KEY
+            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
+          end
+        end
 
         starship init fish | source
       '';
@@ -159,10 +172,30 @@ in
         if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end
+
+        # Ensure API keys are present in login shells
+        if type -q pass
+          if not set -q OPENAI_API_KEY
+            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
+          end
+          if not set -q ANTHROPIC_API_KEY
+            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
+          end
+        end
       '';
       interactiveShellInit = ''
         if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+        end
+
+        # Ensure API keys are present in interactive shells
+        if type -q pass
+          if not set -q OPENAI_API_KEY
+            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
+          end
+          if not set -q ANTHROPIC_API_KEY
+            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
+          end
         end
 
         if status is-interactive

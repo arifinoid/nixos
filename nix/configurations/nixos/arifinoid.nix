@@ -20,6 +20,11 @@
     "nix-command"
     "flakes"
   ];
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 7d";
+  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -116,6 +121,7 @@
     inputs.self.packages.${pkgs.system}.nvim
     inputs.zen-browser.packages.${pkgs.system}.default
   ];
+  services.ollama.enable = true;
   environment.shells = with pkgs; [ fish ];
   environment.variables = {
     MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";
@@ -145,22 +151,14 @@
   xdg.menus.enable = true;
   xdg.sounds.enable = true;
 
-  # SOPS secrets management
+  # SOPS secrets management (key file must exist on disk)
   sops = {
     defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets = {
-      openai_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-    };
+    secrets = { };
   };
 
-  # Environment variables for API keys
-  environment.sessionVariables = {
-    OPENAI_API_KEY = "$(cat ${config.sops.secrets.openai_api_key.path})";
-  };
+  # Home Manager backup behavior (avoids clobber error on existing files)
+  home-manager.backupFileExtension = "backup";
 
 }
