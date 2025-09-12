@@ -12,6 +12,7 @@ in
     fzf
     ack
     neofetch
+    fastfetch
     ripgrep
     trash-cli
     pass
