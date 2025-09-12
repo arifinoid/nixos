@@ -86,6 +86,7 @@
     
     nixd
     nix-search
+    cachix
     fzf
     inputs.self.packages.${pkgs.system}.nvim
   ];

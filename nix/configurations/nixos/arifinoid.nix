@@ -98,6 +98,8 @@
     shell = pkgs.fish;
   };
 
+  programs.fish.enable = true;
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -112,6 +114,7 @@
     vscode
     nixd
     nix-search
+    cachix
     fzf
     zoom-us
     (discord.override {
