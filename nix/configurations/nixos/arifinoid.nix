@@ -13,12 +13,18 @@
   imports = [
     # Include the results of the hardware scan.
     ezModules.arifinoid-hardware # ./hardware-configuration.nix
+    inputs.sops.nixosModules.sops
   ];
 
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 7d";
+  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -92,13 +98,38 @@
     shell = pkgs.fish;
   };
 
-  programs.firefox.enable = true;
-  programs.fish.enable = true; # see modules/home/shells.nix for more info
-  programs.tmux.enable = true; # see modules/home/tmux.nix for more info
-  programs.starship = {
-    enable = true;
-    settings = { };
+  programs.fish.enable = true;
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
+    git
+    kdePackages.partitionmanager
+    code-cursor
+    vscode
+    nixd
+    nix-search
+    cachix
+    fzf
+    zoom-us
+    (discord.override {
+      withOpenASAR = true;
+      withVencord = true;
+    })
+    inputs.self.packages.${pkgs.system}.nvim
+    inputs.zen-browser.packages.${pkgs.system}.default
+  ];
+  services.ollama.enable = true;
+  environment.shells = with pkgs; [ fish ];
+  environment.variables = {
+    MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";
   };
+
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -112,90 +143,6 @@
     };
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    fish
-    starship
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    zoxide
-    wget
-    git
-    alacritty
-    neofetch
-    catppuccin-cursors.mochaMauve
-    (discord.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
-    chromium
-    zoom-us
-    unzip
-    code-cursor
-    vscode
-
-    typescript
-    typescript-language-server
-    nodePackages.typescript
-    nodePackages.typescript-language-server
-    nodePackages.vercel
-    pyright
-    eslint
-    pgsync
-    cmake
-    meson
-    marksman
-    pnpm
-
-    nixd
-    nix-search
-
-    go
-    gcc
-    gofumpt
-    goimports-reviser
-    golines
-    gopls
-    golangci-lint
-
-    inputs.self.packages.${pkgs.system}.nixvim
-    inputs.zen-browser.packages.${pkgs.system}.default
-
-    kdePackages.partitionmanager
-  ];
-  environment.shells = with pkgs; [ fish ];
-  environment.variables = {
-    MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";
-  };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
 
   # Bluetooth
@@ -206,5 +153,15 @@
   xdg.icons.enable = true;
   xdg.menus.enable = true;
   xdg.sounds.enable = true;
+
+  # SOPS secrets management (key file must exist on disk)
+  sops = {
+    defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
+    age.keyFile = "/var/lib/sops-nix/key.txt";
+    secrets = { };
+  };
+
+  # Home Manager backup behavior (avoids clobber error on existing files)
+  home-manager.backupFileExtension = "backup";
 
 }

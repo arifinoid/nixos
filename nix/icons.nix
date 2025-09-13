@@ -30,6 +30,7 @@ let
     warning1 = "";
     warning2 = "";
     warning3 = "";
+    close = "";
     cross = "";
     cross1 = "";
     cross2 = "";
@@ -93,6 +94,8 @@ let
     indent = "▎";
     pipe = "┃";
     dot = "•";
+    separator_active = "▎";
+	  separator_inactive = "";
   };
 in
 icons

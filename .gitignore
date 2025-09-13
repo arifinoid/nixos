@@ -178,4 +178,13 @@ dist
 # result dir
 result
 
+# SOPS secrets - only encrypted files should be committed
+secrets/*.yaml
+secrets/*.json
+secrets/*.env
+!secrets/secret.yaml
+!secrets/*.yaml.sops
+!secrets/*.json.sops
+!secrets/*.env.sops
+
 # End of https://www.toptal.com/developers/gitignore/api/node

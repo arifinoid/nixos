@@ -1,5 +1,5 @@
 { self, inputs, ... }: {
-  perSystem = { icons, pkgs, system, ... }:
+  perSystem = { pkgs, system, ... }:
     let
       nixvimLib = inputs.nixvim.lib;
       helpers = nixvimLib.nixvim // {
@@ -23,7 +23,10 @@
         inherit pkgs;
         module = import ./config; # import the module directly
         # You can use `extraSpecialArgs` to pass additional arguments to your module files
-        extraSpecialArgs = { inherit icons helpers system self inputs; };
+        extraSpecialArgs = { 
+          inherit helpers system self inputs;
+          icons = import ../icons.nix;
+        };
       };
       nvim = nixvim'.makeNixvimWithModule nixvimModule;
       nvimCheck =

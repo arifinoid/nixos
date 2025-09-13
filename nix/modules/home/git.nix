@@ -9,6 +9,10 @@ let
     email = "rohmadarifin007@gmail.com";
   };
 in {
+  home.packages = with pkgs; [
+    git-filter-repo
+  ];
+
   programs.git = {
     enable = true;
     delta = { enable = true; };

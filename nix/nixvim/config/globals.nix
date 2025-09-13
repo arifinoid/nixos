@@ -3,8 +3,6 @@ let
 in
 {
   config = {
-    colorscheme = "catppuccin";
-    colorschemes.catppuccin.enable = true;
     performance = {
       byteCompileLua = {
         enable = true;
@@ -12,10 +10,6 @@ in
         configs = true;
         plugins = true;
       };
-    };
-    clipboard = {
-      register = "unnamedplus";
-      providers.wl-copy.enable = true;
     };
     globals.mapleader = " ";
     opts = {
@@ -95,15 +89,6 @@ in
 
       # Enable cursor line highlight
       cursorline = true; # Highlight the line where the cursor is located
-
-      # Set fold settings
-      # These options were recommended by nvim-ufo
-      # See: https://github.com/kevinhwang91/nvim-ufo#minimal-configuration
-      foldcolumn = "0";
-      foldlevel = 99;
-      foldlevelstart = 99;
-      foldenable = true;
-      foldmethod = "indent";
 
       # Always keep 8 lines above/below cursor unless at start/end of file
       scrolloff = 8;

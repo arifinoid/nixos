@@ -1,5 +1,8 @@
-{ inputs, ... }: {
-  imports = [ inputs.ez-configs.flakeModule ./nixvim ];
+{ inputs, lib, ... }: {
+  imports = [ 
+    inputs.ez-configs.flakeModule
+    ./nixvim
+  ];
 
   ezConfigs = {
     root = ./.;
@@ -13,22 +16,18 @@
     };
 
     globalArgs = { inherit inputs; };
-    nixos.hosts = { arifinoid.userHomeModules = [ "arifinoid" ]; };
+    nixos.hosts = { 
+      arifinoid.userHomeModules = [ "arifinoid" ];
+      "wsl-arifinoid" = { userHomeModules = [ "arifinoid" ]; };
+    };
 
   };
 
   perSystem = { pkgs, system, ... }: {
-    pre-commit.settings.hooks = {
+    # Only enable pre-commit on systems that support it
+    pre-commit.settings.hooks = lib.mkIf (system == "x86_64-linux") {
       deadnix.enable = true;
       nixfmt-rfc-style.enable = true;
-    };
-
-    packages = {
-      nixvim = inputs.nixvim.legacyPackages.${system}.makeNixvimWithModule {
-        inherit system;
-        module = import ./nixvim/config;
-        extraSpecialArgs = { inherit inputs; };
-      };
     };
 
     devShells = {
