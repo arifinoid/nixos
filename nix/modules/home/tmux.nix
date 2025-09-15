@@ -13,7 +13,7 @@
     reverseSplit = true;
     customPaneNavigationAndResize = true;
     prefix = "C-t";
-    terminal = "screen-256color";
+    terminal = "tmux-256color";
     keyMode = "vi";
     plugins = with pkgs.tmuxPlugins; [
       cpu
@@ -29,9 +29,13 @@
         extraConfig = builtins.readFile ./plugins.catppuccin.conf;
       }
     ];
-    extraConfig = builtins.readFile ./tmux.conf;
+    extraConfig = (builtins.readFile ./tmux.conf) + ''
+      set -g default-terminal "tmux-256color"
+      set -as terminal-overrides ",*:RGB"
+    '';
   };
 
   home.packages = with pkgs;
-    lib.optionals stdenv.isDarwin [ reattach-to-user-namespace ];
+    [ ncurses ]
+    ++ lib.optionals stdenv.isDarwin [ reattach-to-user-namespace ];
 }

@@ -3,11 +3,10 @@
   lib,
   icons,
   helpers,
-  config,
   ...
 }:
 
-{
+rec {
   autoCmd = [
     {
       # Disable cmp in neorepl
@@ -19,54 +18,55 @@
             require("cmp").setup.buffer { enabled = false }
           '';
     }
+    {
+      # Define missing Avante sign to avoid "Unknown sign" error
+      event = [ "VimEnter" ];
+      callback.__raw =
+        helpers.mkLuaFun # lua
+          ''
+            local defined = vim.fn.sign_getdefined("AvanteInputPromptSign")
+            if not defined or vim.tbl_isempty(defined) then
+              vim.fn.sign_define("AvanteInputPromptSign", { text = ">", texthl = "Comment", numhl = "" })
+            end
+          '';
+    }
   ];
 
-
+  extraPlugins = [
+    pkgs.vimPlugins.claude-code-nvim
+  ];
 
   plugins = {
+    claude-code = {
+      enable = false;
+      settings.window = {
+        position = "rightbelow vsplit";
+        split_ratio = 0.45;
+      };
+      lazyLoad.enable = true;
+      lazyLoad.settings.cmd = [
+        "ClaudeCode"
+        "ClaudeCodeContinue"
+        "ClaudeCodeResume"
+        "ClaudeCodeVerbose"
+      ];
+    };
     avante = {
       enable = true;
+      lazyLoad.enable = true;
+      lazyLoad.settings.cmd = [
+        "AvanteAsk"
+        "AvanteBuild"
+        "AvanteChat"
+        "AvanteEdit"
+        "AvanteFocus"
+        "AvanteRefresh"
+        "AvanteSwitchProvider"
+        "AvanteShowRepoMap"
+        "AvanteToggle"
+      ];
       settings = {
         provider = "ollama";
-        providers = rec {
-          ollama = {
-            endpoint = "http://localhost:11434/v1";
-            model = "qwen2.5-coder:7b";
-            temperature = 0.2;
-            extra_request_body = {
-              options = {
-                num_predict = 1024; 
-                num_ctx     = 32768;
-                keep_alive  = "5m";
-                temperature = 0.2;
-              };
-            };
-          };
-
-          deepseek-r1-14b = {
-            __inherited_from = "ollama";
-            endpoint = "http://localhost:11434/v1";
-            model = "deepseek-r1:14b";
-            extra_request_body.options = {
-              num_predict = 1024;
-              num_ctx = 32768;
-              keep_alive = "5m";
-              temperature = 0.7;
-            };
-          };
-
-          qianwen = {
-            __inherited_from = "ollama";
-            endpoint = "http://localhost:11434/v1";
-            model = "qwen2.5-coder:7b";
-            extra_request_body.options = {
-              num_predict = 1024;
-              num_ctx = 32768;
-              keep_alive = "5m";
-              temperature = 0.7;
-            };
-          };
-        };
 
         diff = {
           autojump = true;
@@ -85,8 +85,52 @@
           enabled = true;
         };
 
+        ollama = {
+          endpoint = "http://localhost:11434";
+          # model = "qwen2.5-coder"; // for arifinoid host only, wsl-arifinoid is not powerful enough
+          model = "qwen2.5-coder:1.5b";
+          temperature = 0;
+          max_tokens = 4096;
+        };
+
+        claude.api_key_name = "ANTHROPIC_API_KEY";
+        claude.endpoint = "https://api.anthropic.com";
+        claude.model = "claude-3-7-sonnet-20250219";
+        claude.temperature = 0.7;
+        claude.max_tokens = 20000;
+
+        copilot.model = "claude-3.5-sonnet";
+        copilot.temperature = 0.3;
+        copilot.max_tokens = 20000;
+
+        providers = rec {
+          copilot37 = {
+            model = "claude-3.7-sonnet";
+            __inherited_from = "copilot";
+          };
+          grok = groq // {
+            api_key_name = "GROK_API_KEY";
+            model = "grok-2-latest";
+            endpoint = "https://api.x.ai/v1";
+          };
+          groq = {
+            api_key_name = "GROQ_API_KEY";
+            __inherited_from = "openai";
+            endpoint = "https://api.groq.com/openai/v1";
+            model = "llama-3.3-70b-versatile";
+            max_tokens = 32768;
+          };
+        };
       };
     };
+
+    copilot-lua.enable = true;
+    copilot-lua.settings.suggestion.enabled = false;
+    copilot-lua.settings.panel.enabled = false;
+
+    cmp.settings.sources = lib.optionals plugins.copilot-lua.enable [
+      { name = "copilot"; }
+    ];
 
     which-key.settings.spec = [
       {
