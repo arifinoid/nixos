@@ -4,5 +4,5 @@
 [x] pass, secret, etc
 [x] cachix
 [x] tmux config
-[ ] icons
+[x] icons n fonts
 [ ] etc

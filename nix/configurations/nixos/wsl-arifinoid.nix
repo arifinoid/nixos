@@ -16,10 +16,13 @@
     inputs.sops.nixosModules.sops
   ];
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [ "root" "arifinoid" ];
+  };
   nix.gc = {
     automatic = true;
     dates = "daily";

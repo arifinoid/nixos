@@ -1,7 +1,8 @@
 { pkgs, libs, ... }: {
   home.shellAliases = {
-    tms = "tmux source-file ~/.config/.tmux.conf";
+    tms = "tmux source-file ~/.config/tmux/tmux.conf";
     tmk = "tmux kill-session -a";
+    tmks = "tmux kill-server";
     ide =
       "tmux split-window -v -p 30;tmux split-window -h -p 66;tmux split-window -h -p 50";
   };
