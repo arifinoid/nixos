@@ -17,4 +17,4 @@ jobs:
     - run: |
         nix flake check
     - run: |
-        nix build .#wsl-arifinoid --json | jq -r '.[].outputs | to_entries[].value' | cachix push arifinoid-nix
+        nix build .#nixosConfigurations.wsl-arifinoid.config.system.build.toplevel --print-out-paths | cachix push arifinoid-nix
