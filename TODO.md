@@ -2,7 +2,7 @@
 [x] merge dashboard and editor, change the ascii art
 [x] ai
 [x] pass, secret, etc
-[ ] cachix
-[ ] tmux config
-[ ] icons
+[x] cachix
+[x] tmux config
+[x] icons n fonts
 [ ] etc

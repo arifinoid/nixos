@@ -5,7 +5,13 @@
 # NixOS-WSL specific options are documented on the NixOS-WSL repository:
 # https://github.com/nix-community/NixOS-WSL
 
-{ config, lib, pkgs, inputs, ezModules, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ezModules,
+  ...
+}:
 
 {
   imports = [
@@ -16,10 +22,16 @@
     inputs.sops.nixosModules.sops
   ];
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [
+      "root"
+      "arifinoid"
+    ];
+  };
   nix.gc = {
     automatic = true;
     dates = "daily";
@@ -37,7 +49,7 @@
     isNormalUser = true;
     description = "Rohmad Arifin";
     extraGroups = [ "wheel" ];
-    packages = [];
+    packages = [ ];
     shell = pkgs.fish;
   };
 
@@ -53,7 +65,7 @@
 
   # Minimal environment
   environment.shells = with pkgs; [ fish ];
-  
+
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";
     WSL_INTEROP = "1";
@@ -83,7 +95,7 @@
     wget
     git
     kdePackages.partitionmanager
-    
+
     nixd
     nix-search
     cachix
@@ -94,7 +106,7 @@
 
   fonts.packages = with pkgs; [
     sketchybar-app-font
-    
+
     # name of nerdfonts see {https://github.com/NixOS/nixpkgs/blob/nixos-24.11/pkgs/data/fonts/nerdfonts/shas.nix}
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code

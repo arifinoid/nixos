@@ -1,5 +1,4 @@
 {
-  lib,
   helpers,
   icons,
   pkgs,
@@ -26,6 +25,7 @@
 
   extraConfigLuaPre = # lua
     ''
+
       if vim.fn.has('termguicolors') == 1 then
         vim.opt.termguicolors = true
       end
@@ -38,6 +38,7 @@
       callback.__raw =
         helpers.mkLuaFun # lua
           ''
+
             require('lualine').refresh()
           '';
     }
@@ -58,6 +59,7 @@
     helpers.mkLuaFun
       # lua
       ''
+
         local toggle = function()
           if vim.g.unhide_lualine == nil then
             vim.g.unhide_lualine = true
@@ -111,6 +113,7 @@
       settings = {
         provider_selector = # lua
           ''
+
             function(bufnr, filetype, buftype)
               local ftMap = {
                 vim = "indent",
@@ -127,6 +130,7 @@
 
         fold_virt_text_handler = # lua
           ''
+
             function(virtText, lnum, endLnum, width, truncate)
               local newVirtText = {}
               local suffix = ('  %d '):format(endLnum - lnum)
@@ -277,6 +281,7 @@
       lazyLoad.settings.event = "BufEnter";
       lazyLoad.settings.cmd = [ "StatusLine" ];
       lazyLoad.settings.before.__raw = ''
+
         require('lsp-progress').setup()
       '';
       settings.theme = "catppuccin";
@@ -315,6 +320,7 @@
           __unkeyed-1.__raw =
             # lua
             ''
+
               (function()
                 local ft = require('lualine.components.filetype'):extend()
                 local lsp_progress = require('lsp-progress')
@@ -454,7 +460,7 @@
     snacks = {
       enable = true;
       settings = {
-         bigfile = {
+        bigfile = {
           enabled = true;
         };
         notifier = {

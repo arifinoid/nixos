@@ -8,14 +8,17 @@ let
     name = "arifinoid";
     email = "rohmadarifin007@gmail.com";
   };
-in {
+in
+{
   home.packages = with pkgs; [
     git-filter-repo
   ];
 
   programs.git = {
     enable = true;
-    delta = { enable = true; };
+    delta = {
+      enable = true;
+    };
     aliases = {
       gpo = "git pull origin";
       ggpo = "git push origin";
@@ -65,5 +68,7 @@ in {
     enable = true;
   };
 
-  programs.lazygit = { enable = true; };
+  programs.lazygit = {
+    enable = true;
+  };
 }

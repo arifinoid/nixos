@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 {
   home.packages = with pkgs; [
     sops
@@ -24,5 +24,5 @@
   home.sessionVariables = {
     # OPENAI_API_KEY will be available from the system-level SOPS configuration
   };
-  
+
 }
