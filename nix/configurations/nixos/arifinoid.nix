@@ -21,7 +21,10 @@
       "nix-command"
       "flakes"
     ];
-    trusted-users = [ "root" "arifinoid" ];
+    trusted-users = [
+      "root"
+      "arifinoid"
+    ];
   };
   nix.gc = {
     automatic = true;

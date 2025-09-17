@@ -1,4 +1,4 @@
-{ osConfig, lib, ... }:
+{ osConfig, ... }:
 let
   isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
 in

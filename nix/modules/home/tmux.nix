@@ -1,10 +1,10 @@
-{ pkgs, libs, ... }: {
+{ pkgs, ... }:
+{
   home.shellAliases = {
     tms = "tmux source-file ~/.config/tmux/tmux.conf";
     tmk = "tmux kill-session -a";
     tmks = "tmux kill-server";
-    ide =
-      "tmux split-window -v -p 30;tmux split-window -h -p 66;tmux split-window -h -p 50";
+    ide = "tmux split-window -v -p 30;tmux split-window -h -p 66;tmux split-window -h -p 50";
   };
   programs.tmux = {
     enable = true;
@@ -30,13 +30,15 @@
         extraConfig = builtins.readFile ./plugins.catppuccin.conf;
       }
     ];
-    extraConfig = (builtins.readFile ./tmux.conf) + ''
-      set -g default-terminal "tmux-256color"
-      set -as terminal-overrides ",*:RGB"
-    '';
+    extraConfig =
+      (builtins.readFile ./tmux.conf)
+      + ''
+        set -g default-terminal "tmux-256color"
+        set -as terminal-overrides ",*:RGB"
+      '';
   };
 
-  home.packages = with pkgs;
-    [ ncurses ]
-    ++ lib.optionals stdenv.isDarwin [ reattach-to-user-namespace ];
+  home.packages =
+    with pkgs;
+    [ ncurses ] ++ lib.optionals stdenv.isDarwin [ reattach-to-user-namespace ];
 }

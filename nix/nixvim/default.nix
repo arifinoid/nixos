@@ -1,9 +1,12 @@
-{ self, inputs, ... }: {
-  perSystem = { pkgs, system, ... }:
+{ self, inputs, ... }:
+{
+  perSystem =
+    { pkgs, system, ... }:
     let
       nixvimLib = inputs.nixvim.lib;
       helpers = nixvimLib.nixvim // {
-        mkLuaFunWithName = name: lua:
+        mkLuaFunWithName =
+          name: lua:
           # lua
           ''
             function ${name}()
@@ -11,7 +14,8 @@
             end
           '';
 
-        mkLuaFun = lua: # lua
+        mkLuaFun =
+          lua: # lua
           ''
             function()
               ${lua}
@@ -23,15 +27,20 @@
         inherit pkgs;
         module = import ./config; # import the module directly
         # You can use `extraSpecialArgs` to pass additional arguments to your module files
-        extraSpecialArgs = { 
-          inherit helpers system self inputs;
+        extraSpecialArgs = {
+          inherit
+            helpers
+            system
+            self
+            inputs
+            ;
           icons = import ../icons.nix;
         };
       };
       nvim = nixvim'.makeNixvimWithModule nixvimModule;
-      nvimCheck =
-        nixvimLib.${system}.check.mkTestDerivationFromNixvimModule nixvimModule;
-    in {
+      nvimCheck = nixvimLib.${system}.check.mkTestDerivationFromNixvimModule nixvimModule;
+    in
+    {
       checks = {
         # Run `nix flake check .` to verify that your config is not broken
         nvim = nvimCheck;

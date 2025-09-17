@@ -198,7 +198,6 @@ in
         __unkeyed-2 = "<cmd>BufferLast<cr>";
         desc = "Go to last buffer";
       }
-      
 
       {
         __unkeyed-1 = "Y";

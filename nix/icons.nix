@@ -95,7 +95,7 @@ let
     pipe = "┃";
     dot = "•";
     separator_active = "▎";
-	  separator_inactive = "";
+    separator_inactive = "";
   };
 in
 icons

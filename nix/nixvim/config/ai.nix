@@ -15,7 +15,8 @@ rec {
       callback.__raw =
         helpers.mkLuaFun # lua
           ''
-            require("cmp").setup.buffer { enabled = false }
+            
+                        require("cmp").setup.buffer { enabled = false }
           '';
     }
     {
@@ -24,10 +25,11 @@ rec {
       callback.__raw =
         helpers.mkLuaFun # lua
           ''
-            local defined = vim.fn.sign_getdefined("AvanteInputPromptSign")
-            if not defined or vim.tbl_isempty(defined) then
-              vim.fn.sign_define("AvanteInputPromptSign", { text = ">", texthl = "Comment", numhl = "" })
-            end
+            
+                        local defined = vim.fn.sign_getdefined("AvanteInputPromptSign")
+                        if not defined or vim.tbl_isempty(defined) then
+                          vim.fn.sign_define("AvanteInputPromptSign", { text = ">", texthl = "Comment", numhl = "" })
+                        end
           '';
     }
   ];
@@ -159,11 +161,36 @@ rec {
         icon = icons.robotFace;
         desc = "Edit with instruction";
       }
-      { __unkeyed-1 = "<leader>cpo"; __unkeyed-2 = "<cmd>AvanteSwitchProvider openai<cr>"; icon = icons.robotFace; desc = "Provider: OpenAI"; }
-      { __unkeyed-1 = "<leader>cpa"; __unkeyed-2 = "<cmd>AvanteSwitchProvider anthropic<cr>"; icon = icons.robotFace; desc = "Provider: Anthropic"; }
-      { __unkeyed-1 = "<leader>cpg"; __unkeyed-2 = "<cmd>AvanteSwitchProvider groq<cr>"; icon = icons.robotFace; desc = "Provider: Groq"; }
-      { __unkeyed-1 = "<leader>cpd"; __unkeyed-2 = "<cmd>AvanteSwitchProvider deepseek<cr>"; icon = icons.robotFace; desc = "Provider: DeepSeek"; }
-      { __unkeyed-1 = "<leader>cpl"; __unkeyed-2 = "<cmd>AvanteSwitchProvider ollama<cr>"; icon = icons.robotFace; desc = "Provider: Ollama"; }
+      {
+        __unkeyed-1 = "<leader>cpo";
+        __unkeyed-2 = "<cmd>AvanteSwitchProvider openai<cr>";
+        icon = icons.robotFace;
+        desc = "Provider: OpenAI";
+      }
+      {
+        __unkeyed-1 = "<leader>cpa";
+        __unkeyed-2 = "<cmd>AvanteSwitchProvider anthropic<cr>";
+        icon = icons.robotFace;
+        desc = "Provider: Anthropic";
+      }
+      {
+        __unkeyed-1 = "<leader>cpg";
+        __unkeyed-2 = "<cmd>AvanteSwitchProvider groq<cr>";
+        icon = icons.robotFace;
+        desc = "Provider: Groq";
+      }
+      {
+        __unkeyed-1 = "<leader>cpd";
+        __unkeyed-2 = "<cmd>AvanteSwitchProvider deepseek<cr>";
+        icon = icons.robotFace;
+        desc = "Provider: DeepSeek";
+      }
+      {
+        __unkeyed-1 = "<leader>cpl";
+        __unkeyed-2 = "<cmd>AvanteSwitchProvider ollama<cr>";
+        icon = icons.robotFace;
+        desc = "Provider: Ollama";
+      }
     ];
   };
 }
