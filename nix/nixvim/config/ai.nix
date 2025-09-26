@@ -89,8 +89,7 @@ rec {
 
         ollama = {
           endpoint = "http://localhost:11434";
-          # model = "qwen2.5-coder"; // for arifinoid host only, wsl-arifinoid is not powerful enough
-          model = "qwen2.5-coder:1.5b";
+          model = "qwen3-coder:480b-cloud";
           temperature = 0;
           max_tokens = 4096;
         };
