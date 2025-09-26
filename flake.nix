@@ -19,7 +19,7 @@
   inputs = {
     nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs.follows = "nixpkgs-unstable";
+    nixpkgs.follows = "nixpkgs-stable";
 
     # utils
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -35,7 +35,7 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
     # home manager
-    home-manager.url = "github:nix-community/home-manager";
+    home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # development env
