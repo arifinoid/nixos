@@ -1,6 +1,6 @@
 {
   imports = [
-    ./ai.nix
+    ./ai
     ./autocmd.nix
     ./dashboard.nix
     ./editor.nix

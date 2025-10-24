@@ -131,6 +131,8 @@
     inputs.zen-browser.packages.${pkgs.system}.default
   ];
   services.ollama.enable = true;
+  services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
+
   environment.shells = with pkgs; [ fish ];
   environment.variables = {
     MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";

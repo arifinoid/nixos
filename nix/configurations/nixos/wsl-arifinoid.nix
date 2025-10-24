@@ -103,6 +103,7 @@
     inputs.self.packages.${pkgs.system}.nvim
   ];
   services.ollama.enable = true;
+  services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
 
   fonts.packages = with pkgs; [
     sketchybar-app-font
