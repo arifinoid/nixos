@@ -1,9 +1,4 @@
-{
-  helpers,
-  icons,
-  pkgs,
-  ...
-}:
+{ helpers, icons, pkgs, ... }:
 
 {
   colorscheme = "catppuccin";
@@ -14,13 +9,13 @@
     listchars = "nbsp:+,tab:${icons.tab} ,trail:-";
 
     # --- this fold configurations it depends on treesitter
-    foldmethod = "expr";
-    foldexpr = "v:lua.vim.treesitter.foldexpr()";
-    foldcolumn = "0";
-    foldtext = "";
-    foldlevel = 99;
-    foldlevelstart = 1;
-    foldnestmax = 4;
+    # foldmethod = "expr";
+    # foldexpr = "v:lua.vim.treesitter.foldexpr()";
+    # foldcolumn = "0";
+    # foldtext = "";
+    # foldlevel = 99;
+    # foldlevelstart = 1;
+    # foldnestmax = 4;
   };
 
   extraConfigLuaPre = # lua
@@ -31,18 +26,15 @@
       end
     '';
 
-  autoCmd = [
-    {
-      event = [ "User" ];
-      pattern = "LspProgressStatusUpdated";
-      callback.__raw =
-        helpers.mkLuaFun # lua
-          ''
+  autoCmd = [{
+    event = [ "User" ];
+    pattern = "LspProgressStatusUpdated";
+    callback.__raw = helpers.mkLuaFun # lua
+      ''
 
-            require('lualine').refresh()
-          '';
-    }
-  ];
+        require('lualine').refresh()
+      '';
+  }];
 
   extraPlugins = with pkgs.vimPlugins; [
     # theme
@@ -55,20 +47,19 @@
   ];
 
   userCommands.StatusLine.desc = "Toggle Status Line";
-  userCommands.StatusLine.command.__raw =
-    helpers.mkLuaFun
-      # lua
-      ''
+  userCommands.StatusLine.command.__raw = helpers.mkLuaFun
+    # lua
+    ''
 
-        local toggle = function()
-          if vim.g.unhide_lualine == nil then
-            vim.g.unhide_lualine = true
-          end  
-          vim.g.unhide_lualine = not vim.g.unhide_lualine
-          return vim.g.unhide_lualine
-        end
-        require('lualine').hide({ unhide = toggle() })
-      '';
+      local toggle = function()
+        if vim.g.unhide_lualine == nil then
+          vim.g.unhide_lualine = true
+        end  
+        vim.g.unhide_lualine = not vim.g.unhide_lualine
+        return vim.g.unhide_lualine
+      end
+      require('lualine').hide({ unhide = toggle() })
+    '';
 
   plugins = rec {
     # lazy load management
@@ -98,16 +89,13 @@
         }
         {
           __unkeyed-1 = "typr";
-          cmd = [
-            "Typr"
-            "TyprStats"
-          ];
+          cmd = [ "Typr" "TyprStats" ];
         }
       ];
     };
 
     nvim-ufo = {
-      enable = true;
+      enable = false;
       # setupLspCapabilities = true;
       lazyLoad.settings.event = "BufEnter";
       settings = {
@@ -246,11 +234,7 @@
       #   "rainbowcol7"
       # ];
       settings.whitespace.highlight = [ "Whitespace" ];
-      settings.exclude.buftypes = [
-        "nofile"
-        "terminal"
-        "neorg"
-      ];
+      settings.exclude.buftypes = [ "nofile" "terminal" "neorg" ];
       settings.exclude.filetypes = [
         "norg"
         "NvimTree"
@@ -286,21 +270,17 @@
       '';
       settings.theme = "catppuccin";
       settings.options.disabled_filetypes.__unkeyed-1 = "NvimTree";
-      settings.options.disabled_filetypes.statusline = [
-        "sagaoutline"
-        "Trouble"
-      ];
+      settings.options.disabled_filetypes.statusline =
+        [ "sagaoutline" "Trouble" ];
       settings.options.component_separators.left = "";
       settings.options.component_separators.right = "";
       settings.options.section_separators.left = icons.circleRight;
       settings.options.section_separators.right = icons.circleLeft;
-      settings.sections.lualine_a = [
-        {
-          __unkeyed-1 = "mode";
-          separator.right = icons.circleRight;
-          padding.left = 1;
-        }
-      ];
+      settings.sections.lualine_a = [{
+        __unkeyed-1 = "mode";
+        separator.right = icons.circleRight;
+        padding.left = 1;
+      }];
       settings.sections.lualine_b = [
         {
           __unkeyed-1 = "branch";
@@ -308,13 +288,8 @@
         }
         "diff"
       ];
-      settings.sections.lualine_c = [
-        "diagnostics"
-      ];
-      settings.sections.lualine_x = [
-        "searchcount"
-        "selectioncount"
-      ];
+      settings.sections.lualine_c = [ "diagnostics" ];
+      settings.sections.lualine_x = [ "searchcount" "selectioncount" ];
       settings.sections.lualine_y = [
         {
           __unkeyed-1.__raw =
@@ -344,13 +319,11 @@
         }
         "progress"
       ];
-      settings.sections.lualine_z = [
-        {
-          __unkeyed-1 = "location";
-          separator.left = icons.circleLeft;
-          padding.right = 1;
-        }
-      ];
+      settings.sections.lualine_z = [{
+        __unkeyed-1 = "location";
+        separator.left = icons.circleLeft;
+        padding.right = 1;
+      }];
       settings.winbar = { };
       settings.tabline = { };
       settings.extensions = [ ];
@@ -363,88 +336,83 @@
       folding = true;
       settings.indent.enable = true;
       settings.highlight.enable = true;
-      grammarPackages =
-        builtins.map
-          (
-            x:
-            pkgs.vimPlugins.nvim-treesitter.builtGrammars.${x} or pkgs.tree-sitter-grammars."tree-sitter-${x}"
-          )
-          [
-            # ┌────────────────────────────────────┐
-            # │ move to ignoreInstall for disabled │
-            # └────────────────────────────────────┘
-            "asm"
-            "bash"
-            "c"
-            "cmake"
-            "comment"
-            "css"
-            "dhall"
-            "diff"
-            "dockerfile"
-            "dot"
-            "fish"
-            "git_config"
-            "git_rebase"
-            "gitattributes"
-            "gitcommit"
-            "gitignore"
-            "go"
-            "gomod"
-            "gosum"
-            "gotmpl"
-            "gpg"
-            "graphql"
-            "haskell"
-            "haskell_persistent"
-            "hcl"
-            "helm"
-            "html"
-            "http"
-            "javascript"
-            "jq"
-            "jsdoc"
-            "json"
-            "latex"
-            "lua"
-            "luadoc"
-            "luap"
-            "luau"
-            "make"
-            "markdown"
-            "markdown_inline"
-            "mermaid"
-            "nix"
-            "norg"
-            "norg-meta"
-            "ocaml"
-            "ocaml_interface"
-            "ocamllex"
-            "passwd"
-            "po"
-            "proto"
-            "pymanifest"
-            "python"
-            "query"
-            "regex"
-            "rust"
-            "rescript"
-            "sql"
-            "ssh_config"
-            "templ"
-            "terraform"
-            "textproto"
-            "tmux"
-            "todotxt"
-            "toml"
-            "tsx"
-            "typescript"
-            "vhs"
-            "vim"
-            "vimdoc"
-            "xml"
-            "yaml"
-          ];
+      grammarPackages = builtins.map (x:
+        pkgs.vimPlugins.nvim-treesitter.builtGrammars.${x} or pkgs.tree-sitter-grammars."tree-sitter-${x}") [
+          # ┌────────────────────────────────────┐
+          # │ move to ignoreInstall for disabled │
+          # └────────────────────────────────────┘
+          "asm"
+          "bash"
+          "c"
+          "cmake"
+          "comment"
+          "css"
+          "dhall"
+          "diff"
+          "dockerfile"
+          "dot"
+          "fish"
+          "git_config"
+          "git_rebase"
+          "gitattributes"
+          "gitcommit"
+          "gitignore"
+          "go"
+          "gomod"
+          "gosum"
+          "gotmpl"
+          "gpg"
+          "graphql"
+          "haskell"
+          "haskell_persistent"
+          "hcl"
+          "helm"
+          "html"
+          "http"
+          "javascript"
+          "jq"
+          "jsdoc"
+          "json"
+          "latex"
+          "lua"
+          "luadoc"
+          "luap"
+          "luau"
+          "make"
+          "markdown"
+          "markdown_inline"
+          "mermaid"
+          "nix"
+          "norg"
+          "norg-meta"
+          "ocaml"
+          "ocaml_interface"
+          "ocamllex"
+          "passwd"
+          "po"
+          "proto"
+          "pymanifest"
+          "python"
+          "query"
+          "regex"
+          "rust"
+          "rescript"
+          "sql"
+          "ssh_config"
+          "templ"
+          "terraform"
+          "textproto"
+          "tmux"
+          "todotxt"
+          "toml"
+          "tsx"
+          "typescript"
+          "vhs"
+          "vim"
+          "vimdoc"
+          "xml"
+          "yaml"
+        ];
     };
 
     bufferline = {
@@ -460,19 +428,13 @@
     snacks = {
       enable = true;
       settings = {
-        bigfile = {
-          enabled = true;
-        };
+        bigfile = { enabled = true; };
         notifier = {
           enabled = true;
           timeout = 3000;
         };
-        quickfile = {
-          enabled = false;
-        };
-        statuscolumn = {
-          enabled = false;
-        };
+        quickfile = { enabled = false; };
+        statuscolumn = { enabled = false; };
         words = {
           debounce = 100;
           enabled = true;
