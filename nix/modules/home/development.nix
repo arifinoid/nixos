@@ -62,4 +62,26 @@ in
   home.sessionVariables = {
     RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
   };
+
+  programs.alacritty = lib.mkIf (!isWSLHost) {
+    enable = true;
+
+    settings = {
+      font = {
+        normal = {
+          family = "FiraCode Nerd Font";
+          style = "Regular";
+        };
+        bold = {
+          family = "FiraCode Nerd Font";
+          style = "Bold";
+        };
+        italic = {
+          family = "FiraCode Nerd Font";
+          style = "Italic";
+        };
+        size = 12.0;
+      };
+    };
+  };
 }
