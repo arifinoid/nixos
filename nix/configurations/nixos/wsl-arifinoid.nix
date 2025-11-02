@@ -5,13 +5,7 @@
 # NixOS-WSL specific options are documented on the NixOS-WSL repository:
 # https://github.com/nix-community/NixOS-WSL
 
-{
-  config,
-  pkgs,
-  inputs,
-  ezModules,
-  ...
-}:
+{ pkgs, inputs, ezModules, ... }:
 
 {
   imports = [
@@ -23,14 +17,8 @@
   ];
 
   nix.settings = {
-    experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    trusted-users = [
-      "root"
-      "arifinoid"
-    ];
+    experimental-features = [ "nix-command" "flakes" ];
+    trusted-users = [ "root" "arifinoid" ];
   };
   nix.gc = {
     automatic = true;
@@ -102,6 +90,16 @@
     fzf
     inputs.self.packages.${pkgs.system}.nvim
   ];
+
+  systemd.services.ollama = {
+    preStart = ''
+      /run/current-system/sw/bin/bash -c 'echo "OLLAMA_API_KEY=$(/run/current-system/sw/bin/pass show arifinoid/ollama.api.key)" > /run/ollama-env'
+    '';
+    serviceConfig = {
+      EnvironmentFile = "/run/ollama-env";
+    };
+  };
+
   services.ollama.enable = true;
   services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
 
