@@ -14,15 +14,6 @@ in
   opts = {
     list = false;
     listchars = "nbsp:+,tab:${icons.tab} ,trail:-";
-
-    # --- this fold configurations it depends on treesitter
-    foldmethod = "expr";
-    foldexpr = "v:lua.vim.treesitter.foldexpr()";
-    foldcolumn = "0";
-    foldtext = "";
-    foldlevel = 99;
-    foldlevelstart = 1;
-    foldnestmax = 4;
   };
 
   extraConfigLuaPre = readLua ./term_gui_color.lua;
@@ -32,7 +23,7 @@ in
       event = [ "User" ];
       pattern = "LspProgressStatusUpdated";
       callback.__raw =
-        helpers.mkLuaFun (readFile ./lualine_refresh.lua);
+        helpers.mkLuaFun (readLua ./lualine_refresh.lua);
     }
   ];
 
@@ -47,7 +38,7 @@ in
   ];
 
   userCommands.StatusLine.desc = "Toggle Status Line";
-  userCommands.StatusLine.command.__raw = helpers.mkLuaFun (readFile ./lualine_hide.lua);
+  userCommands.StatusLine.command.__raw = helpers.mkLuaFun (readLua ./lualine_hide.lua);
 
   plugins = rec {
     # lazy load management
@@ -83,62 +74,6 @@ in
           ];
         }
       ];
-    };
-
-    nvim-ufo = {
-      enable = true;
-      # setupLspCapabilities = true;
-      lazyLoad.settings.event = "BufEnter";
-      settings = {
-        provider_selector = # lua
-          ''
-
-            function(bufnr, filetype, buftype)
-              local ftMap = {
-                vim = "indent",
-                python = {"indent"},
-                git = "",
-                dashboard = "",
-                Avante = "",
-                AvanteSelectedFiles = "",
-                AvanteInput = "",
-              }
-             return ftMap[filetype]
-            end
-          '';
-
-        fold_virt_text_handler = # lua
-          ''
-
-            function(virtText, lnum, endLnum, width, truncate)
-              local newVirtText = {}
-              local suffix = ('  %d '):format(endLnum - lnum)
-              local sufWidth = vim.fn.strdisplaywidth(suffix)
-              local targetWidth = width - sufWidth
-              local curWidth = 0
-              for _, chunk in ipairs(virtText) do
-                local chunkText = chunk[1]
-                local chunkWidth = vim.fn.strdisplaywidth(chunkText)
-                if targetWidth > curWidth + chunkWidth then
-                  table.insert(newVirtText, chunk)
-                else
-                  chunkText = truncate(chunkText, targetWidth - curWidth)
-                  local hlGroup = chunk[2]
-                  table.insert(newVirtText, {chunkText, hlGroup})
-                  chunkWidth = vim.fn.strdisplaywidth(chunkText)
-                  -- str width returned from truncate() may less than 2nd argument, need padding
-                  if curWidth + chunkWidth < targetWidth then
-                    suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
-                  end
-                  break
-                end
-                curWidth = curWidth + chunkWidth
-              end
-              table.insert(newVirtText, {suffix, 'MoreMsg'})
-              return newVirtText
-            end
-          '';
-      };
     };
 
     which-key.settings.spec = [
@@ -215,15 +150,6 @@ in
       settings.indent.char = "";
       settings.scope.enabled = true;
       settings.scope.char = icons.indent;
-      # settings.scope.highlight = [
-      #   "rainbowcol1"
-      #   "rainbowcol2"
-      #   "rainbowcol3"
-      #   "rainbowcol4"
-      #   "rainbowcol5"
-      #   "rainbowcol6"
-      #   "rainbowcol7"
-      # ];
       settings.whitespace.highlight = [ "Whitespace" ];
       settings.exclude.buftypes = [
         "nofile"
@@ -339,7 +265,6 @@ in
       enable = true;
       lazyLoad.enable = true;
       lazyLoad.settings.event = "BufRead";
-      folding = true;
       settings.indent.enable = true;
       settings.highlight.enable = true;
       grammarPackages =

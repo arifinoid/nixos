@@ -91,7 +91,7 @@
         }
         { name = "async_path"; }
       ];
-      settings.mapping."<C-e>" = "cmp.mapping.complete()";
+      settings.mapping."<C-space>" = "cmp.mapping.complete()";
       settings.mapping."<C-x>" = "cmp.mapping.close()";
       settings.mapping."<C-d>" = "cmp.mapping.scroll_docs(4)";
       settings.mapping."<C-u>" = "cmp.mapping.scroll_docs(-4)";

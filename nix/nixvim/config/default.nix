@@ -3,7 +3,7 @@
     ./ai
     ./autocmd.nix
     ./dashboard.nix
-    ./editor.nix
+    ./editor
     ./globals.nix
     ./keys.nix
     ./lsp.nix
