@@ -37,7 +37,7 @@ in
       nodejs
       nodePackages.typescript
       nodePackages.typescript-language-server
-      nodePackages.vercel
+      # nodePackages.vercel
       pgsync
       pnpm
       podman

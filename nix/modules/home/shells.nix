@@ -24,8 +24,6 @@ let
     yd = "yarn dev";
     yd- = "yarn develop --watch-admin";
     yb = "yarn build";
-    yof = "yarn build && yarn workspace @efishery/theme build && yarn workspace @efishery/onefish build && yarn workspace @efishery/onefish-docs dev";
-    yall = "yarn workspace @efishery/onefish build && yarn workspace @efishery/theme build && yarn workspace @efishery/components build && yarn workspace @efishery/onefish-docs dev";
     yt = "yarn test";
     yse = "yarn server";
     yw = "yarn workspace";
