@@ -12,6 +12,7 @@ in
       };
     };
     globals.mapleader = " ";
+    clipboard.register = "unnamedplus";
     opts = {
       backspace = [
         "indent"

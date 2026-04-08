@@ -12,8 +12,6 @@ let
   resize.right = mkLuaFun "vim.cmd [[ vertical resize +1 ]] ";
 in
 {
-  clipboard.register = "unnamed";
-
   plugins = {
     telescope = {
       enable = true;
