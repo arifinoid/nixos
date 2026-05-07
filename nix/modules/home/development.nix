@@ -1,15 +1,7 @@
-{
-  pkgs,
-  osConfig,
-  lib,
-  ...
-}:
-let
-  isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
-in
-{
-  home.packages =
-    with pkgs;
+{ pkgs, osConfig, lib, ... }:
+let isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
+in {
+  home.packages = with pkgs;
     [
       bun
       cargo
@@ -53,8 +45,7 @@ in
       typescript-language-server
       yarn
       zig
-    ]
-    ++ lib.optionals (!isWSLHost) [ alacritty ];
+    ] ++ lib.optionals (!isWSLHost) [ alacritty ];
 
   programs.go.enable = true;
   programs.go.package = pkgs.go;

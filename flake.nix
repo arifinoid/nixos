@@ -1,19 +1,11 @@
 {
   description = "NixOS flake of arifinoid";
 
-  outputs =
-    inputs:
+  outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "aarch64-darwin"
-        "aarch64-linux"
-        "x86_64-linux"
-      ];
+      systems = [ "aarch64-darwin" "aarch64-linux" "x86_64-linux" ];
 
-      imports = [
-        inputs.git-hooks-nix.flakeModule
-        ./nix
-      ];
+      imports = [ inputs.git-hooks-nix.flakeModule ./nix ];
     };
 
   inputs = {
@@ -62,5 +54,6 @@
       url = "github:MarceColl/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
   };
 }

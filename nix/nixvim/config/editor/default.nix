@@ -1,13 +1,6 @@
-{
-  helpers,
-  icons,
-  pkgs,
-  ...
-}:
-let
-  readLua = p: builtins.readFile p;
-in
-{
+{ helpers, icons, pkgs, ... }:
+let readLua = p: builtins.readFile p;
+in {
   colorscheme = "catppuccin";
   colorschemes.catppuccin.enable = true;
 
@@ -18,14 +11,11 @@ in
 
   extraConfigLuaPre = readLua ./term_gui_color.lua;
 
-  autoCmd = [
-    {
-      event = [ "User" ];
-      pattern = "LspProgressStatusUpdated";
-      callback.__raw =
-        helpers.mkLuaFun (readLua ./lualine_refresh.lua);
-    }
-  ];
+  autoCmd = [{
+    event = [ "User" ];
+    pattern = "LspProgressStatusUpdated";
+    callback.__raw = helpers.mkLuaFun (readLua ./lualine_refresh.lua);
+  }];
 
   extraPlugins = with pkgs.vimPlugins; [
     # theme
@@ -38,7 +28,8 @@ in
   ];
 
   userCommands.StatusLine.desc = "Toggle Status Line";
-  userCommands.StatusLine.command.__raw = helpers.mkLuaFun (readLua ./lualine_hide.lua);
+  userCommands.StatusLine.command.__raw =
+    helpers.mkLuaFun (readLua ./lualine_hide.lua);
 
   plugins = rec {
     # lazy load management
@@ -68,10 +59,7 @@ in
         }
         {
           __unkeyed-1 = "typr";
-          cmd = [
-            "Typr"
-            "TyprStats"
-          ];
+          cmd = [ "Typr" "TyprStats" ];
         }
       ];
     };
@@ -106,9 +94,9 @@ in
     wakatime.autoLoad = false;
 
     presence-nvim = {
-      enable = true;
-      enableLineNumber = true;
-      autoUpdate = true;
+      # enable = true;
+      # enableLineNumber = true;
+      # autoUpdate = true;
     };
 
     colorizer = {
@@ -151,11 +139,7 @@ in
       settings.scope.enabled = true;
       settings.scope.char = icons.indent;
       settings.whitespace.highlight = [ "Whitespace" ];
-      settings.exclude.buftypes = [
-        "nofile"
-        "terminal"
-        "neorg"
-      ];
+      settings.exclude.buftypes = [ "nofile" "terminal" "neorg" ];
       settings.exclude.filetypes = [
         "norg"
         "NvimTree"
@@ -186,26 +170,25 @@ in
       lazyLoad.settings.event = "BufEnter";
       lazyLoad.settings.cmd = [ "StatusLine" ];
       lazyLoad.settings.before.__raw = ''
-
-        require('lsp-progress').setup()
+        
+                
+                        
+                        
+                                require('lsp-progress').setup()
       '';
       settings.theme = "catppuccin";
       settings.options.disabled_filetypes.__unkeyed-1 = "NvimTree";
-      settings.options.disabled_filetypes.statusline = [
-        "sagaoutline"
-        "Trouble"
-      ];
+      settings.options.disabled_filetypes.statusline =
+        [ "sagaoutline" "Trouble" ];
       settings.options.component_separators.left = "";
       settings.options.component_separators.right = "";
       settings.options.section_separators.left = icons.circleRight;
       settings.options.section_separators.right = icons.circleLeft;
-      settings.sections.lualine_a = [
-        {
-          __unkeyed-1 = "mode";
-          separator.right = icons.circleRight;
-          padding.left = 1;
-        }
-      ];
+      settings.sections.lualine_a = [{
+        __unkeyed-1 = "mode";
+        separator.right = icons.circleRight;
+        padding.left = 1;
+      }];
       settings.sections.lualine_b = [
         {
           __unkeyed-1 = "branch";
@@ -213,49 +196,45 @@ in
         }
         "diff"
       ];
-      settings.sections.lualine_c = [
-        "diagnostics"
-      ];
-      settings.sections.lualine_x = [
-        "searchcount"
-        "selectioncount"
-      ];
+      settings.sections.lualine_c = [ "diagnostics" ];
+      settings.sections.lualine_x = [ "searchcount" "selectioncount" ];
       settings.sections.lualine_y = [
         {
           __unkeyed-1.__raw =
             # lua
             ''
-
-              (function()
-                local ft = require('lualine.components.filetype'):extend()
-                local lsp_progress = require('lsp-progress')
-
-                function ft:update_status()
-                  local data = ft.super.update_status(self)
-                  return lsp_progress.progress({
-                    max_size = 50,
-                    format = function(messages)
-                        if #messages > 0 then
-                            return table.concat(messages, " ")
-                        end
-                        return data
-                    end,
-                  })
-                end
-
-                return ft
-              end)()
+              
+                            
+                                          
+                                          
+                                                        (function()
+                                                          local ft = require('lualine.components.filetype'):extend()
+                                                          local lsp_progress = require('lsp-progress')
+                                          
+                                                          function ft:update_status()
+                                                            local data = ft.super.update_status(self)
+                                                            return lsp_progress.progress({
+                                                              max_size = 50,
+                                                              format = function(messages)
+                                                                  if #messages > 0 then
+                                                                      return table.concat(messages, " ")
+                                                                  end
+                                                                  return data
+                                                              end,
+                                                            })
+                                                          end
+                                          
+                                                          return ft
+                                                        end)()
             '';
         }
         "progress"
       ];
-      settings.sections.lualine_z = [
-        {
-          __unkeyed-1 = "location";
-          separator.left = icons.circleLeft;
-          padding.right = 1;
-        }
-      ];
+      settings.sections.lualine_z = [{
+        __unkeyed-1 = "location";
+        separator.left = icons.circleLeft;
+        padding.right = 1;
+      }];
       settings.winbar = { };
       settings.tabline = { };
       settings.extensions = [ ];
@@ -267,88 +246,83 @@ in
       lazyLoad.settings.event = "BufRead";
       settings.indent.enable = true;
       settings.highlight.enable = true;
-      grammarPackages =
-        builtins.map
-          (
-            x:
-            pkgs.vimPlugins.nvim-treesitter.builtGrammars.${x} or pkgs.tree-sitter-grammars."tree-sitter-${x}"
-          )
-          [
-            # ┌────────────────────────────────────┐
-            # │ move to ignoreInstall for disabled │
-            # └────────────────────────────────────┘
-            "asm"
-            "bash"
-            "c"
-            "cmake"
-            "comment"
-            "css"
-            "dhall"
-            "diff"
-            "dockerfile"
-            "dot"
-            "fish"
-            "git_config"
-            "git_rebase"
-            "gitattributes"
-            "gitcommit"
-            "gitignore"
-            "go"
-            "gomod"
-            "gosum"
-            "gotmpl"
-            "gpg"
-            "graphql"
-            "haskell"
-            "haskell_persistent"
-            "hcl"
-            "helm"
-            "html"
-            "http"
-            "javascript"
-            "jq"
-            "jsdoc"
-            "json"
-            "latex"
-            "lua"
-            "luadoc"
-            "luap"
-            "luau"
-            "make"
-            "markdown"
-            "markdown_inline"
-            "mermaid"
-            "nix"
-            "norg"
-            "norg-meta"
-            "ocaml"
-            "ocaml_interface"
-            "ocamllex"
-            "passwd"
-            "po"
-            "proto"
-            "pymanifest"
-            "python"
-            "query"
-            "regex"
-            "rust"
-            "rescript"
-            "sql"
-            "ssh_config"
-            "templ"
-            "terraform"
-            "textproto"
-            "tmux"
-            "todotxt"
-            "toml"
-            "tsx"
-            "typescript"
-            "vhs"
-            "vim"
-            "vimdoc"
-            "xml"
-            "yaml"
-          ];
+      grammarPackages = builtins.map (x:
+        pkgs.vimPlugins.nvim-treesitter.builtGrammars.${x} or pkgs.tree-sitter-grammars."tree-sitter-${x}") [
+          # ┌────────────────────────────────────┐
+          # │ move to ignoreInstall for disabled │
+          # └────────────────────────────────────┘
+          "asm"
+          "bash"
+          "c"
+          "cmake"
+          "comment"
+          "css"
+          "dhall"
+          "diff"
+          "dockerfile"
+          "dot"
+          "fish"
+          "git_config"
+          "git_rebase"
+          "gitattributes"
+          "gitcommit"
+          "gitignore"
+          "go"
+          "gomod"
+          "gosum"
+          "gotmpl"
+          "gpg"
+          "graphql"
+          "haskell"
+          "haskell_persistent"
+          "hcl"
+          "helm"
+          "html"
+          "http"
+          "javascript"
+          "jq"
+          "jsdoc"
+          "json"
+          "latex"
+          "lua"
+          "luadoc"
+          "luap"
+          "luau"
+          "make"
+          "markdown"
+          "markdown_inline"
+          "mermaid"
+          "nix"
+          "norg"
+          "norg-meta"
+          "ocaml"
+          "ocaml_interface"
+          "ocamllex"
+          "passwd"
+          "po"
+          "proto"
+          "pymanifest"
+          "python"
+          "query"
+          "regex"
+          "rust"
+          "rescript"
+          "sql"
+          "ssh_config"
+          "templ"
+          "terraform"
+          "textproto"
+          "tmux"
+          "todotxt"
+          "toml"
+          "tsx"
+          "typescript"
+          "vhs"
+          "vim"
+          "vimdoc"
+          "xml"
+          "yaml"
+        ];
     };
 
     bufferline = {
@@ -364,19 +338,13 @@ in
     snacks = {
       enable = true;
       settings = {
-        bigfile = {
-          enabled = true;
-        };
+        bigfile = { enabled = true; };
         notifier = {
           enabled = true;
           timeout = 3000;
         };
-        quickfile = {
-          enabled = false;
-        };
-        statuscolumn = {
-          enabled = false;
-        };
+        quickfile = { enabled = false; };
+        statuscolumn = { enabled = false; };
         words = {
           debounce = 100;
           enabled = true;

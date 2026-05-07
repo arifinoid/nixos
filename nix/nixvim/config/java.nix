@@ -1,43 +1,19 @@
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   plugins = {
     dap = {
       enable = true;
-      adapters = {
-        java = {
-          type = "executable";
-          command = "${pkgs.jdk}/bin/java";
-          args = [
-            "-jar"
-            "${pkgs.vscode-extensions.vscjava.vscode-java-debug}/share/vscode/extensions/vscjava.vscode-java-debug/server/com.microsoft.java.debug.plugin-*.jar"
-          ];
-        };
-      };
+      adapters = { };
       configurations = {
-        java = [
-          {
-            type = "java";
-            request = "launch";
-            name = "Launch Spring Boot App";
-            projectName = "your-project-name";
-            mainClass = "com.example.YourApplication";
-            args = "";
-            cwd = "\${workspaceFolder}";
-            env = {
-              SPRING_PROFILES_ACTIVE = "dev";
-            };
-          }
-        ];
-      };
-    };
-
-    neotree = {
-      enable = true;
-      filesystem = {
-        filteredItems = {
-          hideDotfiles = false;
-          hideGitignored = false;
-        };
+        java = [{
+          type = "java";
+          request = "launch";
+          name = "Launch Spring Boot App";
+          projectName = "your-project-name";
+          mainClass = "com.example.YourApplication";
+          args = "";
+          cwd = "\${workspaceFolder}";
+          env = { SPRING_PROFILES_ACTIVE = "dev"; };
+        }];
       };
     };
 
@@ -109,28 +85,25 @@
   ];
 
   extraConfigLua = ''
-    -- Java specific settings
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = "java",
-      callback = function()
-        vim.opt_local.shiftwidth = 4
-        vim.opt_local.tabstop = 4
-        vim.opt_local.expandtab = true
-      end,
-    })
-
-    -- Spring Boot specific keymaps
-    vim.api.nvim_create_autocmd("BufRead", {
-      pattern = "*application*.properties",
-      callback = function()
-        vim.keymap.set("n", "<leader>sp", "<cmd>lua require('jdtls').spring_boot_run()<CR>", { desc = "Spring Boot Run", buffer = true })
-      end,
-    })
+    
+        -- Java specific settings
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = "java",
+          callback = function()
+            vim.opt_local.shiftwidth = 4
+            vim.opt_local.tabstop = 4
+            vim.opt_local.expandtab = true
+          end,
+        })
+    
+        -- Spring Boot specific keymaps
+        vim.api.nvim_create_autocmd("BufRead", {
+          pattern = "*application*.properties",
+          callback = function()
+            vim.keymap.set("n", "<leader>sp", "<cmd>lua require('jdtls').spring_boot_run()<CR>", { desc = "Spring Boot Run", buffer = true })
+          end,
+        })
   '';
 
-  extraPlugins = with pkgs.vimPlugins; [
-    nvim-dap
-    nvim-dap-ui
-    nvim-neotest
-  ];
+  extraPlugins = with pkgs.vimPlugins; [ nvim-dap nvim-dap-ui ];
 }

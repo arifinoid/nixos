@@ -1,9 +1,7 @@
-{ pkgs, lib, icons, helpers, ... }:
+{ pkgs, lib, icons, helpers, inputs, ... }:
 
-let
-  readLua = p: builtins.readFile p;
-in
-rec {
+let readLua = p: builtins.readFile p;
+in rec {
   autoCmd = [
     {
       # Disable cmp in neorepl
@@ -18,9 +16,7 @@ rec {
     }
   ];
 
-  extraPlugins = [
-    pkgs.vimPlugins.claude-code-nvim
-  ];
+  extraPlugins = [ pkgs.vimPlugins.claude-code-nvim ];
 
   plugins = {
     claude-code = {
@@ -67,9 +63,7 @@ rec {
           };
         };
 
-        hints = {
-          enabled = true;
-        };
+        hints = { enabled = true; };
 
         ollama = {
           endpoint = "http://localhost:11434";
@@ -113,9 +107,8 @@ rec {
     copilot-lua.settings.suggestion.enabled = false;
     copilot-lua.settings.panel.enabled = false;
 
-    cmp.settings.sources = lib.optionals plugins.copilot-lua.enable [
-      { name = "copilot"; }
-    ];
+    cmp.settings.sources =
+      lib.optionals plugins.copilot-lua.enable [{ name = "copilot"; }];
 
     which-key.settings.spec = [
       {
@@ -177,6 +170,4 @@ rec {
     ];
   };
 }
-
-
 
