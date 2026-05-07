@@ -22,6 +22,17 @@
 
         html.enable = true;
 
+        jdtls = {
+          enable = true;
+          cmd = [
+            "${pkgs.jdt-language-server}/bin/jdtls"
+            "-configuration"
+            "/tmp/jdtls-config"
+            "-data"
+            "/tmp/jdtls-workspace"
+          ];
+        };
+
         jsonls.enable = true;
 
         lua_ls.enable = true;
