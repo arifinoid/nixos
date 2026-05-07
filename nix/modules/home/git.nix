@@ -1,8 +1,8 @@
 { pkgs, ... }:
 let
   work = {
-    name = "rohmadarifin";
-    email = "rohmad.arifin@efishery.com";
+    name = "alto.rohmad";
+    email = "rohmad@alto.id";
   };
   personal = {
     name = "arifinoid";

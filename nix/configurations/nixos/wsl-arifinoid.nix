@@ -28,6 +28,9 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.overlays = [
+    inputs.rust-overlay.overlays.default
+  ];
 
   wsl.enable = true;
   wsl.defaultUser = "arifinoid"; # Changed from "nixos" to "arifinoid"
@@ -74,6 +77,8 @@
   };
 
   # Home Manager backup behavior (avoids clobber error on existing files)
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
 
   # List packages installed in system profile. To search, run:

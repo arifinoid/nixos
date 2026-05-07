@@ -1,9 +1,28 @@
-#!/bin/bash
+#!/sbin/bash
 
 # WSL NixOS Setup Script for arifinoid configuration
 # Minimal setup script that avoids network issues
 
 set -e
+
+ensure_nix_conf() {
+    local target="/etc/nix/nix.conf"
+
+    if [ -L "$target" ]; then
+        local real
+        real=$(readlink -f "$target")
+        echo "⚠️ /etc/nix/nix.conf is a symlink to immutable Nix store; creating a writable local copy..."
+        sudo rm "$target"
+        sudo cp "$real" "$target"
+    elif [ ! -e "$target" ]; then
+        sudo mkdir -p "$(dirname "$target")"
+        sudo install -m 644 /dev/null "$target"
+    fi
+
+    if ! sudo grep -Fxq 'experimental-features = nix-command flakes' "$target" 2>/dev/null; then
+        echo 'experimental-features = nix-command flakes' | sudo tee -a "$target" >/dev/null
+    fi
+}
 
 echo "🚀 Setting up NixOS-WSL with arifinoid configuration..."
 
@@ -19,6 +38,9 @@ if ! grep -qi "nixos" /etc/os-release; then
     echo "   Please install NixOS-WSL first: https://github.com/nix-community/NixOS-WSL"
     exit 1
 fi
+
+# Ensure flakes are enabled in /etc/nix/nix.conf
+ensure_nix_conf
 
 # Check if flake is enabled
 if ! nix flake --version &> /dev/null; then
@@ -40,14 +62,14 @@ sudo mkdir -p /etc/nixos
 
 # Copy your flake configuration
 echo "📁 Setting up flake configuration..."
-if [ -d "/mnt/c/Users/Arif Kiki/Documents/personal/nixos" ]; then
+if [ -d "/mnt/c/Users/rohmad/Documents/personal/nixos" ]; then
     echo "   Found configuration in Windows directory"
-    sudo cp -r "/mnt/c/Users/Arif Kiki/Documents/personal/nixos" /etc/nixos/
+    sudo cp -r "/mnt/c/Users/rohmad/Documents/personal/nixos" /etc/nixos/
     cd /etc/nixos/nixos
     
     # Copy the generated hardware configuration
-    echo "   Copying generated hardware configuration..."
-    sudo cp /etc/nixos/hardware-configuration.nix ./hardware-configuration.nix
+    # echo "   Copying generated hardware configuration..."
+    # sudo cp /etc/nixos/hardware-configuration.nix ./hardware-configuration.nix
     
     # Fix Git repository ownership
     echo "   Fixing Git repository ownership..."
@@ -64,10 +86,10 @@ else
     exit 1
 fi
 
-# Build the configuration (offline mode to avoid network issues)
-echo "🔨 Building NixOS configuration (offline mode)..."
-echo "   Using minimal configuration to avoid build dependencies..."
-sudo nixos-rebuild build --flake .#wsl-arifinoid --option substitute false
+# Build the configuration (allow substitutes to avoid download issues)
+echo "🔨 Building NixOS configuration..."
+echo "   Allowing substitutes to speed up build and avoid network issues..."
+sudo nixos-rebuild build --flake .#wsl-arifinoid
 
 echo "✅ Configuration built successfully!"
 echo ""

@@ -24,8 +24,6 @@ let
     yd = "yarn dev";
     yd- = "yarn develop --watch-admin";
     yb = "yarn build";
-    yof = "yarn build && yarn workspace @efishery/theme build && yarn workspace @efishery/onefish build && yarn workspace @efishery/onefish-docs dev";
-    yall = "yarn workspace @efishery/onefish build && yarn workspace @efishery/theme build && yarn workspace @efishery/components build && yarn workspace @efishery/onefish-docs dev";
     yt = "yarn test";
     yse = "yarn server";
     yw = "yarn workspace";
@@ -130,8 +128,6 @@ in
             set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
           end
         end
-
-        starship init fish | source
       '';
       plugins = [ ];
       functions = {
@@ -204,11 +200,7 @@ in
         end
       '';
     };
-    starship = {
-      enable = true;
-      enableBashIntegration = config.programs.bash.enable;
-      enableFishIntegration = config.programs.fish.enable;
-    };
+    starship.enable = true;
     bat = {
       enable = true;
       config = {

@@ -105,11 +105,7 @@ in
     wakatime.enable = true;
     wakatime.autoLoad = false;
 
-    presence-nvim = {
-      enable = true;
-      enableLineNumber = true;
-      autoUpdate = true;
-    };
+    presence-nvim = {};
 
     colorizer = {
       enable = true;
