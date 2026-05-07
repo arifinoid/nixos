@@ -128,8 +128,6 @@ in
             set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
           end
         end
-
-        starship init fish | source
       '';
       plugins = [ ];
       functions = {
@@ -202,11 +200,7 @@ in
         end
       '';
     };
-    starship = {
-      enable = true;
-      enableBashIntegration = config.programs.bash.enable;
-      enableFishIntegration = config.programs.fish.enable;
-    };
+    starship.enable = true;
     bat = {
       enable = true;
       config = {

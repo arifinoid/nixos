@@ -6,13 +6,18 @@
 }:
 let
   isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
+  rustToolchain = pkgs.rust-bin.stable.latest.default.override {
+    extensions = [
+      "rust-src"
+      "rust-analyzer"
+    ];
+  };
 in
 {
   home.packages =
     with pkgs;
     [
       bun
-      cargo
       cmake
       colima
       docker
@@ -48,7 +53,7 @@ in
       quick-lint-js
       rabbitmq-c
       redis
-      rustc
+      rustToolchain
       typescript
       typescript-language-server
       yarn
@@ -60,7 +65,7 @@ in
   programs.go.package = pkgs.go;
 
   home.sessionVariables = {
-    RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+    RUST_SRC_PATH = "${rustToolchain}/lib/rustlib/src/rust/library";
   };
 
   programs.alacritty = lib.mkIf (!isWSLHost) {

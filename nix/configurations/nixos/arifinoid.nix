@@ -108,6 +108,9 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.overlays = [
+    inputs.rust-overlay.overlays.default
+  ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -170,6 +173,8 @@
   };
 
   # Home Manager backup behavior (avoids clobber error on existing files)
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
 
 }
