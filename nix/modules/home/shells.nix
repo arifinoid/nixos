@@ -113,7 +113,24 @@ in
       shellAbbrs = shellAbbrs;
       shellAliases = shellAliases;
       shellInit = ''
-          if status is-interactive
+        # Source Home Manager session variables
+        for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
+          if test -f "$file"
+            if type -q fenv
+              fenv source "$file" > /dev/null
+            end
+            break
+          end
+        end
+
+        # Fix Colima SSH config (unsupported GSSAPIAuthentication on Linux)
+        if test -f "$HOME/.config/colima/ssh_config"
+          if grep -qi "GSSAPIAuthentication" "$HOME/.config/colima/ssh_config"
+            sed -i '/GSSAPIAuthentication/Id' "$HOME/.config/colima/ssh_config"
+          end
+        end
+
+        if status is-interactive
             if not set -q TMUX
               tmux attach-session -t default 2>/dev/null; or tmux new-session -s default
             end

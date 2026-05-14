@@ -96,17 +96,7 @@
     inputs.self.packages.${pkgs.system}.nvim
   ];
 
-  systemd.services.ollama = {
-    preStart = ''
-      /run/current-system/sw/bin/bash -c 'echo "OLLAMA_API_KEY=$(/run/current-system/sw/bin/pass show arifinoid/ollama.api.key)" > /run/ollama-env'
-    '';
-    serviceConfig = {
-      EnvironmentFile = "/run/ollama-env";
-    };
-  };
-
-  services.ollama.enable = true;
-  services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
+  services.ollama.enable = false;
 
   fonts.packages = with pkgs; [
     sketchybar-app-font
