@@ -19,11 +19,20 @@
 
     which-key = {
       enable = true;
-      registrations = {
-        "<leader>j" = "+Java";
-        "<leader>jr" = "+Run";
-        "<leader>jd" = "+Debug";
-      };
+      settings.spec = [
+        {
+          __unkeyed-1 = "<leader>j";
+          group = "Java";
+        }
+        {
+          __unkeyed-1 = "<leader>jr";
+          group = "Run";
+        }
+        {
+          __unkeyed-1 = "<leader>jd";
+          group = "Debug";
+        }
+      ];
     };
   };
 
@@ -85,7 +94,7 @@
   ];
 
   extraConfigLua = ''
-    
+
         -- Java specific settings
         vim.api.nvim_create_autocmd("FileType", {
           pattern = "java",
@@ -95,7 +104,7 @@
             vim.opt_local.expandtab = true
           end,
         })
-    
+
         -- Spring Boot specific keymaps
         vim.api.nvim_create_autocmd("BufRead", {
           pattern = "*application*.properties",

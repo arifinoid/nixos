@@ -133,7 +133,7 @@
     inputs.self.packages.${pkgs.system}.nvim
     inputs.zen-browser.packages.${pkgs.system}.default
   ];
-  services.ollama.enable = true;
+  services.ollama.enable = false;
   services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
 
   environment.shells = with pkgs; [ fish ];

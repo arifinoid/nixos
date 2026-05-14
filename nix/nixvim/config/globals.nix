@@ -80,7 +80,7 @@ in
       backup = false;
       writebackup = false;
       undofile = true;
-      undodir = "~/.vim/undodir";
+      undodir = { __raw = "vim.fn.expand('~/.vim/undodir')"; };
 
       # Enable 24-bit colors
       termguicolors = true;
