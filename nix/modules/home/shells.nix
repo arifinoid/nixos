@@ -114,14 +114,19 @@ in
       shellAliases = shellAliases;
       shellInit = ''
         # Source Home Manager session variables
-        for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" \
-                    "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" \
-                    "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
+        for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
           if test -f "$file"
             if type -q fenv
               fenv source "$file" > /dev/null
             end
             break
+          end
+        end
+
+        # Fix Colima SSH config (unsupported GSSAPIAuthentication on Linux)
+        if test -f "$HOME/.config/colima/ssh_config"
+          if grep -qi "GSSAPIAuthentication" "$HOME/.config/colima/ssh_config"
+            sed -i '/GSSAPIAuthentication/Id' "$HOME/.config/colima/ssh_config"
           end
         end
 

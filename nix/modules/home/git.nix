@@ -1,24 +1,15 @@
 { pkgs, ... }:
 let
-  work = {
-    name = "alto.rohmad";
-    email = "rohmad@alto.id";
-  };
   personal = {
     name = "arifinoid";
     email = "rohmadarifin007@gmail.com";
   };
-in
-{
-  home.packages = with pkgs; [
-    git-filter-repo
-  ];
+in {
+  home.packages = with pkgs; [ git-filter-repo ];
 
   programs.git = {
     enable = true;
-    delta = {
-      enable = true;
-    };
+    delta = { enable = true; };
     aliases = {
       gpo = "git pull origin";
       ggpo = "git push origin";
@@ -53,10 +44,6 @@ in
         contents.user = personal;
       }
       {
-        condition = "gitdir:~/Documents/work/";
-        contents.user = work;
-      }
-      {
         condition = "gitdir:~/Documents/obsidian";
         contents.user = personal;
       }
@@ -68,7 +55,5 @@ in
     enable = true;
   };
 
-  programs.lazygit = {
-    enable = true;
-  };
+  programs.lazygit = { enable = true; };
 }
