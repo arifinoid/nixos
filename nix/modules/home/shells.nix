@@ -114,9 +114,7 @@ in
       shellAliases = shellAliases;
       shellInit = ''
         # Source Home Manager session variables
-        for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" \
-                    "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" \
-                    "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
+        for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
           if test -f "$file"
             if type -q fenv
               fenv source "$file" > /dev/null
