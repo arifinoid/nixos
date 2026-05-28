@@ -1,23 +1,25 @@
-{ pkgs ? import <nixpkgs> {} }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 
 pkgs.mkShell {
   buildInputs = with pkgs; [
     # Java Development Kit
     jdk17
-    
+
     # Build tools
     maven
     gradle
-    
+
     # Language servers
     jdt-language-server
-    
+
     # Spring Boot CLI
     spring-boot-cli
-    
+
     # Additional Java tools
     lombok
-    
+
     # Development tools
     git
     curl
@@ -27,7 +29,7 @@ pkgs.mkShell {
   shellHook = ''
     export JAVA_HOME=${pkgs.jdk17.home}
     export PATH=$JAVA_HOME/bin:$PATH
-    
+
     echo "Java Spring Boot development environment ready!"
     echo "Java version: $(java -version 2>&1 | head -n 1)"
     echo "Maven version: $(mvn -version | head -n 1)"
