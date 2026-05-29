@@ -9,17 +9,19 @@
           name: lua:
           # lua
           ''
-            function ${name}()
-              ${lua}
-            end
+            
+                        function ${name}()
+                          ${lua}
+                        end
           '';
 
         mkLuaFun =
           lua: # lua
           ''
-            function()
-              ${lua}
-            end
+            
+                        function()
+                          ${lua}
+                        end
           '';
       };
       nixvim' = inputs.nixvim.legacyPackages.${system};

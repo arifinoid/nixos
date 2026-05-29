@@ -1,4 +1,10 @@
-{ pkgs, lib, icons, helpers, ... }:
+{
+  pkgs,
+  lib,
+  icons,
+  helpers,
+  ...
+}:
 
 let
   readLua = p: builtins.readFile p;
@@ -177,6 +183,3 @@ rec {
     ];
   };
 }
-
-
-

@@ -33,8 +33,9 @@
     extraConfig =
       (builtins.readFile ./tmux.conf)
       + ''
-        set -g default-terminal "tmux-256color"
-        set -as terminal-overrides ",*:RGB"
+        
+                set -g default-terminal "tmux-256color"
+                set -as terminal-overrides ",*:RGB"
       '';
   };
 

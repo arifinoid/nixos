@@ -28,7 +28,11 @@ Before proceeding, ensure you have:
    ```
    experimental-features = nix-command flakes
    ```
-3. **Git access**: To clone your configuration repository
+3. **Cachix enabled**: Run on your local machine or WSL session:
+   ```bash
+   cachix use arifinoid-nix
+   ```
+4. **Git access**: To clone your configuration repository
 
 ## Setup Steps
 

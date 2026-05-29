@@ -17,6 +17,7 @@ let
     ngd = "nix-collect-garbage -d";
     nxbw = "sudo nixos-rebuild switch --flake .#wsl-arifinoid";
     nxb = "sudo nixos-rebuild switch --flake .#arifinoid";
+    nfmt = "find . -type f -name '*.nix' -print0 | xargs -0 -n1 -P4 -I{} nix run nixpkgs#nixfmt-rfc-style -- nixfmt -w 100 {}";
 
     # node related
     ys = "yarn start";
@@ -113,6 +114,7 @@ in
       shellAbbrs = shellAbbrs;
       shellAliases = shellAliases;
       shellInit = ''
+
         # Source Home Manager session variables
         for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
           if test -f "$file"
@@ -149,6 +151,7 @@ in
       plugins = [ ];
       functions = {
         envsource = ''
+
           for line in (cat $argv | grep -v '^#' | grep -v '^\s*$')
             set item (string split -m 1 '=' $line)
             set -gx $item[1] $item[2]
@@ -157,6 +160,7 @@ in
         '';
         nix-update = "  nix-channel --update\n  nix flake update\n";
         nix-clean = ''
+
           nix-env --delete-generations old
           nix-store --gc
           nix-channel --update
@@ -171,6 +175,7 @@ in
         nix-shell = {
           wraps = "nix-shell";
           body = ''
+
             for ARG in $argv
               if [ "$ARG" = --run ]
                 command nix-shell $argv
@@ -182,6 +187,7 @@ in
         };
       };
       loginShellInit = ''
+
         if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end
@@ -197,6 +203,7 @@ in
         end
       '';
       interactiveShellInit = ''
+
         if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end

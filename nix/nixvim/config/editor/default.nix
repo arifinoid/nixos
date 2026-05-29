@@ -22,8 +22,7 @@ in
     {
       event = [ "User" ];
       pattern = "LspProgressStatusUpdated";
-      callback.__raw =
-        helpers.mkLuaFun (readLua ./lualine_refresh.lua);
+      callback.__raw = helpers.mkLuaFun (readLua ./lualine_refresh.lua);
     }
   ];
 
@@ -105,7 +104,7 @@ in
     wakatime.enable = true;
     wakatime.autoLoad = false;
 
-    presence-nvim = {};
+    presence-nvim = { };
 
     colorizer = {
       enable = true;
@@ -182,8 +181,9 @@ in
       lazyLoad.settings.event = "BufEnter";
       lazyLoad.settings.cmd = [ "StatusLine" ];
       lazyLoad.settings.before.__raw = ''
-
-        require('lsp-progress').setup()
+        
+        
+                require('lsp-progress').setup()
       '';
       settings.theme = "catppuccin";
       settings.options.disabled_filetypes.__unkeyed-1 = "NvimTree";
@@ -221,26 +221,27 @@ in
           __unkeyed-1.__raw =
             # lua
             ''
-
-              (function()
-                local ft = require('lualine.components.filetype'):extend()
-                local lsp_progress = require('lsp-progress')
-
-                function ft:update_status()
-                  local data = ft.super.update_status(self)
-                  return lsp_progress.progress({
-                    max_size = 50,
-                    format = function(messages)
-                        if #messages > 0 then
-                            return table.concat(messages, " ")
-                        end
-                        return data
-                    end,
-                  })
-                end
-
-                return ft
-              end)()
+              
+              
+                            (function()
+                              local ft = require('lualine.components.filetype'):extend()
+                              local lsp_progress = require('lsp-progress')
+              
+                              function ft:update_status()
+                                local data = ft.super.update_status(self)
+                                return lsp_progress.progress({
+                                  max_size = 50,
+                                  format = function(messages)
+                                      if #messages > 0 then
+                                          return table.concat(messages, " ")
+                                      end
+                                      return data
+                                  end,
+                                })
+                              end
+              
+                              return ft
+                            end)()
             '';
         }
         "progress"

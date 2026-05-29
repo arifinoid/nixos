@@ -34,6 +34,7 @@ nixos/
 1. **Install NixOS** (if not already installed)
 2. **Clone this repository** to your system
 3. **Set up secrets** (see Secrets Management section)
+4. **Enable your Cachix cache** locally: `cachix use arifinoid-nix`
 
 ### Building and Switching
 

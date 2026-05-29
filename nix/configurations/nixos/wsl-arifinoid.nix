@@ -5,7 +5,12 @@
 # NixOS-WSL specific options are documented on the NixOS-WSL repository:
 # https://github.com/nix-community/NixOS-WSL
 
-{ pkgs, inputs, ezModules, ... }:
+{
+  pkgs,
+  inputs,
+  ezModules,
+  ...
+}:
 
 {
   imports = [
@@ -17,8 +22,14 @@
   ];
 
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    trusted-users = [ "root" "arifinoid" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [
+      "root"
+      "arifinoid"
+    ];
   };
   nix.gc = {
     automatic = true;

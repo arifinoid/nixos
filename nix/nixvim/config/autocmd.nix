@@ -6,7 +6,8 @@
       desc = "Highlight yanked text";
       callback = {
         __raw = ''
-          function() vim.highlight.on_yank() end
+          
+                    function() vim.highlight.on_yank() end
         '';
       };
     }

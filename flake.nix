@@ -3,17 +3,29 @@
 
   outputs =
     inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "aarch64-darwin"
-        "aarch64-linux"
-        "x86_64-linux"
-      ];
+    let
+      flake = inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+        systems = [
+          "aarch64-darwin"
+          "aarch64-linux"
+          "x86_64-linux"
+        ];
 
-      imports = [
-        inputs.git-hooks-nix.flakeModule
-        ./nix
-      ];
+        imports = [
+          inputs.git-hooks-nix.flakeModule
+          ./nix
+        ];
+      };
+    in
+    flake
+    // {
+      nix = {
+        caches = [ "https://arifinoid-nix.cachix.org" ];
+        extraTrustedPublicKeys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "arifinoid-nix.cachix.org-1:nWkuaaSkZMWvDUE+eTMi6sVZOHZs1YpiQ55J60qcj0A="
+        ];
+      };
     };
 
   inputs = {

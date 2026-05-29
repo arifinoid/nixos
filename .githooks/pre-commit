@@ -1,0 +1,43 @@
+
+#!/usr/bin/env sh
+set -euo pipefail
+
+# Repo-local pre-commit hook: format Nix files and prevent commit when formatting changes
+# Usage: enable with `git config core.hooksPath .githooks`
+
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$(pwd)")
+cd "$REPO_ROOT" || exit 1
+
+# Files to format before commit: all changed Nix files
+FILES=$(git diff --name-only --diff-filter=ACMRT -- '*.nix' 2>/dev/null || true)
+UNTRACKED_NIX=$(git ls-files --others --exclude-standard -- '*.nix' 2>/dev/null || true)
+FILES=$(printf '%s
+%s
+' "$FILES" "$UNTRACKED_NIX" | sort -u | sed '/^$/d' | tr '\n' ' ')
+
+if [ -z "$FILES" ]; then
+  echo "No changed Nix files to format. Proceeding with commit."
+  exit 0
+fi
+
+echo "Running pre-commit formatting for:$([ -n "$FILES" ] && printf ' %s' $FILES)"
+
+# Run nixfmt if nix is available
+if command -v nix >/dev/null 2>&1; then
+  # Use nix run to avoid relying on a system install of nixfmt
+  nix run nixpkgs#nixfmt-rfc-style -- nixfmt -w 100 $FILES || true
+else
+  echo "nix not found in PATH; skipping nixfmt" >&2
+fi
+
+# If formatting produced unstaged changes, stage them then abort the commit
+if [ -n "$(git status --porcelain -- $FILES)" ]; then
+  echo "Formatting modified files. Staging changes and aborting commit so you can review." >&2
+  git add $FILES
+  echo "Run 'git commit' again to commit the formatted files." >&2
+  exit 1
+fi
+
+echo "Formatting OK. Proceeding with commit."
+
+exit 0
