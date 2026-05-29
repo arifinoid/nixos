@@ -113,108 +113,114 @@ in
       shellAbbrs = shellAbbrs;
       shellAliases = shellAliases;
       shellInit = ''
-        # Source Home Manager session variables
-        for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
-          if test -f "$file"
-            if type -q fenv
-              fenv source "$file" > /dev/null
-            end
-            break
-          end
-        end
-
-        # Fix Colima SSH config (unsupported GSSAPIAuthentication on Linux)
-        if test -f "$HOME/.config/colima/ssh_config"
-          if grep -qi "GSSAPIAuthentication" "$HOME/.config/colima/ssh_config"
-            sed -i '/GSSAPIAuthentication/Id' "$HOME/.config/colima/ssh_config"
-          end
-        end
-
-        if status is-interactive
-            if not set -q TMUX
-              tmux attach-session -t default 2>/dev/null; or tmux new-session -s default
-            end
-          end
-
-        # Load API keys from pass if not already set
-        if type -q pass
-          if not set -q OPENAI_API_KEY
-            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
-          end
-          if not set -q ANTHROPIC_API_KEY
-            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
-          end
-        end
+        
+                # Source Home Manager session variables
+                for file in "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" "/nix/var/nix/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
+                  if test -f "$file"
+                    if type -q fenv
+                      fenv source "$file" > /dev/null
+                    end
+                    break
+                  end
+                end
+        
+                # Fix Colima SSH config (unsupported GSSAPIAuthentication on Linux)
+                if test -f "$HOME/.config/colima/ssh_config"
+                  if grep -qi "GSSAPIAuthentication" "$HOME/.config/colima/ssh_config"
+                    sed -i '/GSSAPIAuthentication/Id' "$HOME/.config/colima/ssh_config"
+                  end
+                end
+        
+                if status is-interactive
+                    if not set -q TMUX
+                      tmux attach-session -t default 2>/dev/null; or tmux new-session -s default
+                    end
+                  end
+        
+                # Load API keys from pass if not already set
+                if type -q pass
+                  if not set -q OPENAI_API_KEY
+                    set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
+                  end
+                  if not set -q ANTHROPIC_API_KEY
+                    set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
+                  end
+                end
       '';
       plugins = [ ];
       functions = {
         envsource = ''
-          for line in (cat $argv | grep -v '^#' | grep -v '^\s*$')
-            set item (string split -m 1 '=' $line)
-            set -gx $item[1] $item[2]
-            echo "Exported key $item[1]"
-          end
+          
+                    for line in (cat $argv | grep -v '^#' | grep -v '^\s*$')
+                      set item (string split -m 1 '=' $line)
+                      set -gx $item[1] $item[2]
+                      echo "Exported key $item[1]"
+                    end
         '';
         nix-update = "  nix-channel --update\n  nix flake update\n";
         nix-clean = ''
-          nix-env --delete-generations old
-          nix-store --gc
-          nix-channel --update
-          nix-env -u --always
-          if test -f /etc/NIXOS
-              for link in /nix/var/nix/gcroots/auto/*
-                  rm $(readlink "$link")
-              end
-          end
-          nix-collect-garbage -d
+          
+                    nix-env --delete-generations old
+                    nix-store --gc
+                    nix-channel --update
+                    nix-env -u --always
+                    if test -f /etc/NIXOS
+                        for link in /nix/var/nix/gcroots/auto/*
+                            rm $(readlink "$link")
+                        end
+                    end
+                    nix-collect-garbage -d
         '';
         nix-shell = {
           wraps = "nix-shell";
           body = ''
-            for ARG in $argv
-              if [ "$ARG" = --run ]
-                command nix-shell $argv
-                return $status
-              end
-            end
-            command nix-shell $argv --run "exec fish"
+            
+                        for ARG in $argv
+                          if [ "$ARG" = --run ]
+                            command nix-shell $argv
+                            return $status
+                          end
+                        end
+                        command nix-shell $argv --run "exec fish"
           '';
         };
       };
       loginShellInit = ''
-        if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-          fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-        end
-
-        # Ensure API keys are present in login shells
-        if type -q pass
-          if not set -q OPENAI_API_KEY
-            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
-          end
-          if not set -q ANTHROPIC_API_KEY
-            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
-          end
-        end
+        
+                if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+                  fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+                end
+        
+                # Ensure API keys are present in login shells
+                if type -q pass
+                  if not set -q OPENAI_API_KEY
+                    set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
+                  end
+                  if not set -q ANTHROPIC_API_KEY
+                    set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
+                  end
+                end
       '';
       interactiveShellInit = ''
-        if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-          fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
-        end
-
-        # Ensure API keys are present in interactive shells
-        if type -q pass
-          if not set -q OPENAI_API_KEY
-            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
-          end
-          if not set -q ANTHROPIC_API_KEY
-            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
-          end
-        end
-
-        if status is-interactive
-        and not set -q TMUX
-            exec tmux
-        end
+        
+                if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+                  fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
+                end
+        
+                # Ensure API keys are present in interactive shells
+                if type -q pass
+                  if not set -q OPENAI_API_KEY
+                    set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
+                  end
+                  if not set -q ANTHROPIC_API_KEY
+                    set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
+                  end
+                end
+        
+                if status is-interactive
+                and not set -q TMUX
+                    exec tmux
+                end
       '';
     };
     starship.enable = true;
