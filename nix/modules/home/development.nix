@@ -17,6 +17,16 @@ in
   home.packages =
     with pkgs;
     [
+      (writeShellApplication {
+        name = "claude";
+        runtimeInputs = [ nodejs ];
+        text = ''exec npx --yes @anthropic-ai/claude-code "$@"'';
+      })
+      (writeShellApplication {
+        name = "pi";
+        runtimeInputs = [ nodejs ];
+        text = ''exec npx --yes @earendil-works/pi-coding-agent "$@"'';
+      })
       bun
       cmake
       colima
@@ -108,9 +118,9 @@ in
       ];
     in
     ''
-      
-            set -gx PKG_CONFIG_PATH "${pkgConfigPath}" $PKG_CONFIG_PATH
-            set -gx LIBRARY_PATH "${lib.makeLibraryPath [ pkgs.zlib ]}" $LIBRARY_PATH
+
+      set -gx PKG_CONFIG_PATH "${pkgConfigPath}" $PKG_CONFIG_PATH
+      set -gx LIBRARY_PATH "${lib.makeLibraryPath [ pkgs.zlib ]}" $LIBRARY_PATH
     '';
 
   programs.alacritty = lib.mkIf (!isWSLHost) {

@@ -132,21 +132,6 @@ in
           end
         end
 
-        if status is-interactive
-            if not set -q TMUX
-              tmux attach-session -t default 2>/dev/null; or tmux new-session -s default
-            end
-          end
-
-        # Load API keys from pass if not already set
-        if type -q pass
-          if not set -q OPENAI_API_KEY
-            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
-          end
-          if not set -q ANTHROPIC_API_KEY
-            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
-          end
-        end
       '';
       plugins = [ ];
       functions = {
@@ -192,15 +177,6 @@ in
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end
 
-        # Ensure API keys are present in login shells
-        if type -q pass
-          if not set -q OPENAI_API_KEY
-            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
-          end
-          if not set -q ANTHROPIC_API_KEY
-            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
-          end
-        end
       '';
       interactiveShellInit = ''
 
@@ -208,20 +184,38 @@ in
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end
 
-        # Ensure API keys are present in interactive shells
-        if type -q pass
-          if not set -q OPENAI_API_KEY
-            set -gx OPENAI_API_KEY (pass show arifinoid/openai.api.key 2>/dev/null | head -n1)
-          end
-          if not set -q ANTHROPIC_API_KEY
-            set -gx ANTHROPIC_API_KEY (pass show arifinoid/anthropic.api.key 2>/dev/null | head -n1)
-          end
-        end
-
         if status is-interactive
         and not set -q TMUX
             exec tmux
         end
+      '';
+    };
+    zsh = {
+      enable = true;
+      enableCompletion = true;
+      autosuggestion.enable = true;
+      syntaxHighlighting.enable = true;
+      shellAliases = shellAliases // shellAbbrs;
+      shellGlobalAliases = {
+        G = "| grep";
+        L = "| less";
+      };
+      initContent = ''
+        source ${pkgs.spaceship-prompt}/lib/spaceship-prompt/spaceship.zsh
+
+        envsource() {
+          while IFS= read -r line; do
+            case "$line" in
+              \#*|"") continue ;;
+            esac
+            export "$line"
+            echo "Exported key $line"
+          done < "$1"
+        }
+
+        nix-shell() {
+          command nix-shell "$@" --run "exec zsh"
+        }
       '';
     };
     starship.enable = true;
@@ -238,6 +232,7 @@ in
     zoxide = {
       enable = true;
       enableFishIntegration = config.programs.fish.enable;
+      enableZshIntegration = config.programs.zsh.enable;
     };
   };
 }

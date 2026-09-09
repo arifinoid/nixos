@@ -13,11 +13,6 @@
     };
   };
 
-  services.gpg-agent = {
-    enable = true;
-    pinentry.package = pkgs.pinentry-tty;
-  };
-
   # Environment variables for API keys
   # Note: SOPS secrets are handled at the system level
   # Use pass for home-manager environment variables

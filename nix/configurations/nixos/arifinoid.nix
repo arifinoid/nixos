@@ -13,6 +13,7 @@
   imports = [
     # Include the results of the hardware scan.
     ezModules.arifinoid-hardware # ./hardware-configuration.nix
+    ezModules.bun-overlay
     inputs.sops.nixosModules.sops
   ];
 
@@ -101,10 +102,11 @@
       kdePackages.kate
       #  thunderbird
     ];
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   programs.fish.enable = true;
+  programs.zsh.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -136,7 +138,10 @@
   services.ollama.enable = false;
   services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
 
-  environment.shells = with pkgs; [ fish ];
+  environment.shells = with pkgs; [
+    zsh
+    fish
+  ];
   environment.variables = {
     MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";
   };

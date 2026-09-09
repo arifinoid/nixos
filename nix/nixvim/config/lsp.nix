@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  inputs,
+  pkgs,
+  system,
+  ...
+}:
 {
   plugins = {
     lsp = {
@@ -61,7 +66,25 @@
       };
     };
 
-    lsp-format.enable = true;
+    conform-nvim = {
+      enable = true;
+      settings = {
+        formatters = {
+          nixfmt = {
+            command = "${inputs.nixpkgs.legacyPackages.${system}.nixfmt-rfc-style}/bin/nixfmt";
+            args = [
+              "-w"
+              "100"
+            ];
+          };
+        };
+        formatters_by_ft.nix = [ "nixfmt" ];
+        format_on_save = {
+          timeout_ms = 5000;
+          lsp_fallback = false;
+        };
+      };
+    };
 
     lspkind.enable = true;
     lspkind.cmp.enable = true;
