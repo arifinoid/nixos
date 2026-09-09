@@ -75,7 +75,10 @@
   services.openssh.enable = true;
 
   # Minimal environment
-  environment.shells = with pkgs; [ zsh fish ];
+  environment.shells = with pkgs; [
+    zsh
+    fish
+  ];
 
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";

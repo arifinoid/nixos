@@ -138,7 +138,10 @@
   services.ollama.enable = false;
   services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
 
-  environment.shells = with pkgs; [ zsh fish ];
+  environment.shells = with pkgs; [
+    zsh
+    fish
+  ];
   environment.variables = {
     MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";
   };

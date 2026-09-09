@@ -1,7 +1,7 @@
 { ... }:
 {
   nixpkgs.overlays = [
-    (final: prev: rec {
+    (_final: prev: rec {
       bun = prev.bun.overrideAttrs (oldAttrs: rec {
         version = "1.4.2";
         passthru = oldAttrs.passthru // {

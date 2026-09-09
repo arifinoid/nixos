@@ -8,8 +8,8 @@ set -euo pipefail
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$(pwd)")
 cd "$REPO_ROOT" || exit 1
 
-# Files to format before commit: all changed Nix files
-FILES=$(git diff --name-only --diff-filter=ACMRT -- '*.nix' 2>/dev/null || true)
+# Files to format before commit: all staged and unstaged Nix files
+FILES=$(git diff HEAD --name-only --diff-filter=ACMRT -- '*.nix' 2>/dev/null || true)
 UNTRACKED_NIX=$(git ls-files --others --exclude-standard -- '*.nix' 2>/dev/null || true)
 FILES=$(printf '%s
 %s
@@ -24,8 +24,8 @@ echo "Running pre-commit formatting for:$([ -n "$FILES" ] && printf ' %s' $FILES
 
 # Run nixfmt if nix is available
 if command -v nix >/dev/null 2>&1; then
-  # Use nix run to avoid relying on a system install of nixfmt
-  nix run nixpkgs#nixfmt-rfc-style -- nixfmt -w 100 $FILES
+  FORMATTER=$(nix build .#formatter --no-link --print-out-paths)
+  "$FORMATTER/bin/nixfmt" -w 100 $FILES
 else
   echo "nix not found in PATH; skipping nixfmt" >&2
 fi
