@@ -16,6 +16,7 @@
   imports = [
     # Include the generated hardware configuration
     ezModules.wsl-hardware
+    ezModules.bun-overlay
     # Include NixOS-WSL configuration
     inputs.nixos-wsl.nixosModules.wsl
     inputs.sops.nixosModules.sops
@@ -29,6 +30,14 @@
     trusted-users = [
       "root"
       "arifinoid"
+    ];
+    substituters = [
+      "https://cache.nixos.org/"
+      "https://arifinoid-nix.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "arifinoid-nix.cachix.org-1:nWkuaaSkZMWvDUE+eTMi6sVZOHZs1YpiQ55J60qcj0A="
     ];
   };
   nix.gc = {
@@ -52,10 +61,11 @@
     description = "Rohmad Arifin";
     extraGroups = [ "wheel" ];
     packages = [ ];
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   programs.fish.enable = true;
+  programs.zsh.enable = true;
   programs.tmux.enable = true;
   programs.starship.enable = true;
   programs.zoxide.enable = true;
@@ -63,10 +73,9 @@
   programs.nix-ld.enable = true;
 
   services.openssh.enable = true;
-  services.getty.autologinUser = "arifinoid";
 
   # Minimal environment
-  environment.shells = with pkgs; [ fish ];
+  environment.shells = with pkgs; [ zsh fish ];
 
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";
@@ -98,7 +107,6 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     git
-    kdePackages.partitionmanager
 
     nixd
     nix-search

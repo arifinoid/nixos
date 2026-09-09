@@ -17,6 +17,16 @@ in
   home.packages =
     with pkgs;
     [
+      (writeShellApplication {
+        name = "claude";
+        runtimeInputs = [ nodejs ];
+        text = ''exec npx --yes @anthropic-ai/claude-code "$@"'';
+      })
+      (writeShellApplication {
+        name = "pi";
+        runtimeInputs = [ nodejs ];
+        text = ''exec npx --yes @earendil-works/pi-coding-agent "$@"'';
+      })
       bun
       cmake
       colima

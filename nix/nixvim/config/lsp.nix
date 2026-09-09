@@ -63,6 +63,23 @@
 
     lsp-format.enable = true;
 
+    conform-nvim = {
+      enable = true;
+      settings = {
+        formatters = {
+          nixfmt = {
+            command = "${pkgs.nixfmt-rfc-style}/bin/nixfmt";
+            args = [ "-w" "100" ];
+          };
+        };
+        formattersByFt.nix = [ "nixfmt" ];
+        formatOnSave = {
+          timeoutMs = 5000;
+          lspFallback = false;
+        };
+      };
+    };
+
     lspkind.enable = true;
     lspkind.cmp.enable = true;
 

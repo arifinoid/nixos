@@ -25,7 +25,7 @@ echo "Running pre-commit formatting for:$([ -n "$FILES" ] && printf ' %s' $FILES
 # Run nixfmt if nix is available
 if command -v nix >/dev/null 2>&1; then
   # Use nix run to avoid relying on a system install of nixfmt
-  nix run nixpkgs#nixfmt-rfc-style -- nixfmt -w 100 $FILES || true
+  nix run nixpkgs#nixfmt-rfc-style -- nixfmt -w 100 $FILES
 else
   echo "nix not found in PATH; skipping nixfmt" >&2
 fi

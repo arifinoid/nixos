@@ -71,14 +71,9 @@ if [ -d "/mnt/c/Users/rohmad/Documents/personal/nixos" ]; then
     # echo "   Copying generated hardware configuration..."
     # sudo cp /etc/nixos/hardware-configuration.nix ./hardware-configuration.nix
     
-    # Fix Git repository ownership
-    echo "   Fixing Git repository ownership..."
-    sudo chown -R root:root .git/ 2>/dev/null || true
-    sudo chown -R root:root . 2>/dev/null || true
-    
-    # Remove Git remote to avoid ownership issues
-    echo "   Removing Git remote to avoid ownership issues..."
-    sudo git remote remove origin 2>/dev/null || true
+    # Allow nixos-rebuild to evaluate this user-owned flake through sudo.
+    echo "   Allowing root to read this Git repository..."
+    sudo git config --system --add safe.directory "$PWD"
 else
     echo "   Configuration not found in expected Windows location"
     echo "   Please copy your nixos configuration to /etc/nixos/nixos"

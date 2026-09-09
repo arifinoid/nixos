@@ -13,7 +13,6 @@ in
       wget
       fzf
       ack
-      neofetch
       fastfetch
       ripgrep
       trash-cli
@@ -23,7 +22,6 @@ in
       speedtest-cli
       google-authenticator
       nettools
-      stacer
       obs-studio
       unzip
     ]
