@@ -96,7 +96,18 @@
   sops = {
     defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets = { };
+    secrets = {
+      llmkita_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
+      ox_alpha_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
+    };
   };
 
   # Home Manager backup behavior (avoids clobber error on existing files)

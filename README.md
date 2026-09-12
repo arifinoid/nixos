@@ -69,9 +69,70 @@ This configuration supports two secret management approaches:
 - **Usage**: `cmd:pass show arifinoid/openai.api.key` (in nixvim config)
 
 ### 2. SOPS (Secrets OPerationS)
-- **Setup**: Run `./setup-sops-key.sh`
+- **Create or restore age key**: Keep private key at `/var/lib/sops-nix/key.txt`.
 - **Edit secrets**: `sops secrets/secret.yaml`
-- **Usage**: Available as environment variables
+- **Rebuild**: `nxbw` for WSL or `nxb` for native NixOS.
+- **Usage**: NixOS decrypts secrets into `/run/secrets/` during activation.
+
+Never generate a new age key after encrypting `secrets/secret.yaml`. The private key must match the recipient in `.sops.yaml`.
+
+### Add an API key
+
+Use one secret name per API key. Replace `<secret_name>` with a lowercase name such as `openai_api_key`.
+
+1. Add the key to encrypted SOPS data:
+
+```bash
+sops secrets/secret.yaml
+```
+
+Add this field in the editor:
+
+```yaml
+<secret_name>: paste-api-key-here
+```
+
+2. Register the secret in both NixOS configurations under `sops.secrets`:
+
+```nix
+<secret_name> = {
+	owner = "arifinoid";
+	group = "users";
+	mode = "0400";
+};
+```
+
+Add the block to both:
+
+- `nix/configurations/nixos/wsl-arifinoid.nix`
+- `nix/configurations/nixos/arifinoid.nix`
+
+3. Apply configuration:
+
+```bash
+nxbw  # WSL
+nxb   # native NixOS
+```
+
+SOPS decrypts the key to `/run/secrets/<secret_name>`. Check file existence without printing the key:
+
+```bash
+test -s /run/secrets/<secret_name> && echo "secret loaded"
+```
+
+### Use secret in OpenCode
+
+OpenCode supports file substitution. Reference the decrypted file in `.config/opencode/opencode.json`:
+
+```json
+"apiKey": "{file:/run/secrets/<secret_name>}"
+```
+
+Do not commit API keys, plaintext secret files, shell exports, or generated `/run/secrets` files.
+
+### OpenCode configuration
+
+Home Manager links `.config/opencode/opencode.json` to `~/.config/opencode/opencode.json` during rebuild. Do not edit the generated path directly.
 
 ## AI Integration
 

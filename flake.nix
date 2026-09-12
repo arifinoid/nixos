@@ -77,5 +77,9 @@
       url = "github:MarceColl/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Herdr
+    herdr.url = "github:herdrdev/herdr/v0.9.0";
+
   };
 }
