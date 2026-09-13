@@ -1,0 +1,80 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.llm-kita.com/api",
+    "ANTHROPIC_AUTH_TOKEN": "{file:/run/secrets/llmkita_api_key}",
+    "ANTHROPIC_MODEL": "auto",
+    "ANTHROPIC_SMALL_FAST_MODEL": "auto"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/arifinoid/.local/bin/icm hook pre"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/arifinoid/.local/bin/icm hook post"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/arifinoid/.local/bin/icm hook compact"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/arifinoid/.local/bin/icm hook prompt"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/arifinoid/.local/bin/icm hook start"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/arifinoid/.local/bin/icm hook end"
+          }
+        ]
+      }
+    ]
+  }
+}
