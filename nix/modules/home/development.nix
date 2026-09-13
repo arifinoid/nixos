@@ -136,7 +136,6 @@ in
       set -gx PKG_CONFIG_PATH "${pkgConfigPath}" $PKG_CONFIG_PATH
       set -gx LIBRARY_PATH "${lib.makeLibraryPath [ pkgs.zlib ]}" $LIBRARY_PATH
       set -gx LLMKITA_API_KEY (cat /run/secrets/llmkita_api_key)
-    
     '';
 
   programs.alacritty = lib.mkIf (!isWSLHost) {
