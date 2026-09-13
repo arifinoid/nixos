@@ -188,3 +188,7 @@ secrets/*.env
 !secrets/*.env.sops
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+
+.agents/
+.claude/
+skills-lock.json
