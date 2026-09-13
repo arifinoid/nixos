@@ -133,16 +133,6 @@
       };
     }
     {
-      key = "<C-w>";
-      mode = "n";
-      action = "<Cmd>BufferClose<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Close buffer";
-      };
-    }
-    {
       key = "<S-p>";
       mode = "n";
       action = "<Cmd>BufferPick<CR>";
@@ -320,16 +310,6 @@
     }
 
     # File operations
-    {
-      key = "<C-w>";
-      mode = "n";
-      action = ":bdelete<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Delete buffer";
-      };
-    }
     {
       key = "<C-q>";
       mode = "n";

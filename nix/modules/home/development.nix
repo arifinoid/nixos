@@ -16,6 +16,7 @@ let
 in
 {
   xdg.configFile."opencode/opencode.json".source = "${inputs.self}/.config/opencode/opencode.json";
+  home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
 
   home.packages =
     with pkgs;
@@ -29,6 +30,11 @@ in
         name = "pi";
         runtimeInputs = [ nodejs ];
         text = ''exec npx --yes @earendil-works/pi-coding-agent "$@"'';
+      })
+      (writeShellApplication {
+        name = "opencode";
+        runtimeInputs = [ bun ];
+        text = ''exec bunx --bun --package opencode-ai@latest opencode "$@"'';
       })
       bun
       cmake
@@ -57,7 +63,6 @@ in
       nodePackages.typescript
       nodePackages.typescript-language-server
       # nodePackages.vercel
-      inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.opencode
       openssl.dev
       pgsync
       pkg-config
