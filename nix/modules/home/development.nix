@@ -2,6 +2,7 @@
   pkgs,
   osConfig,
   lib,
+  inputs,
   ...
 }:
 let
@@ -14,6 +15,9 @@ let
   };
 in
 {
+  xdg.configFile."opencode/opencode.json".source = "${inputs.self}/.config/opencode/opencode.json";
+  home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
+
   home.packages =
     with pkgs;
     [
@@ -26,6 +30,11 @@ in
         name = "pi";
         runtimeInputs = [ nodejs ];
         text = ''exec npx --yes @earendil-works/pi-coding-agent "$@"'';
+      })
+      (writeShellApplication {
+        name = "opencode";
+        runtimeInputs = [ bun ];
+        text = ''exec bunx --bun --package opencode-ai@latest opencode "$@"'';
       })
       bun
       cmake
@@ -42,6 +51,7 @@ in
       golines
       go-migrate
       gopls
+      inputs.herdr.packages.${pkgs.system}.default
       jq
       k9s
       lua5_4_compat
@@ -97,6 +107,10 @@ in
     RUST_SRC_PATH = "${rustToolchain}/lib/rustlib/src/rust/library";
   };
 
+  programs.zsh.initContent = ''
+    export LLMKITA_API_KEY="$(cat ${osConfig.sops.secrets.llmkita_api_key.path})"
+  '';
+
   programs.fish.shellInit =
     let
       pkgConfigPath = lib.makeSearchPath "lib/pkgconfig" [
@@ -121,6 +135,8 @@ in
 
       set -gx PKG_CONFIG_PATH "${pkgConfigPath}" $PKG_CONFIG_PATH
       set -gx LIBRARY_PATH "${lib.makeLibraryPath [ pkgs.zlib ]}" $LIBRARY_PATH
+      set -gx LLMKITA_API_KEY (cat /run/secrets/llmkita_api_key)
+    
     '';
 
   programs.alacritty = lib.mkIf (!isWSLHost) {

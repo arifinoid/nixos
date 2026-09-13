@@ -1,0 +1,34 @@
+onboarding = false
+
+[terminal]
+shell_mode = "login"
+
+[keys]
+prefix = "ctrl+t"
+new_tab = "prefix+c"
+split_vertical = "prefix+v"
+split_horizontal = "prefix+minus"
+next_tab = "prefix+n"
+previous_tab = "prefix+p"
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+swap_pane_left = "prefix+shift+h"
+swap_pane_down = "prefix+shift+j"
+swap_pane_up = "prefix+shift+k"
+swap_pane_right = "prefix+shift+l"
+resize_mode = "prefix+r"
+copy_mode = "prefix+["
+detach = "prefix+q"
+close_pane = "prefix+x"
+zoom = "prefix+z"
+
+[theme]
+name = "catppuccin"
+
+[ui]
+tab_bar_right = [
+  { type = "hostname" },
+  { type = "datetime", format = "%H:%M" },
+]

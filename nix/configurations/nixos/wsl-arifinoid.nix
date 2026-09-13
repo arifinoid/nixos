@@ -66,7 +66,6 @@
 
   programs.fish.enable = true;
   programs.zsh.enable = true;
-  programs.tmux.enable = true;
   programs.starship.enable = true;
   programs.zoxide.enable = true;
   # dynamically linked executables intended for generic linux environments out of the box. https://nix.dev/permalink/stub-ld
@@ -96,7 +95,18 @@
   sops = {
     defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets = { };
+    secrets = {
+      llmkita_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
+      ox_alpha_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
+    };
   };
 
   # Home Manager backup behavior (avoids clobber error on existing files)

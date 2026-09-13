@@ -34,7 +34,18 @@ in
     # extra
     unicode-vim
     lsp-progress-nvim
+    oil-nvim
   ];
+
+  extraConfigLua = ''
+    require("oil").setup({
+      columns = { "icon", "permissions", "size", "mtime" },
+      delete_to_trash = true,
+      view_options = {
+        show_hidden = true,
+      },
+    })
+  '';
 
   userCommands.StatusLine.desc = "Toggle Status Line";
   userCommands.StatusLine.command.__raw = helpers.mkLuaFun (readLua ./lualine_hide.lua);
@@ -56,14 +67,8 @@ in
           ];
         }
         {
-          __unkeyed-1 = "nvim-tree.lua";
-          cmd = [
-            "NvimTreeToggle"
-            "NvimTreeOpen"
-            "NvimTreeClose"
-            "NvimTreeRefresh"
-            "NvimTreeFindFile"
-          ];
+          __unkeyed-1 = "oil.nvim";
+          cmd = [ "Oil" ];
         }
         {
           __unkeyed-1 = "typr";
@@ -78,8 +83,8 @@ in
     which-key.settings.spec = [
       {
         __unkeyed-1 = "<c-b>";
-        __unkeyed-2 = "<cmd>NvimTreeToggle<CR>";
-        desc = "Open Tree in left side";
+        __unkeyed-2 = "<cmd>Oil<CR>";
+        desc = "Open file browser";
       }
 
       {
@@ -122,19 +127,6 @@ in
 
     cursorline.enable = true;
 
-    nvim-tree = {
-      enable = true;
-      disableNetrw = true;
-      view.side = "left";
-      view.width = 25;
-      respectBufCwd = true;
-      autoReloadOnWrite = true;
-      git.enable = true;
-      filters.dotfiles = true;
-      renderer.highlightGit = true;
-      renderer.indentMarkers.enable = true;
-    };
-
     rainbow-delimiters = {
       enable = true;
       # highlight = indent-blankline.settings.scope.highlight;
@@ -153,7 +145,7 @@ in
       ];
       settings.exclude.filetypes = [
         "norg"
-        "NvimTree"
+        "oil"
         "sagaoutline"
         "help"
         "terminal"
@@ -186,7 +178,7 @@ in
                 require('lsp-progress').setup()
       '';
       settings.theme = "catppuccin";
-      settings.options.disabled_filetypes.__unkeyed-1 = "NvimTree";
+      settings.options.disabled_filetypes.__unkeyed-1 = "oil";
       settings.options.disabled_filetypes.statusline = [
         "sagaoutline"
         "Trouble"

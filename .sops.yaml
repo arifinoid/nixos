@@ -1,5 +1,5 @@
 keys:
-  - &arifinoid age1k08s3lcfr7nek9skvjjyfausmpd65lwa4u5h562aqtwxmfd5uvcq4756u7
+  - &arifinoid age1n05p386lf08e7e8h4q7065nv9enycz25hr8t4sjh6cx344l9z3ksrnnrjq
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env)$
     key_groups:

@@ -185,8 +185,8 @@ in
         end
 
         if status is-interactive
-        and not set -q TMUX
-            exec tmux
+        and not set -q HERDR_PANE_ID
+          exec herdr
         end
       '';
     };
@@ -202,6 +202,10 @@ in
       };
       initContent = ''
         source ${pkgs.spaceship-prompt}/lib/spaceship-prompt/spaceship.zsh
+
+        if [[ -o interactive && -z "$HERDR_PANE_ID" ]]; then
+          exec herdr
+        fi
 
         envsource() {
           while IFS= read -r line; do
