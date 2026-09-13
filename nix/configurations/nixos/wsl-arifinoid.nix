@@ -66,7 +66,6 @@
 
   programs.fish.enable = true;
   programs.zsh.enable = true;
-  programs.tmux.enable = true;
   programs.starship.enable = true;
   programs.zoxide.enable = true;
   # dynamically linked executables intended for generic linux environments out of the box. https://nix.dev/permalink/stub-ld
