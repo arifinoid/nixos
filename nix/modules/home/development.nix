@@ -15,8 +15,11 @@ let
   };
 in
 {
+  imports = [ inputs.omp.homeManagerModules.default ];
+
   xdg.configFile."opencode/opencode.json".source = "${inputs.self}/.config/opencode/opencode.json";
   home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
+  home.file.".omp/agent/models.yml".source = "${inputs.self}/.config/omp/agent/models.yml";
 
   home.packages =
     with pkgs;
@@ -32,9 +35,19 @@ in
         text = ''exec npx --yes @earendil-works/pi-coding-agent "$@"'';
       })
       (writeShellApplication {
+        name = "9router";
+        runtimeInputs = [ nodejs ];
+        text = ''exec npx --yes 9router "$@"'';
+      })
+      (writeShellApplication {
         name = "opencode";
         runtimeInputs = [ bun ];
         text = ''exec bunx --bun --package opencode-ai@latest opencode "$@"'';
+      })
+      (writeShellApplication {
+        name = "omo";
+        runtimeInputs = [ bun ];
+        text = ''exec bunx --bun --package omo-ai@latest omo "$@"'';
       })
       bun
       cmake
@@ -103,11 +116,32 @@ in
   programs.go.enable = true;
   programs.go.package = pkgs.go;
 
+  programs.omp.enable = true;
+  # Upstream (18.3.5+) embed-native.ts requires the post-link version stamp on
+  # pi-natives addons, but omp's Nix build (nix/package.nix) never stamps them
+  # (their bazel/npm release pipeline does). Stamp the cargo-built addon before
+  # the embedding step. Idempotent - safe once upstream fixes their Nix build.
+  programs.omp.package = inputs.omp.packages.${pkgs.system}.default.overrideAttrs (old: {
+    buildPhase =
+      lib.replaceStrings
+        [ ''echo "Compiling OMP"'' ]
+        [
+          ''
+            for addon in packages/natives/native/*.node; do
+              bun scripts/stamp-native-version.ts "$addon"
+            done
+            echo "Compiling OMP"
+          ''
+        ]
+        old.buildPhase;
+  });
+
   home.sessionVariables = {
     RUST_SRC_PATH = "${rustToolchain}/lib/rustlib/src/rust/library";
   };
 
   programs.zsh.initContent = ''
+
     export LLMKITA_API_KEY="$(cat ${osConfig.sops.secrets.llmkita_api_key.path})"
   '';
 
@@ -132,6 +166,7 @@ in
       ];
     in
     ''
+
 
       set -gx PKG_CONFIG_PATH "${pkgConfigPath}" $PKG_CONFIG_PATH
       set -gx LIBRARY_PATH "${lib.makeLibraryPath [ pkgs.zlib ]}" $LIBRARY_PATH

@@ -81,5 +81,7 @@
     # Herdr
     herdr.url = "github:herdrdev/herdr/v0.9.0";
 
+    # Oh My Pi coding agent
+    omp.url = "github:can1357/oh-my-pi";
   };
 }
