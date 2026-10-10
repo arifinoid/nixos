@@ -124,14 +124,6 @@ in
             break
           end
         end
-
-        # Fix Colima SSH config (unsupported GSSAPIAuthentication on Linux)
-        if test -f "$HOME/.config/colima/ssh_config"
-          if grep -qi "GSSAPIAuthentication" "$HOME/.config/colima/ssh_config"
-            sed -i '/GSSAPIAuthentication/Id' "$HOME/.config/colima/ssh_config"
-          end
-        end
-
       '';
       plugins = [ ];
       functions = {
