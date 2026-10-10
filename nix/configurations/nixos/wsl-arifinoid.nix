@@ -52,6 +52,10 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
+    # Build OpenSSH with GSSAPI support. Without it, `GSSAPIAuthentication`
+    # is an unknown option and ssh warns on every Lima/Colima generated
+    # ssh_config.
+    (_final: prev: { openssh = prev.openssh_gssapi; })
   ];
 
   wsl.enable = true;
