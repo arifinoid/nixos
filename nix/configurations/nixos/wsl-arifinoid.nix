@@ -45,8 +45,9 @@
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";
     WSL_INTEROP = "1";
-    EDITOR = "nano";
-    VISUAL = "nano";
+    # nvim = daily driver (nano tetap terinstall sebagai fallback darurat)
+    EDITOR = "nvim";
+    VISUAL = "nvim";
     PAGER = "less";
     MANPAGER = "less -R";
   };

@@ -21,3 +21,5 @@ jobs:
         nix flake check
     - run: |
         nix build .#nixosConfigurations.wsl-arifinoid.config.system.build.toplevel --print-out-paths | cachix push arifinoid-nix
+    - run: |
+        nix build .#nixosConfigurations.arifinoid.config.system.build.toplevel --print-out-paths | cachix push arifinoid-nix

@@ -3,10 +3,10 @@
   programs = {
     direnv = {
       enable = true;
-      # shell yang dipakai user = fish + zsh (bash-only = hook ga pernah load)
+      # Fish: JANGAN di-set — home-manager hardcode enable+readOnly
+      # ("direnv otomatis ke-load di fish"). Nge-set manual = error eval.
       enableBashIntegration = true;
       enableZshIntegration = true;
-      enableFishIntegration = true;
       nix-direnv.enable = true;
     };
   };

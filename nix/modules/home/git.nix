@@ -31,25 +31,11 @@ in
       gpom = "pull origin main";
       grv = "remote -v";
     };
+    # NOTE: dulu 5 aturan condition, semuanya user yang sama — collapse jadi satu.
+    # Kalau nanti butuh split work/personal, tambah condition + user berbeda di sini.
     includes = [
       {
-        condition = "gitdir:~/Documents/personal/";
-        contents.user = personal;
-      }
-      {
-        condition = "gitdir:~/.config/";
-        contents.user = personal;
-      }
-      {
-        condition = "gitdir:~/telekasten-notes/";
-        contents.user = personal;
-      }
-      {
         condition = "gitdir:~/";
-        contents.user = personal;
-      }
-      {
-        condition = "gitdir:~/Documents/obsidian";
         contents.user = personal;
       }
     ];
