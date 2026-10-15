@@ -17,7 +17,9 @@ let
     ngd = "nix-collect-garbage -d";
     nxbw = "sudo nixos-rebuild switch --flake .#wsl-arifinoid";
     nxb = "sudo nixos-rebuild switch --flake .#arifinoid";
-    nfmt = "nix fmt";
+    # NOTE: jangan `nix fmt` polos — formatter repo ini binary mentah yang
+    # butuh daftar file eksplisit (tanpa arg dia baca stdin kosong lalu error).
+    nfmt = "git ls-files '*.nix' | xargs -r nix run .#formatter.x86_64-linux --";
 
     # node related
     ys = "yarn start";

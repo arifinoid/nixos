@@ -31,6 +31,11 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
+  # SSH server: selain akses remote, ini juga bikin sops-nix happy
+  # (versi barunya referensi opsi openssh.generateHostKeys yang sudah
+  # dihapus upstream — short-circuit hanya saat enable=true).
+  services.openssh.enable = true;
+
   # Set your time zone.
   time.timeZone = "Asia/Jakarta";
 

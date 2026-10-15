@@ -24,8 +24,9 @@ echo "Running pre-commit formatting for:$([ -n "$FILES" ] && printf ' %s' $FILES
 
 # Run nixfmt if nix is available
 if command -v nix >/dev/null 2>&1; then
-  FORMATTER=$(nix build .#formatter --no-link --print-out-paths)
-  "$FORMATTER/bin/nixfmt" -w 100 $FILES
+  SYS=$(nix eval --impure --expr builtins.currentSystem --raw)
+  FORMATTER=$(nix build ".#formatter.$SYS" --no-link --print-out-paths)
+  "$FORMATTER/bin/nixfmt" $FILES
 else
   echo "nix not found in PATH; skipping nixfmt" >&2
 fi

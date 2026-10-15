@@ -40,6 +40,11 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  # lima via colima: versi ini ditandai insecure di nixpkgs baru.
+  # Hapus baris ini kalau colima sudah pindah ke lima yang fixed.
+  nixpkgs.config.permittedInsecurePackages = [
+    "lima-1.0.7"
+  ];
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
   ];

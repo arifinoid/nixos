@@ -12,7 +12,6 @@
         ];
 
         imports = [
-          inputs.git-hooks-nix.flakeModule
           ./nix
         ];
       };
@@ -38,9 +37,6 @@
     # utils
     flake-parts.url = "github:hercules-ci/flake-parts";
 
-    # pre-commit
-    git-hooks-nix.url = "github:cachix/git-hooks.nix";
-
     # nixos wsl
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
@@ -58,9 +54,13 @@
     ez-configs.inputs.flake-parts.follows = "flake-parts";
 
     # Nixvim
+    # NOTE: nixvim main WAJIB nixpkgs yang module system-nya support
+    # `valueMeta` (fitur 2026). Stable kita ketuaan, jadi follows DICABUT:
+    # nixvim pakai nixos-unstable bawaannya, sistem tetap stable.
+    # Konsekuensi: pkgs di dalam config nvim = stable (di-inject manual
+    # di nix/nixvim/default.nix), tapi lib/schema = baru.
     nixvim = {
       url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Browser
