@@ -14,32 +14,8 @@
     # Include the results of the hardware scan.
     ezModules.arifinoid-hardware # ./hardware-configuration.nix
     ezModules.bun-overlay
-    inputs.sops.nixosModules.sops
+    ezModules.common
   ];
-
-  nix.settings = {
-    experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    trusted-users = [
-      "root"
-      "arifinoid"
-    ];
-    substituters = [
-      "https://cache.nixos.org/"
-      "https://nix-community.cachix.org"
-    ];
-    trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-    ];
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "daily";
-    options = "--delete-older-than 7d";
-  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -98,28 +74,15 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.arifinoid = {
-    isNormalUser = true;
-    description = "Rohmad Arifin";
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-      "docker"
-    ];
-    packages = with pkgs; [
-      kdePackages.kate
-      #  thunderbird
-    ];
-    shell = pkgs.zsh;
-  };
-
-  programs.fish.enable = true;
-  programs.zsh.enable = true;
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [
-    inputs.rust-overlay.overlays.default
+  # (base user in common.nix; host adds groups/packages)
+  users.users.arifinoid.extraGroups = [
+    "networkmanager"
+    "wheel"
+    "docker"
+  ];
+  users.users.arifinoid.packages = with pkgs; [
+    kdePackages.kate
+    #  thunderbird
   ];
 
   # List packages installed in system profile. To search, run:
@@ -143,13 +106,6 @@
     inputs.self.packages.${pkgs.system}.nvim
     inputs.zen-browser.packages.${pkgs.system}.default
   ];
-  services.ollama.enable = false;
-  services.ollama.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.ollama;
-
-  environment.shells = with pkgs; [
-    zsh
-    fish
-  ];
   environment.variables = {
     MESA_SHADER_CACHE_DIR = "$HOME/.cache/mesa_shader_cache";
   };
@@ -167,8 +123,6 @@
     };
   };
 
-  system.stateVersion = "25.05"; # Did you read the comment?
-
   # Bluetooth
   services.blueman.enable = true;
 
@@ -177,33 +131,5 @@
   xdg.icons.enable = true;
   xdg.menus.enable = true;
   xdg.sounds.enable = true;
-
-  # SOPS secrets management (key file must exist on disk)
-  sops = {
-    defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
-    age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets = {
-      llmkita_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-      ox_alpha_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-      wakatime_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-    };
-  };
-
-  # Home Manager backup behavior (avoids clobber error on existing files)
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.backupFileExtension = "backup";
 
 }

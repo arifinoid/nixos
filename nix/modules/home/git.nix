@@ -13,41 +13,29 @@ in
     delta = {
       enable = true;
     };
+    # NOTE: alias git JANGAN diawali "git " — `git gb` me-expand jadi `git <value>`,
+    # jadi value "git branch" akan jadi `git git branch` (broken).
     aliases = {
-      gpo = "git pull origin";
-      ggpo = "git push origin";
-      gcm = "git checkout master";
-      gc = "git checkout";
-      gr = "git restore";
-      gst = "git status";
-      gsta = "git stash";
-      gstl = "git stash list";
-      gstp = "git stash pop";
-      gf = "git fetch";
-      gb = "git branch";
-      gm = "git merge";
-      gpom = "git pull origin master";
-      grv = "git remote -v";
+      gpo = "pull origin";
+      ggpo = "push origin";
+      gcm = "checkout main";
+      gc = "checkout";
+      gr = "restore";
+      gst = "status";
+      gsta = "stash";
+      gstl = "stash list";
+      gstp = "stash pop";
+      gf = "fetch";
+      gb = "branch";
+      gm = "merge";
+      gpom = "pull origin main";
+      grv = "remote -v";
     };
+    # NOTE: dulu 5 aturan condition, semuanya user yang sama — collapse jadi satu.
+    # Kalau nanti butuh split work/personal, tambah condition + user berbeda di sini.
     includes = [
       {
-        condition = "gitdir:~/Documents/personal/";
-        contents.user = personal;
-      }
-      {
-        condition = "gitdir:~/.config/";
-        contents.user = personal;
-      }
-      {
-        condition = "gitdir:~/telekasten-notes/";
-        contents.user = personal;
-      }
-      {
         condition = "gitdir:~/";
-        contents.user = personal;
-      }
-      {
-        condition = "gitdir:~/Documents/obsidian";
         contents.user = personal;
       }
     ];

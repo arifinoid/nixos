@@ -17,61 +17,24 @@
     # Include the generated hardware configuration
     ezModules.wsl-hardware
     ezModules.bun-overlay
+    ezModules.common
     # Include NixOS-WSL configuration
     inputs.nixos-wsl.nixosModules.wsl
-    inputs.sops.nixosModules.sops
   ];
 
-  nix.settings = {
-    experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    trusted-users = [
-      "root"
-      "arifinoid"
-    ];
-    substituters = [
-      "https://cache.nixos.org/"
-      "https://arifinoid-nix.cachix.org"
-      "https://nix-community.cachix.org"
-    ];
-    trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "arifinoid-nix.cachix.org-1:nWkuaaSkZMWvDUE+eTMi6sVZOHZs1YpiQ55J60qcj0A="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-    ];
-  };
-  nix.gc = {
-    automatic = true;
-    dates = "daily";
-    options = "--delete-older-than 7d";
-  };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  # Build OpenSSH with GSSAPI support. Without it, `GSSAPIAuthentication`
+  # is an unknown option and ssh warns on every Lima/Colima generated
+  # ssh_config. (rust overlay comes from common.nix)
   nixpkgs.overlays = [
-    inputs.rust-overlay.overlays.default
-    # Build OpenSSH with GSSAPI support. Without it, `GSSAPIAuthentication`
-    # is an unknown option and ssh warns on every Lima/Colima generated
-    # ssh_config.
     (_final: prev: { openssh = prev.openssh_gssapi; })
   ];
 
   wsl.enable = true;
   wsl.defaultUser = "arifinoid"; # Changed from "nixos" to "arifinoid"
 
-  # User configuration - minimal to avoid builds
-  users.users.arifinoid = {
-    isNormalUser = true;
-    description = "Rohmad Arifin";
-    extraGroups = [ "wheel" ];
-    packages = [ ];
-    shell = pkgs.zsh;
-  };
+  # Host-specific user bits (base user in common.nix)
+  users.users.arifinoid.extraGroups = [ "wheel" ];
 
-  programs.fish.enable = true;
-  programs.zsh.enable = true;
   programs.starship.enable = true;
   programs.zoxide.enable = true;
   # dynamically linked executables intended for generic linux environments out of the box. https://nix.dev/permalink/stub-ld
@@ -79,51 +42,17 @@
 
   services.openssh.enable = true;
 
-  # Minimal environment
-  environment.shells = with pkgs; [
-    zsh
-    fish
-  ];
-
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";
     WSL_INTEROP = "1";
-    EDITOR = "nano";
-    VISUAL = "nano";
+    # nvim = daily driver (nano tetap terinstall sebagai fallback darurat)
+    EDITOR = "nvim";
+    VISUAL = "nvim";
     PAGER = "less";
     MANPAGER = "less -R";
   };
 
-  # System settings
-  system.stateVersion = "25.05"; # Did you read the comment?
-
-  # SOPS secrets management (key file must exist on disk)
-  sops = {
-    defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
-    age.keyFile = "/var/lib/sops-nix/key.txt";
-    secrets = {
-      llmkita_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-      ox_alpha_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-      wakatime_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-    };
-  };
-
-  # Home Manager backup behavior (avoids clobber error on existing files)
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.backupFileExtension = "backup";
+  # SOPS + stateVersion + HM flags live in common.nix.
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

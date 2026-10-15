@@ -17,8 +17,6 @@ in
       ripgrep
       trash-cli
       pass
-      xclip
-      xsel
       speedtest-cli
       google-authenticator
       nettools
@@ -26,6 +24,9 @@ in
       unzip
     ]
     ++ lib.optionals (!isWSLHost) [
+      # X11 clipboard: tidak ada gunanya di WSL
+      xclip
+      xsel
       openssh
       stow
       blackbox-terminal

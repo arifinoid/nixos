@@ -17,7 +17,14 @@ jobs:
       with:
         name: arifinoid-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    # pipefail: tanpa ini, `nix build ... | cachix push` selalu hijau
+    # walaupun nix build-nya gagal (exit code yang dipakai = cachix).
     - run: |
+        set -o pipefail
         nix flake check
     - run: |
+        set -o pipefail
         nix build .#nixosConfigurations.wsl-arifinoid.config.system.build.toplevel --print-out-paths | cachix push arifinoid-nix
+    - run: |
+        set -o pipefail
+        nix build .#nixosConfigurations.arifinoid.config.system.build.toplevel --print-out-paths | cachix push arifinoid-nix
