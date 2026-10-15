@@ -99,6 +99,9 @@ in
   home = with pkgs; {
     shellAliases = shellAliases;
     sessionPath = [ "$HOME/.yarn/bin" ];
+    # pay-respects = binari biasa (tidak ada wrapper fishPlugins-nya di nixpkgs,
+    # init shell-nya di-generate runtime di interactiveShellInit bawah).
+    packages = [ pay-respects ];
   };
 
   programs = {
@@ -119,25 +122,21 @@ in
           end
         end
       '';
-      plugins = with pkgs.fishPlugins; [
+      plugins = [
         # dipindah dari home.packages: plugin fish HARUS lewat sini biar ke-source.
         # (sebelumnya cuma ke-install; forgit/pisces/fenv ga pernah load,
         #  akibatnya hm-session-vars ga ke-source di fish)
         {
           name = "foreign-env";
-          src = foreign-env;
+          src = pkgs.fishPlugins."foreign-env";
         }
         {
           name = "forgit"; # https://github.com/wfxr/forgit
-          src = forgit;
+          src = pkgs.fishPlugins.forgit;
         }
         {
           name = "pisces"; # Paired symbols in the command line
-          src = pisces;
-        }
-        {
-          name = "pay-respects"; # the fuck replacement
-          src = pay-respects;
+          src = pkgs.fishPlugins.pisces;
         }
       ];
       functions = {
