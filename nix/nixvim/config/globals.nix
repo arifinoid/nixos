@@ -4,6 +4,10 @@ in
 {
   config = {
     performance = {
+      # combinePlugins DINONAKTIFKAN: eksperimental + tabrakan file massal
+      # (doc/recipes.md di blink/conform/oil/..., queries/*.scm di treesitter/snacks).
+      # Startup tetap dibantu byteCompileLua + lazy-load + treesitter ramping.
+      combinePlugins.enable = false;
       byteCompileLua = {
         enable = true;
         nvimRuntime = true;
@@ -72,7 +76,7 @@ in
         "menuone"
         "noselect"
         "noinsert"
-      ]; # mostly just for cmp
+      ]; # for blink.cmp
 
       # Enable persistent undo history
       swapfile = false;

@@ -21,6 +21,15 @@ in
   home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
   home.file.".omp/agent/models.yml".source = "${inputs.self}/.config/omp/agent/models.yml";
 
+  # ~/.wakatime.cfg digenerate dari sops secret tiap aktivasi.
+  # (Beda sama omp/opencode yang di-symlink: isi secret DILARANG masuk /nix/store,
+  # jadi file ditulis dari /run/secrets pas aktivasi, bukan via home.file.)
+  home.activation.wakatimeCfg = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    WKEY=$(cat ${osConfig.sops.secrets.wakatime_api_key.path})
+    umask 077
+    printf '[settings]\napi_key = %s\n' "$WKEY" > "$HOME/.wakatime.cfg"
+  '';
+
   home.packages =
     with pkgs;
     [

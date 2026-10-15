@@ -193,6 +193,11 @@
         group = "users";
         mode = "0400";
       };
+      wakatime_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
     };
   };
 

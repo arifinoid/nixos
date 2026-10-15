@@ -11,11 +11,11 @@
       };
     }
 
-    # Buffer management
+    # Buffer management (bufferline.nvim)
     {
       key = "<S-Tab>";
       mode = "n";
-      action = "<Cmd>BufferPrevious<CR>";
+      action = "<Cmd>BufferLineCyclePrev<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -25,7 +25,7 @@
     {
       key = "<Tab>";
       mode = "n";
-      action = "<Cmd>BufferNext<CR>";
+      action = "<Cmd>BufferLineCycleNext<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -35,7 +35,7 @@
     {
       key = "<C-1>";
       mode = "n";
-      action = "<Cmd>BufferGoto 1<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 1<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -45,7 +45,7 @@
     {
       key = "<C-2>";
       mode = "n";
-      action = "<Cmd>BufferGoto 2<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 2<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -55,7 +55,7 @@
     {
       key = "<C-3>";
       mode = "n";
-      action = "<Cmd>BufferGoto 3<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 3<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -65,7 +65,7 @@
     {
       key = "<C-4>";
       mode = "n";
-      action = "<Cmd>BufferGoto 4<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 4<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -75,7 +75,7 @@
     {
       key = "<C-5>";
       mode = "n";
-      action = "<Cmd>BufferGoto 5<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 5<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -85,7 +85,7 @@
     {
       key = "<C-6>";
       mode = "n";
-      action = "<Cmd>BufferGoto 6<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 6<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -95,7 +95,7 @@
     {
       key = "<C-7>";
       mode = "n";
-      action = "<Cmd>BufferGoto 7<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 7<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -105,7 +105,7 @@
     {
       key = "<C-8>";
       mode = "n";
-      action = "<Cmd>BufferGoto 8<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 8<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -115,7 +115,7 @@
     {
       key = "<C-9>";
       mode = "n";
-      action = "<Cmd>BufferGoto 9<CR>";
+      action = "<Cmd>BufferLineGoToBuffer 9<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -125,7 +125,7 @@
     {
       key = "<C-0>";
       mode = "n";
-      action = "<Cmd>BufferLast<CR>";
+      action = "<Cmd>b$<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -135,7 +135,7 @@
     {
       key = "<S-p>";
       mode = "n";
-      action = "<Cmd>BufferPick<CR>";
+      action = "<Cmd>BufferLinePick<CR>";
       options = {
         silent = true;
         noremap = true;
@@ -184,16 +184,8 @@
         desc = "Move to top window";
       };
     }
-    {
-      key = "<C-m>";
-      mode = "n";
-      action = ":Magit<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Open Magit";
-      };
-    }
+    # NOTE: <C-m> sengaja tidak di-map (di terminal == Enter).
+    # Butuh git UI? enable plugins.neogit dulu, baru tambah keymap.
     {
       key = "ss";
       mode = "n";
@@ -266,6 +258,194 @@
         desc = "Signature help";
       };
     }
+    {
+      key = "K";
+      mode = "n";
+      action = "<cmd>lua vim.lsp.buf.hover()<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Hover documentation";
+      };
+    }
+    {
+      key = "[d";
+      mode = "n";
+      action = "<cmd>lua vim.diagnostic.goto_prev()<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Previous diagnostic";
+      };
+    }
+    {
+      key = "]d";
+      mode = "n";
+      action = "<cmd>lua vim.diagnostic.goto_next()<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Next diagnostic";
+      };
+    }
+    {
+      key = "<leader>e";
+      mode = "n";
+      action = "<cmd>lua vim.diagnostic.open_float()<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Show diagnostic float";
+      };
+    }
+
+    # Lspsaga (finder/peek/outline)
+    {
+      key = "gf";
+      mode = "n";
+      action = "<cmd>Lspsaga finder<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Saga finder (def/ref/impl)";
+      };
+    }
+    {
+      key = "gp";
+      mode = "n";
+      action = "<cmd>Lspsaga peek_definition<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Saga peek definition";
+      };
+    }
+    {
+      key = "<leader>so";
+      mode = "n";
+      action = "<cmd>Lspsaga outline<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Saga symbols outline";
+      };
+    }
+
+    # Trouble (diagnostics/symbols)
+    {
+      key = "<leader>xx";
+      mode = "n";
+      action = "<cmd>Trouble diagnostics toggle<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Trouble workspace diagnostics";
+      };
+    }
+    {
+      key = "<leader>xX";
+      mode = "n";
+      action = "<cmd>Trouble diagnostics toggle filter.buf=0<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Trouble buffer diagnostics";
+      };
+    }
+    {
+      key = "<leader>cs";
+      mode = "n";
+      action = "<cmd>Trouble symbols toggle<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Trouble document symbols";
+      };
+    }
+
+    # WTF (AI explain diagnostic, butuh API key)
+    {
+      key = "<leader>wd";
+      mode = "n";
+      action = "<cmd>Wtf<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Explain diagnostic with AI";
+      };
+    }
+
+    # Gitsigns (hunk navigation + actions)
+    {
+      key = "]h";
+      mode = "n";
+      action = "<cmd>Gitsigns next_hunk<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Next git hunk";
+      };
+    }
+    {
+      key = "[h";
+      mode = "n";
+      action = "<cmd>Gitsigns prev_hunk<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Previous git hunk";
+      };
+    }
+    {
+      key = "<leader>hs";
+      mode = "n";
+      action = "<cmd>Gitsigns stage_hunk<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Stage hunk";
+      };
+    }
+    {
+      key = "<leader>hr";
+      mode = "n";
+      action = "<cmd>Gitsigns reset_hunk<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Reset hunk";
+      };
+    }
+    {
+      key = "<leader>hp";
+      mode = "n";
+      action = "<cmd>Gitsigns preview_hunk<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Preview hunk";
+      };
+    }
+    {
+      key = "<leader>hb";
+      mode = "n";
+      action = "<cmd>Gitsigns blame_line<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Blame line";
+      };
+    }
+    {
+      key = "<leader>hd";
+      mode = "n";
+      action = "<cmd>Gitsigns diffthis<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Diff this buffer";
+      };
+    }
 
     # Window resizing
     {
@@ -310,6 +490,26 @@
     }
 
     # File operations
+    {
+      key = "<C-b>";
+      mode = "n";
+      action = "<cmd>Oil<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Open file browser";
+      };
+    }
+    {
+      key = "<leader>bd";
+      mode = "n";
+      action = "<cmd>bdelete<CR>";
+      options = {
+        silent = true;
+        noremap = true;
+        desc = "Delete current buffer";
+      };
+    }
     {
       key = "<C-q>";
       mode = "n";
@@ -393,9 +593,9 @@
       };
     }
 
-    # Text manipulation
+    # Text manipulation (Alt-based biar K/J standar tetap bebas: K hover, J join)
     {
-      key = "<J>";
+      key = "<A-j>";
       mode = "n";
       action = ":m .+1<CR>";
       options = {
@@ -405,7 +605,7 @@
       };
     }
     {
-      key = "<K>";
+      key = "<A-k>";
       mode = "n";
       action = ":m .-2<CR>";
       options = {
@@ -519,87 +719,8 @@
       };
     }
 
-    # Obsidian keymaps
-    {
-      key = "<leader>oc";
-      mode = "n";
-      action = "<cmd>lua require('obsidian').util.toggle_checkbox()<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Obsidian toggle checkbox";
-      };
-    }
-    {
-      key = "<leader>ot";
-      mode = "n";
-      action = "<cmd>ObsidianTemplate<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Insert Obsidian template";
-      };
-    }
-    {
-      key = "<leader>oo";
-      mode = "n";
-      action = "<cmd>ObsidianOpen<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Open in Obsidian App";
-      };
-    }
-    {
-      key = "<leader>ob";
-      mode = "n";
-      action = "<cmd>ObsidianBacklinks<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Show Obsidian Backlinks";
-      };
-    }
-    {
-      key = "<leader>ol";
-      mode = "n";
-      action = "<cmd>ObsidianLinks<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Show Obsidian Links";
-      };
-    }
-    {
-      key = "<leader>on";
-      mode = "n";
-      action = "<cmd>ObsidianNew<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Create New Note";
-      };
-    }
-    {
-      key = "<leader>os";
-      mode = "n";
-      action = "<cmd>ObsidianSearch<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Search Note";
-      };
-    }
-    {
-      key = "<leader>oq";
-      mode = "n";
-      action = "<cmd>ObsidianQuickSwitch<CR>";
-      options = {
-        silent = true;
-        noremap = true;
-        desc = "Quick Switch";
-      };
-    }
+    # NOTE: keymap Obsidian dibuang — plugin obsidian-nvim belum di-enable
+    # dan ~/Documents/obsidian belum ada. Pasang plugin + workspace dulu kalau mau.
 
     # Additional utility keymaps
     {
