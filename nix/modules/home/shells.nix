@@ -17,7 +17,7 @@ let
     ngd = "nix-collect-garbage -d";
     nxbw = "sudo nixos-rebuild switch --flake .#wsl-arifinoid";
     nxb = "sudo nixos-rebuild switch --flake .#arifinoid";
-    nfmt = "find . -type f -name '*.nix' -print0 | xargs -0 -n1 -P4 -I{} nix run nixpkgs#nixfmt-rfc-style -- nixfmt -w 100 {}";
+    nfmt = "nix fmt";
 
     # node related
     ys = "yarn start";
