@@ -30,7 +30,6 @@
 
   inputs = {
     nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs.follows = "nixpkgs-stable";
 
     rust-overlay.url = "github:oxalica/rust-overlay";
@@ -42,20 +41,12 @@
     # pre-commit
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
 
-    # nix darwin
-    nix-darwin.url = "github:LnL7/nix-darwin/master";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-
     # nixos wsl
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
     # home manager
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    # development env
-    devenv.url = "github:cachix/devenv";
-    devenv.inputs.nixpkgs.follows = "nixpkgs";
 
     # Secret Ops
     sops.url = "github:Mic92/sops-nix";
