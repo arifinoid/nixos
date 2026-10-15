@@ -1,6 +1,4 @@
 {
-  pkgs,
-  lib,
   icons,
   helpers,
   ...
@@ -12,37 +10,13 @@ in
 rec {
   autoCmd = [
     {
-      # Disable cmp in neorepl
-      event = [ "FileType" ];
-      pattern = "neorepl";
-      callback.__raw = helpers.mkLuaFun (readLua ./ai.lua);
-    }
-    {
       # Define missing Avante sign to avoid "Unknown sign" error
       event = [ "VimEnter" ];
       callback.__raw = helpers.mkLuaFun (readLua ./avante_sign.lua);
     }
   ];
 
-  extraPlugins = [
-    pkgs.vimPlugins.claude-code-nvim
-  ];
-
   plugins = {
-    claude-code = {
-      enable = false;
-      settings.window = {
-        position = "rightbelow vsplit";
-        split_ratio = 0.45;
-      };
-      lazyLoad.enable = true;
-      lazyLoad.settings.cmd = [
-        "ClaudeCode"
-        "ClaudeCodeContinue"
-        "ClaudeCodeResume"
-        "ClaudeCodeVerbose"
-      ];
-    };
     avante = {
       enable = true;
       lazyLoad.enable = true;
@@ -58,7 +32,9 @@ rec {
         "AvanteToggle"
       ];
       settings = {
-        provider = "ollama";
+        # default: copilot (copilot-lua aktif = diasumsikan ada langganan).
+        # Ganti ke "groq"/"grok"/"claude" kalau itu yang dipakai.
+        provider = "copilot";
 
         diff = {
           autojump = true;
@@ -75,13 +51,6 @@ rec {
 
         hints = {
           enabled = true;
-        };
-
-        ollama = {
-          endpoint = "http://localhost:11434";
-          model = "qwen3-coder:480b-cloud";
-          temperature = 0;
-          max_tokens = 4096;
         };
 
         claude.api_key_name = "ANTHROPIC_API_KEY";
@@ -118,10 +87,7 @@ rec {
     copilot-lua.enable = true;
     copilot-lua.settings.suggestion.enabled = false;
     copilot-lua.settings.panel.enabled = false;
-
-    cmp.settings.sources = lib.optionals plugins.copilot-lua.enable [
-      { name = "copilot"; }
-    ];
+    # copilot disalurkan via blink-cmp-copilot (lihat lsp.nix), bukan cmp
 
     which-key.settings.spec = [
       {
@@ -175,10 +141,10 @@ rec {
         desc = "Provider: DeepSeek";
       }
       {
-        __unkeyed-1 = "<leader>cpl";
-        __unkeyed-2 = "<cmd>AvanteSwitchProvider ollama<cr>";
+        __unkeyed-1 = "<leader>cpc";
+        __unkeyed-2 = "<cmd>AvanteSwitchProvider copilot<cr>";
         icon = icons.robotFace;
-        desc = "Provider: Ollama";
+        desc = "Provider: Copilot";
       }
     ];
   };

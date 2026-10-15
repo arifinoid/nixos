@@ -38,7 +38,11 @@ in
       enable = true;
       lazyLoad = {
         enable = true;
-        settings.event = "VimEnter";
+        # load pas command dipanggil (fw/fhh), bukan tiap startup
+        settings.cmd = [
+          "HopWord"
+          "HopPattern"
+        ];
       };
     };
 
@@ -110,7 +114,7 @@ in
         icon = icons.git;
       }
       {
-        __unkeyed-1 = "gc";
+        __unkeyed-1 = "gs";
         __unkeyed-2 = "<cmd>Telescope git_status<cr>";
         desc = "Telescope git status";
         icon = icons.git;
@@ -131,9 +135,9 @@ in
       # }
 
       {
-        __unkeyed-1 = "<c-w>";
-        __unkeyed-2 = "<cmd>BufferLinePickClose<cr>";
-        desc = "Close current buffer";
+        __unkeyed-1 = "<leader>bd";
+        __unkeyed-2 = "<cmd>bdelete<cr>";
+        desc = "Delete current buffer";
         icon = icons.close;
       }
       {
@@ -193,7 +197,7 @@ in
       }
       {
         __unkeyed-1 = "<c-0>";
-        __unkeyed-2 = "<cmd>BufferLast<cr>";
+        __unkeyed-2 = "<cmd>b$<cr>";
         desc = "Go to last buffer";
       }
 
@@ -266,13 +270,13 @@ in
       {
         __unkeyed-1 = "<left>";
         __unkeyed-2.__raw = resize.left;
-        desc = "resize window right";
+        desc = "decrease window width";
       }
 
       {
         __unkeyed-1 = "<right>";
         __unkeyed-2.__raw = resize.right;
-        desc = "resize window left";
+        desc = "increase window width";
       }
 
     ];

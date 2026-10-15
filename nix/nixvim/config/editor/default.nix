@@ -109,6 +109,9 @@ in
     wakatime.enable = true;
     wakatime.autoLoad = true;
 
+    # backend untuk <leader>v MarkdownPreviewToggle di keys.nix
+    markdown-preview.enable = true;
+
     presence-nvim = { };
 
     colorizer = {
@@ -261,76 +264,41 @@ in
             pkgs.vimPlugins.nvim-treesitter.builtGrammars.${x} or pkgs.tree-sitter-grammars."tree-sitter-${x}"
           )
           [
-            # ┌────────────────────────────────────┐
-            # │ move to ignoreInstall for disabled │
-            # └────────────────────────────────────┘
-            "asm"
+            # NOTE: daftar dipangkas ke bahasa yang dipakai (dulu ~70).
+            # Tambah lagi kalau butuh — nama invalid ketahuan pas eval.
             "bash"
             "c"
+            "cpp"
             "cmake"
             "comment"
             "css"
-            "dhall"
             "diff"
             "dockerfile"
-            "dot"
             "fish"
-            "git_config"
-            "git_rebase"
-            "gitattributes"
             "gitcommit"
-            "gitignore"
             "go"
             "gomod"
-            "gosum"
             "gotmpl"
-            "gpg"
-            "graphql"
-            "haskell"
-            "haskell_persistent"
             "hcl"
-            "helm"
             "html"
-            "http"
+            "java"
             "javascript"
-            "jq"
             "jsdoc"
             "json"
-            "latex"
+            "jsonc"
             "lua"
-            "luadoc"
-            "luap"
-            "luau"
-            "make"
             "markdown"
             "markdown_inline"
-            "mermaid"
             "nix"
-            "norg"
-            "norg-meta"
-            "ocaml"
-            "ocaml_interface"
-            "ocamllex"
-            "passwd"
-            "po"
-            "proto"
-            "pymanifest"
             "python"
             "query"
             "regex"
             "rust"
-            "rescript"
             "sql"
-            "ssh_config"
-            "templ"
             "terraform"
-            "textproto"
-            "tmux"
-            "todotxt"
             "toml"
             "tsx"
             "typescript"
-            "vhs"
             "vim"
             "vimdoc"
             "xml"
@@ -376,7 +344,8 @@ in
       settings = {
         lsp = {
           override = {
-            "cmp.entry.get_documentation" = true;
+            # blink.cmp punya dokumentasi sendiri, jangan pakai override cmp
+            "cmp.entry.get_documentation" = false;
             "vim.lsp.util.convert_input_to_markdown_lines" = true;
             "vim.lsp.util.stylize_markdown" = true;
           };
