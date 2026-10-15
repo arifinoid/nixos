@@ -101,48 +101,49 @@
   ];
 
   extraConfigLua = ''
-    -- nvim-jdtls attach per-project (ganti lsp.servers.jdtls yang di-disable).
-    -- Workspace unik per project di ~/.cache, bukan /tmp shared.
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = "java",
-      callback = function()
-        local jdtls = require("jdtls")
-        local root = require("jdtls.setup").find_root(
-          { ".git", "mvnw", "gradlew", "pom.xml", "build.gradle", "settings.gradle" }
-        ) or vim.fn.getcwd()
-        local project = vim.fn.fnamemodify(root, ":p:h:t")
-        local home = os.getenv("HOME")
-        jdtls.start_or_attach({
-          cmd = {
-            "${pkgs.jdt-language-server}/bin/jdtls",
-            "-configuration",
-            home .. "/.cache/jdtls/config",
-            "-data",
-            home .. "/.cache/jdtls/workspace/" .. project,
-          },
-          root_dir = root,
-          capabilities = require("blink-cmp").get_lsp_capabilities(),
-        })
-        pcall(require("jdtls.dap").setup_dap_main_class_configs)
-      end,
-    })
-
-            -- Java specific settings
-            vim.api.nvim_create_autocmd("FileType", {
-              pattern = "java",
-              callback = function()
-                vim.opt_local.shiftwidth = 4
-                vim.opt_local.tabstop = 4
-                vim.opt_local.expandtab = true
-              end,
-            })
     
-            -- Spring Boot: jalankan/debug via DAP (pilih main class)
-            vim.api.nvim_create_autocmd("BufRead", {
-              pattern = "*application*.properties",
-              callback = function()
-                vim.keymap.set("n", "<leader>sp", "<cmd>lua require('jdtls.dap').setup_dap_main_class_configs(); require('dap').continue()<CR>", { desc = "Spring Boot Run (DAP)", buffer = true })
-              end,
+        -- nvim-jdtls attach per-project (ganti lsp.servers.jdtls yang di-disable).
+        -- Workspace unik per project di ~/.cache, bukan /tmp shared.
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = "java",
+          callback = function()
+            local jdtls = require("jdtls")
+            local root = require("jdtls.setup").find_root(
+              { ".git", "mvnw", "gradlew", "pom.xml", "build.gradle", "settings.gradle" }
+            ) or vim.fn.getcwd()
+            local project = vim.fn.fnamemodify(root, ":p:h:t")
+            local home = os.getenv("HOME")
+            jdtls.start_or_attach({
+              cmd = {
+                "${pkgs.jdt-language-server}/bin/jdtls",
+                "-configuration",
+                home .. "/.cache/jdtls/config",
+                "-data",
+                home .. "/.cache/jdtls/workspace/" .. project,
+              },
+              root_dir = root,
+              capabilities = require("blink-cmp").get_lsp_capabilities(),
             })
+            pcall(require("jdtls.dap").setup_dap_main_class_configs)
+          end,
+        })
+    
+                -- Java specific settings
+                vim.api.nvim_create_autocmd("FileType", {
+                  pattern = "java",
+                  callback = function()
+                    vim.opt_local.shiftwidth = 4
+                    vim.opt_local.tabstop = 4
+                    vim.opt_local.expandtab = true
+                  end,
+                })
+        
+                -- Spring Boot: jalankan/debug via DAP (pilih main class)
+                vim.api.nvim_create_autocmd("BufRead", {
+                  pattern = "*application*.properties",
+                  callback = function()
+                    vim.keymap.set("n", "<leader>sp", "<cmd>lua require('jdtls.dap').setup_dap_main_class_configs(); require('dap').continue()<CR>", { desc = "Spring Boot Run (DAP)", buffer = true })
+                  end,
+                })
   '';
 }
