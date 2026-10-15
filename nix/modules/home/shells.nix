@@ -54,14 +54,14 @@ let
     gcan = "git commit --amend --no-edit";
     gcano = "git commit --amend --no-edit --no-verify";
     gcl = "git clone";
-    gcm = "git checkout master";
+    gcm = "git checkout main";
     gs = "git diff";
     gf = "git fetch";
     gfp = "git fetch --prune-tags --prune";
     ggpo = "git push origin";
     gm = "git merge";
     gpo = "git pull origin";
-    gpom = "git pull origin master";
+    gpom = "git pull origin main";
     gr = "git restore";
     grv = "git remote -v";
     gst = "git status";
@@ -99,12 +99,6 @@ in
   home = with pkgs; {
     shellAliases = shellAliases;
     sessionPath = [ "$HOME/.yarn/bin" ];
-    packages = with fishPlugins; [
-      pay-respects # the fuck replacement
-      foreign-env
-      forgit # https://github.com/wfxr/forgit
-      pisces # Paired symbols in the command line
-    ];
   };
 
   programs = {
@@ -125,7 +119,27 @@ in
           end
         end
       '';
-      plugins = [ ];
+      plugins = with pkgs.fishPlugins; [
+        # dipindah dari home.packages: plugin fish HARUS lewat sini biar ke-source.
+        # (sebelumnya cuma ke-install; forgit/pisces/fenv ga pernah load,
+        #  akibatnya hm-session-vars ga ke-source di fish)
+        {
+          name = "foreign-env";
+          src = foreign-env;
+        }
+        {
+          name = "forgit"; # https://github.com/wfxr/forgit
+          src = forgit;
+        }
+        {
+          name = "pisces"; # Paired symbols in the command line
+          src = pisces;
+        }
+        {
+          name = "pay-respects"; # the fuck replacement
+          src = pay-respects;
+        }
+      ];
       functions = {
         envsource = ''
 
@@ -176,6 +190,11 @@ in
           fenv source '/nix/var/nix/profiles/default/etc/profile.d/nix.sh'
         end
 
+        # pay-respects: alias koreksi command (default: fuck)
+        if type -q pay-respects
+          pay-respects fish --alias fuck | source
+        end
+
         if status is-interactive
         and not set -q HERDR_PANE_ID
           exec herdr
@@ -193,8 +212,8 @@ in
         L = "| less";
       };
       initContent = ''
-        source ${pkgs.spaceship-prompt}/lib/spaceship-prompt/spaceship.zsh
-
+        # NOTE: spaceship-prompt SENGAJA tidak dipakai — starship sudah aktif
+        # (programs.starship.enable). Dua-duanya on = prompt dobel/broken.
         if [[ -o interactive && -z "$HERDR_PANE_ID" ]]; then
           exec herdr
         fi
