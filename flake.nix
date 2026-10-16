@@ -44,9 +44,9 @@
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Secret Ops
+    # Secret Ops: SENGAJA tidak follows — butuh nixpkgs bawaannya sendiri
+    # (unstable) karena helper Go-nya butuh toolchain >= 1.26.
     sops.url = "github:Mic92/sops-nix";
-    sops.inputs.nixpkgs.follows = "nixpkgs";
 
     # Ez
     ez-configs.url = "github:ehllie/ez-configs";
