@@ -58,6 +58,11 @@ in
         runtimeInputs = [ bun ];
         text = ''exec bunx --bun --package omo-ai@latest omo "$@"'';
       })
+      (writeShellApplication {
+        name = "rea";
+        runtimeInputs = [ nodejs ];
+        text = ''exec npx --yes rea-agents@latest "$@"'';
+      })
       bun
       cmake
       colima
