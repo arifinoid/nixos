@@ -77,7 +77,9 @@ in
       jq
       k9s
       lua5_4_compat
-      marksman
+      # NOTE: marksman SENGAJA tidak di sini — paket stable-nya butuh dotnet
+      # stage0 yang broken di nixpkgs rev ini (gagal build). Server LSP-nya
+      # tetap jalan dari closure nvim (unstable), jadi fungsionalitas utuh.
       meson
       minikube
       nixfmt-classic

@@ -112,7 +112,7 @@ in
     # backend untuk <leader>v MarkdownPreviewToggle di keys.nix
     markdown-preview.enable = true;
 
-    presence-nvim = { };
+    presence = { };
 
     colorizer = {
       enable = true;
@@ -285,7 +285,6 @@ in
             "javascript"
             "jsdoc"
             "json"
-            "jsonc"
             "lua"
             "markdown"
             "markdown_inline"

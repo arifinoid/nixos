@@ -40,6 +40,11 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  # lima via colima: versi ini ditandai insecure di nixpkgs baru.
+  # Hapus baris ini kalau colima sudah pindah ke lima yang fixed.
+  nixpkgs.config.permittedInsecurePackages = [
+    "lima-1.0.7"
+  ];
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
   ];
@@ -63,6 +68,10 @@
   sops = {
     defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
+    # Helper dari paket bawaan sops-nix (dibangun dengan nixpkgs-nya
+    # sendiri = unstable, Go-nya cukup baru). Default modul ini build dari
+    # source + toolchain stable (Go 1.24) dan GAGAL (butuh >= 1.26).
+    package = inputs.sops.packages.${pkgs.stdenv.hostPlatform.system}.sops-install-secrets;
     secrets = {
       llmkita_api_key = {
         owner = "arifinoid";

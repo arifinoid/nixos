@@ -192,3 +192,4 @@ secrets/*.env
 .agents/
 .claude/
 skills-lock.json
+opencode-session.txt

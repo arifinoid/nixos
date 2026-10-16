@@ -1,7 +1,5 @@
 {
-  inputs,
   pkgs,
-  system,
   ...
 }:
 {
@@ -64,7 +62,7 @@
       settings = {
         formatters = {
           nixfmt = {
-            command = "${inputs.nixpkgs.legacyPackages.${system}.nixfmt-rfc-style}/bin/nixfmt";
+            command = "${pkgs.nixfmt}/bin/nixfmt";
             args = [
               "-w"
               "100"
@@ -120,9 +118,9 @@
     };
 
     lspsaga.enable = true;
-    lspsaga.lightbulb.sign = false;
-    lspsaga.lightbulb.virtualText = true;
-    lspsaga.lightbulb.debounce = 40;
+    lspsaga.settings.lightbulb.sign = false;
+    lspsaga.settings.lightbulb.virtual_text = true;
+    lspsaga.settings.lightbulb.debounce = 40;
 
     luasnip.enable = true;
     luasnip.lazyLoad.settings.event = "InsertEnter";
