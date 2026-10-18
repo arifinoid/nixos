@@ -1,33 +1,46 @@
-# Tooling agent yang di-install ke ~/.local/bin (rtk, icm, claude, agy).
+# Tooling agent: rtk & icm (dari GitHub release, lihat packages/agent-cli.nix)
+# plus binary installer lain di ~/.local/bin (claude, agy).
 #
-# Installer masing-masing nulis binary ke ~/.local/bin, tapi PATH sistem NixOS
-# cuma nyertain profile nix — jadi rtk/icm cuma kelihatan setelah masuk
-# `nix develop` project (dulu: ai-optimizer). Modul ini bikin keduanya langsung
-# kepakai dari shell biasa, tanpa nix develop.
+# Installer rtk/icm nulis ke ~/.local/bin, tapi PATH sistem NixOS cuma nyertain
+# profile nix — makanya dulu harus `nix develop` dulu. Sekarang keduanya nix
+# package, jadi langsung kepakai dari shell biasa.
+#
+# Catatan: modul ini home-manager, jadi HANYA ngejalan di host yang pakai HM
+# (arifinoid + wsl-arifinoid). VPS tidak kena.
 {
   config,
+  inputs,
   lib,
+  pkgs,
   ...
 }:
 
+let
+  agentCli = pkgs.callPackage "${inputs.self}/nix/packages/agent-cli.nix" { };
+in
 {
-  # NOTE: prefix PATH lewat sessionVariables.PATH = mkForce "...:${...PATH}"
-  # bikin infinite recursion di module system, jadi lewat init shell.
+  home.packages = [
+    agentCli.rtk
+    agentCli.icm
+  ];
+
+  # ~/.local/bin (claude, agy, binary installer lain) di-APPEND, bukan di-prepend:
+  # rtk/icm harus resolve ke versi nix, bukan hasil installer lama di sana.
+  # NOTE: prefix PATH lewat sessionVariables.PATH = mkForce "...:${...PATH}" bikin
+  # infinite recursion di module system, makanya lewat init shell.
   programs.zsh.initContent = ''
-    # rtk, icm, claude, agy (installer di luar nix)
     typeset -U path
-    path=("$HOME/.local/bin" $path)
+    path=($path "$HOME/.local/bin")
     export PATH
   '';
 
   programs.fish.shellInit = ''
-    fish_add_path --path "$HOME/.local/bin" --prepend
+    fish_add_path --path "$HOME/.local/bin" --append
   '';
 
   home.sessionVariables = {
     # Sama dengan shellHook ai-optimizer, biar `pipx install` mendarat di
-    # ~/.local/bin (yang sekarang udah ada di PATH), bukan default
-    # ~/.local/pipx/bin yang gak ada di PATH sistem.
+    # ~/.local/bin, bukan default ~/.local/pipx/bin yang gak ada di PATH.
     PIPX_HOME = "${config.home.homeDirectory}/.local/pipx";
     PIPX_BIN_DIR = "${config.home.homeDirectory}/.local/bin";
   };
