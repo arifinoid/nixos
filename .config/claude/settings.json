@@ -1,10 +1,4 @@
 {
-  "env": {
-    "ANTHROPIC_BASE_URL": "https://api.llm-kita.com/api",
-    "ANTHROPIC_AUTH_TOKEN": "{file:/run/secrets/llmkita_api_key}",
-    "ANTHROPIC_MODEL": "auto",
-    "ANTHROPIC_SMALL_FAST_MODEL": "auto"
-  },
   "hooks": {
     "PreToolUse": [
       {

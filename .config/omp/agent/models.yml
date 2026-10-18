@@ -11,7 +11,6 @@ providers:
   llmkita:
     baseUrl: https://api.llm-kita.com/api/v1
     api: openai-completions
-    apiKey: "!cat /run/secrets/llmkita_api_key"
     models:
       - id: auto
         name: "auto (smart routing)"

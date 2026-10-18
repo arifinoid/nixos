@@ -5,8 +5,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "llm-kita",
       "options": {
-        "baseURL": "https://api.llm-kita.com/api/v1",
-        "apiKey": "{file:/run/secrets/llmkita_api_key}"
+        "baseURL": "https://api.llm-kita.com/api/v1"
       },
       "models": {
         "auto": {
