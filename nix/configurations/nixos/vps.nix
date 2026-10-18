@@ -81,6 +81,11 @@ in
     (pkgs.writeShellScriptBin "hermes" ''
       exec /root/.local/bin/hermes "$@"
     '')
+    # Dipakai hermes sebagai providers.9router.key_cmd. Harus absolute path:
+    # gateway systemd cuma set PATH ke bin hermes, jadi `cat` aja exit 127.
+    (pkgs.writeShellScriptBin "nine-router-key" ''
+      exec ${pkgs.coreutils}/bin/cat /root/.9router/hermes-api-key
+    '')
     (pkgs.writeShellScriptBin "rtk" ''
       exec /root/.local/bin/rtk "$@"
     '')
