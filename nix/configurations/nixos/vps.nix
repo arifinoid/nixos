@@ -168,8 +168,8 @@ in
     '';
   };
 
-  # Hermes baca key 9router dari env NINE_ROUTER_API_KEY; nilainya diambil
-  # dari file runtime /root/.9router/hermes-api-key (JANGAN ditaruh di repo).
+  # sourced oleh shell bash; zsh dapat env-nya lewat interactiveShellInit di
+  # bawah. Isinya cuma baca file yang di-render sops (lihat blok sops).
   environment.etc."profile.d/nine-router.sh".source = "${inputs.self}/nix/scripts/nine-router-env.sh";
 
   # SOPS di VPS: age key khusus VPS di /var/lib/sops-nix/key.txt (pub key-nya
@@ -215,7 +215,7 @@ in
       plugins = [ "git" ];
     };
     interactiveShellInit = ''
-      # Key API 9router buat hermes (dibaca dari file runtime, bukan repo).
+      # Key API 9router buat hermes, dibaca dari file hasil render sops.
       if [ -r /root/.9router/hermes-api-key ]; then
         export NINE_ROUTER_API_KEY="$(cat /root/.9router/hermes-api-key)"
       fi

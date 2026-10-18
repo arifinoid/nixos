@@ -1,12 +1,15 @@
-# Tooling agent: rtk & icm (dari GitHub release, lihat packages/agent-cli.nix)
-# plus binary installer lain di ~/.local/bin (claude, agy).
+# Tooling agent: rtk & icm (lihat packages/agent-cli.nix) plus binary installer
+# lain di ~/.local/bin (claude, agy).
 #
-# Installer rtk/icm nulis ke ~/.local/bin, tapi PATH sistem NixOS cuma nyertain
-# profile nix — makanya dulu harus `nix develop` dulu. Sekarang keduanya nix
-# package, jadi langsung kepakai dari shell biasa.
+# Installer rtk/icm dulu nulis ke ~/.local/bin, sementara PATH sistem NixOS cuma
+# nyertain profile nix — jadi toolnya cuma kelihatan setelah `nix develop`.
+# Sekarang keduanya nix package.
 #
-# Catatan: modul ini home-manager, jadi HANYA ngejalan di host yang pakai HM
-# (arifinoid + wsl-arifinoid). VPS tidak kena.
+# Plugin integrasinya (~/.config/opencode/plugins/{rtk,icm}.ts) tetap milik
+# installer: isinya memanggil `rtk rewrite` / `icm extract` saat opencode jalan.
+#
+# Modul home-manager, jadi hanya ngejalan di arifinoid + wsl-arifinoid; VPS tidak
+# punya HM sehingga tidak kena.
 {
   config,
   inputs,
@@ -24,10 +27,10 @@ in
     agentCli.icm
   ];
 
-  # ~/.local/bin (claude, agy, binary installer lain) di-APPEND, bukan di-prepend:
-  # rtk/icm harus resolve ke versi nix, bukan hasil installer lama di sana.
-  # NOTE: prefix PATH lewat sessionVariables.PATH = mkForce "...:${...PATH}" bikin
-  # infinite recursion di module system, makanya lewat init shell.
+  # ~/.local/bin di-APPEND, bukan di-prepend: rtk/icm harus resolve ke versi nix,
+  # bukan binary installer lama yang masih nangkring di sana.
+  # (Prefix PATH lewat sessionVariables.PATH = mkForce "...:${...PATH}" bikin
+  # infinite recursion di module system — itu sebabnya lewat init shell.)
   programs.zsh.initContent = ''
     typeset -U path
     path=($path "$HOME/.local/bin")
@@ -38,15 +41,12 @@ in
     fish_add_path --path "$HOME/.local/bin" --append
   '';
 
+  # Samakan dengan shellHook ai-optimizer: pipx install mendarat di ~/.local/bin.
   home.sessionVariables = {
-    # Sama dengan shellHook ai-optimizer, biar `pipx install` mendarat di
-    # ~/.local/bin, bukan default ~/.local/pipx/bin yang gak ada di PATH.
     PIPX_HOME = "${config.home.homeDirectory}/.local/pipx";
     PIPX_BIN_DIR = "${config.home.homeDirectory}/.local/bin";
   };
 
-  # rtk init menulis hook ke ~/.config/rtk; icm MCP ke ~/.config/opencode.
-  # Foldernya cukup ada; isinya tetap milik installer (bukan aset nix).
   home.activation.createToolDirs = lib.hm.dag.entryBefore [ "linkDotFiles" ] ''
     mkdir -p "$HOME/.config/rtk" "$HOME/.local/pipx"
   '';
