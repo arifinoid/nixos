@@ -1,11 +1,11 @@
+# Sumopod/Hermes (Tencent Cloud), disk virtio 40G.
+# ESP buat removable-EFI + EF02 buat legacy BIOS boot (hybrid).
+
 { inputs, ... }:
 
 {
   imports = [ inputs.disko.nixosModules.disko ];
 
-  # Sumopod/Hermes (Tencent Cloud), disk virtio 40G.
-  # GPT: ESP 512M (vfat) + BIOS boot 2M + ext4 root.
-  # ESP dibutuhkan untuk removable-EFI; EF02 untuk legacy BIOS boot.
   disko.devices = {
     disk.main = {
       device = "/dev/vda";

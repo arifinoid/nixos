@@ -27,11 +27,9 @@ in
   ];
 
   extraPlugins = with pkgs.vimPlugins; [
-    # theme
     catppuccin-nvim
     midnight-nvim
 
-    # extra
     unicode-vim
     lsp-progress-nvim
     oil-nvim
@@ -51,7 +49,6 @@ in
   userCommands.StatusLine.command.__raw = helpers.mkLuaFun (readLua ./lualine_hide.lua);
 
   plugins = rec {
-    # lazy load management
     lz-n = {
       enable = true;
       plugins = [
@@ -132,7 +129,6 @@ in
 
     rainbow-delimiters = {
       enable = true;
-      # highlight = indent-blankline.settings.scope.highlight;
     };
 
     indent-blankline = {

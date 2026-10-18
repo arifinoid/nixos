@@ -24,7 +24,7 @@ in
       unzip
     ]
     ++ lib.optionals (!isWSLHost) [
-      # X11 clipboard: tidak ada gunanya di WSL
+      # X11 clipboard: tidak berguna di WSL
       xclip
       xsel
       openssh
@@ -32,7 +32,7 @@ in
       blackbox-terminal
       gparted
       insomnia
-      mesa # OpenGL drivers for most systems
+      mesa
       intel-media-driver
       libdrm
       libglvnd

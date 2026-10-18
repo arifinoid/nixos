@@ -12,12 +12,4 @@
       use-agent = true;
     };
   };
-
-  # Environment variables for API keys
-  # Note: SOPS secrets are handled at the system level
-  # Use pass for home-manager environment variables
-  home.sessionVariables = {
-    # OPENAI_API_KEY will be available from the system-level SOPS configuration
-  };
-
 }
