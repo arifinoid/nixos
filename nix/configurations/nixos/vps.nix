@@ -1,4 +1,5 @@
 {
+  config,
   modulesPath,
   pkgs,
   ezModules,
@@ -14,6 +15,7 @@ let
 in
 {
   imports = [
+    inputs.sops.nixosModules.sops
     ezModules.vps-disko
     (modulesPath + "/profiles/qemu-guest.nix")
   ];
@@ -102,6 +104,9 @@ in
       ];
       Restart = "on-failure";
       RestartSec = 5;
+      # Next.js nge-spawn child "next-server"; tanpa ini unit bisa dianggap
+      # selesai sementara child masih megang port 20128 (EADDRINUSE).
+      ExitType = "cgroup";
     };
   };
 
@@ -136,6 +141,41 @@ in
   # Hermes baca key 9router dari env NINE_ROUTER_API_KEY; nilainya diambil
   # dari file runtime /root/.9router/hermes-api-key (JANGAN ditaruh di repo).
   environment.etc."profile.d/nine-router.sh".source = "${inputs.self}/nix/scripts/nine-router-env.sh";
+
+  # SOPS di VPS: age key khusus VPS di /var/lib/sops-nix/key.txt (pub key-nya
+  # terdaftar di .sops.yaml). File hasil decrypt ditulis ke /root (persistent,
+  # bukan /run/secrets yg tmpfs) supaya ~/.9router & gateway hermes punya env
+  # tetap setelah reboot.
+  sops = {
+    defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
+    age.keyFile = "/var/lib/sops-nix/key.txt";
+    package = inputs.sops.packages.${pkgs.stdenv.hostPlatform.system}.sops-install-secrets;
+    secrets.nine_router_api_key = {
+      owner = "root";
+      group = "root";
+      mode = "0400";
+    };
+    # NOTE: name harus RELATIF ("root/..." bukan "/root/..."). Kalo absolut,
+    # path default sops-nix jadi "/run/secrets/rendered//root/..." (double
+    # slash) -> helper gak cocokin sama filepath.Join, hasilnya symlink
+    # file rendered ke dirinya sendiri (ELOOP, activation "setupSecrets" gagal).
+    templates."/root/.9router/hermes-api-key" = {
+      name = "root/.9router/hermes-api-key";
+      path = "/root/.9router/hermes-api-key";
+      content = config.sops.placeholder.nine_router_api_key;
+      mode = "0400";
+      owner = "root";
+      group = "root";
+    };
+    templates."/root/.config/environment.d/99-nine-router.conf" = {
+      name = "root/.config/environment.d/99-nine-router.conf";
+      path = "/root/.config/environment.d/99-nine-router.conf";
+      content = "NINE_ROUTER_API_KEY=${config.sops.placeholder.nine_router_api_key}";
+      mode = "0400";
+      owner = "root";
+      group = "root";
+    };
+  };
 
   programs.zsh = {
     enable = true;

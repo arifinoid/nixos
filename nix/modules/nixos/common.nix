@@ -68,16 +68,6 @@
     # source + toolchain stable (Go 1.24) dan GAGAL (butuh >= 1.26).
     package = inputs.sops.packages.${pkgs.stdenv.hostPlatform.system}.sops-install-secrets;
     secrets = {
-      llmkita_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
-      ox_alpha_api_key = {
-        owner = "arifinoid";
-        group = "users";
-        mode = "0400";
-      };
       wakatime_api_key = {
         owner = "arifinoid";
         group = "users";
