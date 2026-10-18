@@ -31,6 +31,10 @@
     nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
     nixpkgs.follows = "nixpkgs-stable";
 
+    # Unstable: cuma buat package yang di 25.05 udah ketuaan
+    # (saat ini: claude-code & opencode). Lihat development.nix.
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
