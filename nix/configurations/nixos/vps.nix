@@ -1,15 +1,17 @@
-# VPS Sumopod/Hermes (Tencent Cloud, 43.173.26.172).
-# Deploy: nixos-rebuild switch --flake .#vps --target-host root@43.173.26.172
-# NOTE: single-user tanpa home-manager; sengaja TIDAK pakai ezModules.common
-# (sops/age key-nya belum disiapin buat VPS).
-
 {
   modulesPath,
   pkgs,
   ezModules,
+  inputs,
   ...
 }:
 
+let
+  npmCli = pkgs.callPackage "${inputs.self}/nix/packages/npm-cli.nix" { };
+  # CLI `9router` interaktif (menu web/TUI/tray) — tanpa TTY dia auto exit.
+  # Jadi systemd nge-run Next.js server-nya langsung.
+  nineRouterApp = "${npmCli."9router"}/lib/node_modules/9router/app";
+in
 {
   imports = [
     ezModules.vps-disko
@@ -18,8 +20,6 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  # Hybrid boot (firmware VPS-nya ternyata BIOS legacy; grub EFI-only
-  # gak pernah kebaca -> VPS unreachable pas install pertama).
   boot.loader.grub = {
     device = "/dev/vda";
     efiSupport = true;
@@ -28,8 +28,6 @@
   boot.loader.efi.canTouchEfiVariables = false;
   boot.kernelParams = [ "net.ifnames=0" ];
 
-  # Static networkd (DHCP cuma dipakai cloud-init). Data diambil dari
-  # Ubuntu sebelum install; IP publik 43.173.26.172 = DMAT ke internal ini.
   networking = {
     hostName = "vps";
     usePredictableInterfaceNames = false;
@@ -62,7 +60,6 @@
     };
   };
 
-  # CA bundle global — dipakai juga python/uv hermes-agent buat HTTPS
   environment.variables.SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
   environment.variables.SSL_CERT_DIR = "/etc/ssl/certs";
 
@@ -72,6 +69,12 @@
     btop
     neovim
     python3
+    nodejs
+
+    # Router LLM = backend 9router buat hermes. Config & API-key
+    # provider-nya di /root/.9router (diisi manual, tidak di repo).
+    npmCli."9router"
+
     # hermes-agent + rtk terpasang imperatif di /root/.local/bin
     (pkgs.writeShellScriptBin "hermes" ''
       exec /root/.local/bin/hermes "$@"
@@ -81,6 +84,59 @@
     '')
   ];
 
+  # 9router sebagai daemon; bind 127.0.0.1 (yang nembak cuma hermes di
+  # host yang sama, gak usah dibuka ke internet).
+  systemd.services.nine-router = {
+    description = "9router LLM gateway";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.nodejs_24}/bin/node --dns-result-order=ipv4first ${nineRouterApp}/custom-server.js";
+      WorkingDirectory = nineRouterApp;
+      Environment = [
+        "HOME=/root"
+        "PORT=20128"
+        "HOSTNAME=127.0.0.1"
+        "NODE_ENV=production"
+        "PATH=/run/current-system/sw/bin"
+      ];
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
+
+  # Alias & config git yang sama kayak laptop (home shell ngga ada di VPS).
+  # NOTE: alias git JANGAN diawali "git " — `git gb` jadi `git <value>`.
+  programs.git = {
+    enable = true;
+    config = {
+      user = {
+        name = "arifinoid";
+        email = "rohmadarifin007@gmail.com";
+      };
+      aliases = {
+        gpo = "pull origin";
+        ggpo = "push origin";
+        gcm = "checkout main";
+        gc = "checkout";
+        gr = "restore";
+        gst = "status";
+        gsta = "stash";
+        gstl = "stash list";
+        gstp = "stash pop";
+        gf = "fetch";
+        gb = "branch";
+        gm = "merge";
+        gpom = "pull origin main";
+        grv = "remote -v";
+      };
+    };
+  };
+
+  # Hermes baca key 9router dari env NINE_ROUTER_API_KEY; nilainya diambil
+  # dari file runtime /root/.9router/hermes-api-key (JANGAN ditaruh di repo).
+  environment.etc."profile.d/nine-router.sh".source = "${inputs.self}/nix/scripts/nine-router-env.sh";
+
   programs.zsh = {
     enable = true;
     ohMyZsh = {
@@ -89,6 +145,34 @@
       plugins = [ "git" ];
     };
     interactiveShellInit = ''
+      # Key API 9router buat hermes (dibaca dari file runtime, bukan repo).
+      if [ -r /root/.9router/hermes-api-key ]; then
+        export NINE_ROUTER_API_KEY="$(cat /root/.9router/hermes-api-key)"
+      fi
+
+      # Alias daily dari shell laptop (herdr/yarn/pnpm gak relevan di VPS).
+      alias vim='nvim'
+      alias cl='clear'
+
+      alias nb='nix build'
+      alias ndp='nix develop'
+      alias nf='nix flake'
+      alias nr='nix run'
+      alias ns='nix-shell'
+      alias nq='nix search'
+      alias ngd='nix-collect-garbage -d'
+      alias lenv='nix-env -p /nix/var/nix/profiles/system --list-generations'
+      alias senv='nix-env -p /nix/var/nix/profiles/system --switch-generation'
+      alias denv='nix-env -p /nix/var/nix/profiles/system --delete-generations'
+
+      alias gaa='git add .'
+      alias gca='git commit --amend'
+      alias gcan='git commit --amend --no-edit'
+      alias gcano='git commit --amend --no-edit --no-verify'
+      alias gcl='git clone'
+      alias gs='git diff'
+      alias gfp='git fetch --prune-tags --prune'
+
       alias nixgens='nix-env -p /nix/var/nix/profiles/system --list-generations'
 
       # Delete old generations + collect garbage (disk/memory kecil).
@@ -104,8 +188,6 @@
     '';
   };
 
-  # nix-ld: biar binary prebuilt non-nix (python/uv hermes-agent, rtk, dll.)
-  # bisa jalan di NixOS
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
@@ -117,8 +199,6 @@
 
   users.users.root = {
     shell = pkgs.zsh;
-    # Password root sengaja tidak ada di config (repo publik); login pakai
-    # SSH key. Password shadow sisa install dirotasi/hapus manual.
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILuZ1G10ccT9UXtLOVbrqjqSv+/oEdz3ofM7GicHPDG1 rohmadarifin007@gmail.com"
     ];
