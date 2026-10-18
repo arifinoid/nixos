@@ -38,6 +38,10 @@
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Partitioning (disks), dipakai host vps
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
     # utils
     flake-parts.url = "github:hercules-ci/flake-parts";
 
