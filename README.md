@@ -49,9 +49,10 @@ Pakai alias biar ringkas (lihat `nix/modules/home/shells.nix`):
 ```bash
 nxbw   # WSL   → sudo nixos-rebuild switch --flake .#wsl-arifinoid
 nxb    # native→ sudo nixos-rebuild switch --flake .#arifinoid
+# <vps-ip> = IP publik VPS lo (lihat shellAliases di nix/modules/home/shells.nix)
 nxbv   # VPS   → nixos-rebuild switch --flake ~/Documents/repos/nixos#vps \
-              #            --target-host root@43.173.26.172
-svps   # ssh ke VPS
+              #            --target-host root@<vps-ip>
+svps   # ssh root@<vps-ip>
 ```
 
 Tanpa alias:
@@ -59,7 +60,7 @@ Tanpa alias:
 ```bash
 sudo nixos-rebuild switch --flake .#arifinoid        # native
 sudo nixos-rebuild switch --flake .#wsl-arifinoid    # WSL
-nixos-rebuild switch --flake .#vps --target-host root@43.173.26.172
+nixos-rebuild switch --flake .#vps --target-host root@<vps-ip>
 ```
 
 ### Formatting & Lint
