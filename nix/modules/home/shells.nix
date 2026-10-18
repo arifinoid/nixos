@@ -17,6 +17,10 @@ let
     ngd = "nix-collect-garbage -d";
     nxbw = "sudo nixos-rebuild switch --flake .#wsl-arifinoid";
     nxb = "sudo nixos-rebuild switch --flake .#arifinoid";
+    # VPS: rebuild dari jalur absolut (gak depend cwd), remote-target (tanpa
+    # sudo), dan shortcut ssh-nya
+    nxbv = "nixos-rebuild switch --flake ~/Documents/repos/nixos#vps --target-host root@43.173.26.172";
+    svps = "ssh root@43.173.26.172";
     # NOTE: jangan `nix fmt` polos — formatter repo ini binary mentah yang
     # butuh daftar file eksplisit (tanpa arg dia baca stdin kosong lalu error).
     nfmt = "git ls-files '*.nix' | xargs -r nix run .#formatter.x86_64-linux --";
