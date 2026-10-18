@@ -1,6 +1,5 @@
 let
   icons = {
-    # suggest me with devicons from nerdfonts
     language.vim = "";
     language.neovim = "";
     language.org = "";

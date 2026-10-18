@@ -18,9 +18,7 @@
 let
   mkNpmCli =
     {
-      # Nama derivasi + meta.mainProgram (bin utama yang dipanggil).
       pname,
-      # Nama package npm; boleh scoped (contoh: @earendil-works/pi-coding-agent).
       pkg,
       version,
       tarballHash,
@@ -44,8 +42,8 @@ let
         nodejs
         ;
       dontNpmBuild = true; # tarball registry sudah berisi hasil build (dist)
-      # tau postinstall 9router/omo patch lokal doang (non-fatal, no-net);
-      # rea punya optionalDependency frida yang install script-nya butuh net.
+      # postinstall 9router/omo cuma patch lokal (non-fatal); rea punya
+      # optionalDependency frida yang install script-nya butuh net.
       strictDeps = true;
       allowSubstitutes = true;
       meta = {
@@ -62,7 +60,7 @@ in
     tarballHash = "sha256-rieF6HC4GoyOHURRCle17gv8npdGeawvqq2kqr7j08A=";
     npmDepsHash = "sha256-K3acNHvZ42YQbTe92qWVaYqAP63IPOBuQV9AYbQOqqU=";
     lock = ./locks/pi-coding-agent-lock.json;
-    npmInstallFlags = [ "--omit=dev" ]; # lock hanya berisi prod deps
+    npmInstallFlags = [ "--omit=dev" ];
   };
 
   "9router" = mkNpmCli {
@@ -81,7 +79,7 @@ in
     tarballHash = "sha256-3uUk6njf185gMRVRZh4r8KvdAlxjcVysXBw+LRKEAaE=";
     npmDepsHash = "sha256-qBFBCWBEAUoZt7h0ENzpbs4Ofm9Y/+lcD+eX6MBYF/8=";
     lock = ./locks/omo-ai-lock.json;
-    npmInstallFlags = [ "--omit=dev" ]; # lock hanya berisi prod deps
+    npmInstallFlags = [ "--omit=dev" ];
   };
 
   rea = mkNpmCli {
@@ -92,7 +90,7 @@ in
     npmDepsHash = "sha256-XPxwg4rEBKbqLkccOoZI5QNYLb0cYOcNoIxDqadO0OA=";
     lock = ./locks/rea-agents-lock.json;
     npmInstallFlags = [
-      "--omit=dev" # lock hanya berisi prod deps
+      "--omit=dev"
       "--ignore-scripts" # frida (optional dep) butuh net
     ];
     npmRebuildFlags = [ "--ignore-scripts" ];

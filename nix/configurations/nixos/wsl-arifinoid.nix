@@ -1,10 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
-# NixOS-WSL specific options are documented on the NixOS-WSL repository:
-# https://github.com/nix-community/NixOS-WSL
-
 {
   pkgs,
   inputs,
@@ -14,11 +7,9 @@
 
 {
   imports = [
-    # Include the generated hardware configuration
     ezModules.wsl-hardware
     ezModules.bun-overlay
     ezModules.common
-    # Include NixOS-WSL configuration
     inputs.nixos-wsl.nixosModules.wsl
   ];
 
@@ -30,14 +21,12 @@
   ];
 
   wsl.enable = true;
-  wsl.defaultUser = "arifinoid"; # Changed from "nixos" to "arifinoid"
+  wsl.defaultUser = "arifinoid";
 
-  # Host-specific user bits (base user in common.nix)
   users.users.arifinoid.extraGroups = [ "wheel" ];
 
   programs.starship.enable = true;
   programs.zoxide.enable = true;
-  # dynamically linked executables intended for generic linux environments out of the box. https://nix.dev/permalink/stub-ld
   programs.nix-ld.enable = true;
 
   services.openssh.enable = true;
@@ -54,10 +43,8 @@
 
   # SOPS + stateVersion + HM flags live in common.nix.
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim
     wget
     git
 
@@ -73,7 +60,6 @@
   fonts.packages = with pkgs; [
     sketchybar-app-font
 
-    # name of nerdfonts see {https://github.com/NixOS/nixpkgs/blob/nixos-24.11/pkgs/data/fonts/nerdfonts/shas.nix}
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
     nerd-fonts.hack

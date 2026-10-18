@@ -1,6 +1,4 @@
-# Shared base for all NixOS hosts (bare metal + WSL).
-# Host-specific stuff (desktop, bootloader, WSL, fonts, systemPackages)
-# stays in nix/configurations/nixos/<host>.nix.
+# Shared base untuk semua NixOS hosts (bare metal + WSL).
 {
   pkgs,
   inputs,
@@ -21,7 +19,6 @@
       "root"
       "arifinoid"
     ];
-    # cache.nixos.org tidak ditulis (sudah default NixOS)
     substituters = [
       "https://arifinoid-nix.cachix.org"
       "https://nix-community.cachix.org"
@@ -38,7 +35,6 @@
     options = "--delete-older-than 7d";
   };
 
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   # lima via colima: versi ini ditandai insecure di nixpkgs baru.
   # Hapus baris ini kalau colima sudah pindah ke lima yang fixed.
@@ -49,7 +45,6 @@
     inputs.rust-overlay.overlays.default
   ];
 
-  # Base user; hosts add their own extraGroups/packages.
   users.users.arifinoid = {
     isNormalUser = true;
     description = "Rohmad Arifin";
@@ -96,5 +91,5 @@
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
 
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "25.05";
 }

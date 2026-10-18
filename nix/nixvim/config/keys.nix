@@ -10,8 +10,6 @@
         desc = "Exit insert mode";
       };
     }
-
-    # Buffer management (bufferline.nvim)
     {
       key = "<S-Tab>";
       mode = "n";
@@ -143,7 +141,6 @@
       };
     }
 
-    # Window management
     {
       key = "<C-h>";
       mode = "n";
@@ -207,7 +204,6 @@
       };
     }
 
-    # LSP keymaps
     {
       key = "gd";
       mode = "n";
@@ -299,7 +295,6 @@
       };
     }
 
-    # Lspsaga (finder/peek/outline)
     {
       key = "gf";
       mode = "n";
@@ -331,7 +326,6 @@
       };
     }
 
-    # Trouble (diagnostics/symbols)
     {
       key = "<leader>xx";
       mode = "n";
@@ -363,7 +357,6 @@
       };
     }
 
-    # WTF (AI explain diagnostic, butuh API key)
     {
       key = "<leader>wd";
       mode = "n";
@@ -375,7 +368,6 @@
       };
     }
 
-    # Gitsigns (hunk navigation + actions)
     {
       key = "]h";
       mode = "n";
@@ -447,7 +439,6 @@
       };
     }
 
-    # Window resizing
     {
       key = "<Left>";
       mode = "n";
@@ -489,7 +480,6 @@
       };
     }
 
-    # File operations
     {
       key = "<C-b>";
       mode = "n";
@@ -561,7 +551,6 @@
       };
     }
 
-    # Git operations
     {
       key = "gb";
       mode = "n";
@@ -675,7 +664,6 @@
       };
     }
 
-    # Visual mode
     {
       key = "<";
       mode = "v";
@@ -697,7 +685,6 @@
       };
     }
 
-    # Visual block
     {
       key = "J";
       mode = "x";
@@ -722,7 +709,6 @@
     # NOTE: keymap Obsidian dibuang — plugin obsidian-nvim belum di-enable
     # dan ~/Documents/obsidian belum ada. Pasang plugin + workspace dulu kalau mau.
 
-    # Additional utility keymaps
     {
       key = "<leader>s";
       mode = "n";

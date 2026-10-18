@@ -127,13 +127,6 @@ in
         icon = icons.save;
       }
 
-      # {
-      #   __unkeyed-1 = "<c-S>";
-      #   __unkeyed-2 = "<cmd>wq<cr>";
-      #   desc = "Write current buffer and quit";
-      #   icon = icons.save;
-      # }
-
       {
         __unkeyed-1 = "<leader>bd";
         __unkeyed-2 = "<cmd>bdelete<cr>";
