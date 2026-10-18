@@ -7,6 +7,12 @@
 }:
 let
   isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
+  # Snapshot nixpkgs unstable: claude-code & opencode di 25.05 ketuaan
+  # (1.0.85 / 0.3.112 vs unstable 2.x / 1.x).
+  unstablePkgs = import inputs.nixpkgs-unstable {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
   rustToolchain = pkgs.rust-bin.stable.latest.default.override {
     extensions = [
       "rust-src"
@@ -34,11 +40,6 @@ in
     with pkgs;
     [
       (writeShellApplication {
-        name = "claude";
-        runtimeInputs = [ nodejs ];
-        text = ''exec npx --yes @anthropic-ai/claude-code "$@"'';
-      })
-      (writeShellApplication {
         name = "pi";
         runtimeInputs = [ nodejs ];
         text = ''exec npx --yes @earendil-works/pi-coding-agent "$@"'';
@@ -47,11 +48,6 @@ in
         name = "9router";
         runtimeInputs = [ nodejs ];
         text = ''exec npx --yes 9router "$@"'';
-      })
-      (writeShellApplication {
-        name = "opencode";
-        runtimeInputs = [ bun ];
-        text = ''exec bunx --bun --package opencode-ai@latest opencode "$@"'';
       })
       (writeShellApplication {
         name = "omo";
@@ -64,6 +60,7 @@ in
         text = ''exec npx --yes rea-agents@latest "$@"'';
       })
       bun
+      unstablePkgs.claude-code
       cmake
       colima
       docker
@@ -92,6 +89,7 @@ in
       nodePackages.typescript
       nodePackages.typescript-language-server
       # nodePackages.vercel
+      unstablePkgs.opencode
       openssl.dev
       pgsync
       pkg-config
