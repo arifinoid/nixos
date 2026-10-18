@@ -40,8 +40,9 @@ Before proceeding, ensure you have:
 
 1. **Copy the setup script** to your NixOS-WSL machine:
    ```bash
-   # From Windows, copy setup-wsl.sh to your WSL environment
-   cp /mnt/c/Users/rohmad/Documents/personal/nixos/setup-wsl.sh ~/
+   # From Windows, copy setup-wsl.sh ke environment WSL
+   # (ganti path di bawah dengan lokasi repo lo di Windows)
+   cp /mnt/c/Users/<user>/Documents/repos/nixos/setup-wsl.sh ~/
    ```
 
 2. **Make it executable and run**:

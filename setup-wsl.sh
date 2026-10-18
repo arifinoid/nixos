@@ -62,9 +62,12 @@ sudo mkdir -p /etc/nixos
 
 # Copy your flake configuration
 echo "📁 Setting up flake configuration..."
-if [ -d "/mnt/c/Users/rohmad/Documents/personal/nixos" ]; then
+# Ganti dengan lokasi repo lo di Windows (WSL expose drive C via /mnt/c).
+WIN_REPO="${WIN_REPO:-/mnt/c/Users/<user>/Documents/repos/nixos}"
+
+if [ -d "$WIN_REPO" ]; then
     echo "   Found configuration in Windows directory"
-    sudo cp -r "/mnt/c/Users/rohmad/Documents/personal/nixos" /etc/nixos/
+    sudo cp -r "$WIN_REPO" /etc/nixos/
     cd /etc/nixos/nixos
     
     # Copy the generated hardware configuration

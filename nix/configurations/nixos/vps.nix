@@ -168,8 +168,7 @@ in
     '';
   };
 
-  # sourced oleh shell bash; zsh dapat env-nya lewat interactiveShellInit di
-  # bawah. Isinya cuma baca file yang di-render sops (lihat blok sops).
+  # zsh dapat env yang sama lewat interactiveShellInit di bawah.
   environment.etc."profile.d/nine-router.sh".source = "${inputs.self}/nix/scripts/nine-router-env.sh";
 
   # SOPS di VPS: age key khusus VPS di /var/lib/sops-nix/key.txt (pub key-nya

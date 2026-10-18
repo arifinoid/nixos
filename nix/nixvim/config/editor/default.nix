@@ -209,29 +209,27 @@ in
       ];
       settings.sections.lualine_y = [
         {
-          __unkeyed-1.__raw =
-            # lua
-            ''
-              (function()
-                local ft = require('lualine.components.filetype'):extend()
-                local lsp_progress = require('lsp-progress')
+          __unkeyed-1.__raw = ''
+            (function()
+              local ft = require('lualine.components.filetype'):extend()
+              local lsp_progress = require('lsp-progress')
 
-                function ft:update_status()
-                  local data = ft.super.update_status(self)
-                  return lsp_progress.progress({
-                    max_size = 50,
-                    format = function(messages)
-                        if #messages > 0 then
-                            return table.concat(messages, " ")
-                        end
-                        return data
-                    end,
-                  })
-                end
+              function ft:update_status()
+                local data = ft.super.update_status(self)
+                return lsp_progress.progress({
+                  max_size = 50,
+                  format = function(messages)
+                      if #messages > 0 then
+                          return table.concat(messages, " ")
+                      end
+                      return data
+                  end,
+                })
+              end
 
-                return ft
-              end)()
-            '';
+              return ft
+            end)()
+          '';
         }
         "progress"
       ];
