@@ -41,6 +41,10 @@ let
 
     prd = "pnpm run dev";
 
+    # Toolchain pin ai-optimizer (nodejs/python dari nixpkgs-unstable-nya).
+    # Untuk rtk/icm aja udah global lewat ~/.local/bin —lihat agent-tools.nix.
+    aio = "cd ~/Documents/repos/ai-optimizer && nix develop -c \$SHELL";
+
     cl = "clear";
     cds = "find . -name '.DS_Store' -type f -delete";
     absen = "colima start && docker compose up";
