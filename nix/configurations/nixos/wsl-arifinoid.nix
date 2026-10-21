@@ -55,8 +55,6 @@
     inputs.self.packages.${pkgs.system}.nvim
   ];
 
-  services.ollama.enable = false;
-
   fonts.packages = with pkgs; [
     sketchybar-app-font
 

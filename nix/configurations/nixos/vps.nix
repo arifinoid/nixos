@@ -9,8 +9,6 @@
 
 let
   npmCli = pkgs.callPackage "${inputs.self}/nix/packages/npm-cli.nix" { };
-  # CLI `9router` interaktif (menu web/TUI/tray) — tanpa TTY dia auto exit.
-  # Jadi systemd nge-run Next.js server-nya langsung.
   nineRouterApp = "${npmCli."9router"}/lib/node_modules/9router/app";
 in
 {
@@ -67,22 +65,22 @@ in
 
   environment.systemPackages = with pkgs; [
     git
+    gh
     fastfetch
     btop
     neovim
     python3
     nodejs
 
-    # Router LLM = backend 9router buat hermes. Config & API-key
-    # provider-nya di /root/.9router (diisi manual, tidak di repo).
+    bat
+    eza
+    zsh-completions
+
     npmCli."9router"
 
-    # hermes-agent + rtk terpasang imperatif di /root/.local/bin
     (pkgs.writeShellScriptBin "hermes" ''
       exec /root/.local/bin/hermes "$@"
     '')
-    # Dipakai hermes sebagai providers.9router.key_cmd. Harus absolute path:
-    # gateway systemd cuma set PATH ke bin hermes, jadi `cat` aja exit 127.
     (pkgs.writeShellScriptBin "nine-router-key" ''
       exec ${pkgs.coreutils}/bin/cat /root/.9router/hermes-api-key
     '')
@@ -91,8 +89,6 @@ in
     '')
   ];
 
-  # 9router sebagai daemon; bind 127.0.0.1 (yang nembak cuma hermes di
-  # host yang sama, gak usah dibuka ke internet).
   systemd.services.nine-router = {
     description = "9router LLM gateway";
     after = [ "network.target" ];
@@ -109,14 +105,10 @@ in
       ];
       Restart = "on-failure";
       RestartSec = 5;
-      # Next.js nge-spawn child "next-server"; tanpa ini unit bisa dianggap
-      # selesai sementara child masih megang port 20128 (EADDRINUSE).
       ExitType = "cgroup";
     };
   };
 
-  # Alias & config git yang sama kayak laptop (home shell ngga ada di VPS).
-  # NOTE: alias git JANGAN diawali "git " — `git gb` jadi `git <value>`.
   programs.git = {
     enable = true;
     config = {
@@ -143,11 +135,7 @@ in
     };
   };
 
-  # GitHub over SSH. Private key TIDAK di repo & TIDAK di nix store —
-  # generate manual di VPS: ssh-keygen -t ed25519 -C "vps-43.173.26.172"
-  # (pub-nya terdaftar di GitHub account arifinoid, judul "vps Sumopod ...").
   programs.ssh = {
-    # publicKey = satu baris penuh "ssh-ed25519 AAAA..." (bukan base64 doang).
     knownHosts = {
       "github.com" = {
         publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
@@ -168,13 +156,8 @@ in
     '';
   };
 
-  # zsh dapat env yang sama lewat interactiveShellInit di bawah.
   environment.etc."profile.d/nine-router.sh".source = "${inputs.self}/nix/scripts/nine-router-env.sh";
 
-  # SOPS di VPS: age key khusus VPS di /var/lib/sops-nix/key.txt (pub key-nya
-  # terdaftar di .sops.yaml). File hasil decrypt ditulis ke /root (persistent,
-  # bukan /run/secrets yg tmpfs) supaya ~/.9router & gateway hermes punya env
-  # tetap setelah reboot.
   sops = {
     defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
@@ -184,10 +167,6 @@ in
       group = "root";
       mode = "0400";
     };
-    # NOTE: name harus RELATIF ("root/..." bukan "/root/..."). Kalo absolut,
-    # path default sops-nix jadi "/run/secrets/rendered//root/..." (double
-    # slash) -> helper gak cocokin sama filepath.Join, hasilnya symlink
-    # file rendered ke dirinya sendiri (ELOOP, activation "setupSecrets" gagal).
     templates."/root/.9router/hermes-api-key" = {
       name = "root/.9router/hermes-api-key";
       path = "/root/.9router/hermes-api-key";
@@ -208,6 +187,16 @@ in
 
   programs.zsh = {
     enable = true;
+    enableCompletion = true;
+    enableLsColors = true;
+    autosuggestions = {
+      enable = true;
+      strategy = [
+        "history"
+        "completion"
+      ];
+    };
+    syntaxHighlighting.enable = true;
     ohMyZsh = {
       enable = true;
       theme = "robbyrussell";
@@ -222,6 +211,13 @@ in
       # Alias daily dari shell laptop (herdr/yarn/pnpm gak relevan di VPS).
       alias vim='nvim'
       alias cl='clear'
+
+      # Warna & listing modern.
+      alias cat='bat'
+      alias ls='eza --group-directories-first'
+      alias ll='eza -l --group-directories-first'
+      alias la='eza -la --group-directories-first'
+      alias lt='eza --tree --level=2'
 
       alias nb='nix build'
       alias ndp='nix develop'
@@ -257,6 +253,16 @@ in
     '';
   };
 
+  programs.bat = {
+    enable = true;
+    settings = {
+      pager = "less -FR";
+      theme = "Dracula";
+    };
+  };
+
+  programs.zoxide.enable = true;
+
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
@@ -268,8 +274,6 @@ in
 
   users.users.root = {
     shell = pkgs.zsh;
-    # Laptop = key utama; Termius (HP) = key kedua, biar bisa di-revoke
-    # sendiri tanpa ganggu akses laptop.
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILuZ1G10ccT9UXtLOVbrqjqSv+/oEdz3ofM7GicHPDG1 rohmadarifin007@gmail.com"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB4SA84BWJ39p/H2/bwbXnDDj3DMGYFKq6UTfpJ23xaQ termius"
