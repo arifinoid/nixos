@@ -5,10 +5,21 @@
   ...
 }:
 
+let
+  unstablePkgs = import inputs.nixpkgs-unstable {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
+in
 {
   imports = [
     inputs.sops.nixosModules.sops
   ];
+
+  services.ollama = {
+    enable = true;
+    package = unstablePkgs.ollama;
+  };
 
   nix.settings = {
     experimental-features = [
@@ -59,13 +70,9 @@
     fish
   ];
 
-  # SOPS secrets management (key file must exist on disk)
   sops = {
     defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
-    # Helper dari paket bawaan sops-nix (dibangun dengan nixpkgs-nya
-    # sendiri = unstable, Go-nya cukup baru). Default modul ini build dari
-    # source + toolchain stable (Go 1.24) dan GAGAL (butuh >= 1.26).
     package = inputs.sops.packages.${pkgs.stdenv.hostPlatform.system}.sops-install-secrets;
     secrets = {
       wakatime_api_key = {
@@ -76,7 +83,6 @@
     };
   };
 
-  # Home Manager behavior (avoids clobber error on existing files)
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
