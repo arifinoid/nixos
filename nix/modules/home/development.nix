@@ -47,6 +47,10 @@ in
       npmCli."9router"
       npmCli.omo
       npmCli.rea
+      # ECC CLI (ecc-universal) — skill/agent-nya sendiri di-install sebagai
+      # plugin Claude Code (`ecc@ecc`); paket ini cuma perintah
+      # doctor/consult/repair/list-installed.
+      npmCli.ecc
       bun
       unstablePkgs.claude-code
       cmake
