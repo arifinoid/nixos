@@ -19,7 +19,22 @@
         },
         "glm-5.3": {
           "name": "GLM 5.3"
+        },
+        "9router": {
+          "name": "9router (nvidia/nvidia/nemotron-3-ultra-550b-a55b)"
         }
+      }
+    }
+  },
+  "9router": {
+    "npm": "@ai-sdk/openai-compatible",
+    "name": "9router-local",
+    "options": {
+      "baseURL": "http://localhost:20128/"
+    },
+    "models": {
+      "nvidia/nvidia/nemotron-3-ultra-550b-a55b": {
+        "name": "Nemotron 3 Ultra 550B"
       }
     }
   }
