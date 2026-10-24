@@ -57,7 +57,6 @@ config.window_frame = {
 	inactive_titlebar_bg = bg_custom,
 }
 
-
 config.tab_max_width = 16
 config.tab_bar_at_bottom = false
 config.disable_default_key_bindings = true
@@ -110,7 +109,7 @@ config.font = wezterm.font({
 config.freetype_load_flags = "NO_HINTING"
 config.front_end = "Software" -- WebGpu or OpenGL or Software
 -- set font size 16
-config.font_size = 12
+config.font_size = 10
 -- add set line height
 -- config.line_height = 1.1
 
@@ -263,7 +262,6 @@ config.mouse_bindings = {
 		action = wezterm.action.OpenLinkAtMouseCursor,
 	},
 }
-
 
 -------------------------------end custom tab ----------------------------------------------
 config.show_tab_index_in_tab_bar = false

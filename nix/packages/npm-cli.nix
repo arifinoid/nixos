@@ -74,28 +74,6 @@ in
     lock = ./locks/9router-lock.json;
   };
 
-  # ECC (affaan-m/ECC) — operator layer buat Claude Code & harness lain.
-  # CLI-nya dipakai buat doctor/consult/repair/uninstall; skill/agent-nya sendiri
-  # di-install sebagai plugin Claude Code (ecc@ecc), bukan lewat paket ini.
-  ecc = mkNpmCli {
-    pname = "ecc";
-    pkg = "ecc-universal";
-    version = "2.2.3";
-    tarballHash = "sha256-ZRKiTy6zcKn01JqZZuuwSaGRlIrq/il/Y0CjrL68bl0=";
-    npmDepsHash = "sha256-d8G66uSQhJYvCQQAKqO2PMJywqxmdC9OuNlTzMHOZqM=";
-    lock = ./locks/ecc-universal-lock.json;
-    npmInstallFlags = [
-      "--omit=dev"
-      "--ignore-scripts" # tarball registry sudah berisi hasil build
-    ];
-    npmRebuildFlags = [ "--ignore-scripts" ];
-    # Tarball ECC ke-publish tanpa scripts/build-opencode.js, jadi `prepack`
-    # (npm run build:opencode) gagal saat di-run di dalam sandbox nix.
-    # Output .opencode/ yang dipublish tetap ikut terbawa, jadi pack cukup
-    # tanpa jalankan script sama sekali.
-    npmPackFlags = [ "--ignore-scripts" ];
-  };
-
   omo = mkNpmCli {
     pname = "omo";
     pkg = "omo-ai";
