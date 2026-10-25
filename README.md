@@ -19,6 +19,8 @@ nixos/
 ├── flake.nix                    # flake-parts + ez-configs
 ├── .sops.yaml                   # Recipient age (laptop + VPS)
 ├── secrets/secret.yaml          # Encrypted secrets (SOPS)
+├── restore-sops-key.sh          # Restore existing age key (SOPS)
+├── setup-sops-key.sh            # Generate new age key (re-key only)
 ├── .config/                     # Dotfile sources (claude, opencode, omp)
 ├── nix/
 │   ├── configurations/
@@ -92,10 +94,68 @@ nix build .#arifinoid
 Semua secret pakai **SOPS + age** (pass sudah tidak dipakai).
 
 - **Recipients** (`.sops.yaml`): `arifinoid` (laptop) + `vps`. Keduanya bisa decrypt `secrets/secret.yaml`.
-- **Private key**: `/var/lib/sops-nix/key.txt` di tiap mesin (mode 0400). Jangan generate ulang setelah file dienkripsi.
+- **Private key**: `/var/lib/sops-nix/key.txt` di tiap mesin (mode 0400). Kalau hilang, restore dengan `./restore-sops-key.sh`; jangan generate ulang setelah file dienkripsi.
 - **Edit**: `sops secrets/secret.yaml`
 - **Rebuild**: `nxbw` (WSL), `nxb` (native), `nxbv` (VPS)
 - **Pakai**: NixOS decrypt ke `/run/secrets/<nama>` saat activation. Di VPS, `sops.templates` juga merender file persisten di `/root/...` (mis. key 9router) supaya tidak hilang saat reboot.
+
+### Restore key vs generate key baru
+
+`secrets/secret.yaml` sudah terenkripsi untuk recipient di `.sops.yaml`. Kalau
+`/var/lib/sops-nix/key.txt` hilang, **restore key yang lama** — jangan generate
+key baru, karena key baru tidak bisa membuka secret yang sudah ada.
+
+| Situasi | Pakai |
+|---|---|
+| Key masih ada di mesin lain / backup | `./restore-sops-key.sh` |
+| Mesin benar-benar baru & secret akan di-rekey | `bash setup-sops-key.sh`, lalu `sops updatekeys` dari mesin yang masih bisa decrypt |
+
+#### Restore dari mesin lain (mis. WSL)
+
+Di mesin sumber, ambil isi key:
+
+```bash
+sudo cat /var/lib/sops-nix/key.txt
+```
+
+Di mesin tujuan (dari root repo), pipe langsung tanpa menulis key ke file lain:
+
+```bash
+# dari file lokal
+./restore-sops-key.sh ~/key.txt
+
+# dari stdin / hasil paste (Ctrl-D untuk selesai)
+./restore-sops-key.sh -
+
+# langsung dari mesin lain lewat SSH
+ssh <user>@<host> 'sudo cat /var/lib/sops-nix/key.txt' | ./restore-sops-key.sh -
+```
+
+Script akan:
+
+1. mengambil baris `AGE-SECRET-KEY-1...` dari input,
+2. menampilkan public key dan mencocokkannya dengan recipient di `.sops.yaml`,
+3. mengetes decrypt `secrets/secret.yaml` sebelum memasang apa pun,
+4. memasang `/var/lib/sops-nix/key.txt` sebagai `root:root` mode `0400`.
+
+Key yang sudah ada tidak ditimpa tanpa `--force`; kalau ditimpa, versi lama
+disimpan sebagai `key.txt.bak.<timestamp>`. Kalau key yang dipasang sama persis,
+script keluar tanpa mengubah apa pun. Pakai `--skip-verify` hanya kalau `sops`
+tidak tersedia (tidak disarankan).
+
+Setelah restore, rebuild lalu cek:
+
+```bash
+nxb
+test -s /run/secrets/wakatime_api_key && echo "secret loaded"
+systemctl status home-manager-arifinoid.service --no-pager
+```
+
+Public key yang diharapkan untuk recipient `arifinoid`:
+`age1n05p386lf08e7e8h4q7065nv9enycz25hr8t4sjh6cx344l9z3ksrnnrjq`.
+
+Jangan pernah commit private key atau menaruhnya di repo — cukup di
+`/var/lib/sops-nix/key.txt`.
 
 ### Secret yang ada sekarang
 
@@ -219,7 +279,7 @@ otomatis aktif untuk host yang memakai home-manager.
 
 ### Common Issues
 
-1. **SOPS decryption errors**: cek `/var/lib/sops-nix/key.txt` ada & cocok recipient di `.sops.yaml`, kalau belum ada pakai `./setup-sops-key.sh`
+1. **SOPS decryption errors** (`cannot read keyfile '/var/lib/sops-nix/key.txt'`, `/run/secrets/<nama>` tidak ada): key belum terpasang atau tidak cocok dengan recipient di `.sops.yaml`. Restore key lama dengan `./restore-sops-key.sh <key-file|->` dan pastikan public key-nya `age1n05p386...`. Jangan pakai `setup-sops-key.sh` kecuali sedang re-key.
 2. **Plugin not found**: cek plugin-nya ada di nixpkgs unstable
 3. **Build failures**: cek flake inputs & dependencies
 
@@ -230,6 +290,10 @@ otomatis aktif untuk host yang memakai home-manager.
   Gejalanya: `path '...-source/nix/...nix' does not exist`.
 - **`nix fmt` tanpa argumen gagal** (`expecting expression`) — formatter-nya binary
   mentah. Pakai alias `nfmt` yang mengoper daftar file.
+- **Jangan generate key SOPS baru kalau `secrets/secret.yaml` sudah berisi
+  `ENC[...]`.** Key baru tidak bisa decrypt secret lama. Restore key yang cocok
+  dengan `./restore-sops-key.sh`, atau re-key lewat mesin yang masih bisa decrypt
+  (`sops updatekeys`).
 - **`sops.templates` name harus relatif** (`root/...`, bukan `/root/...`). Kalau
   absolut, path default sops-nix jadi `/run/secrets/rendered//root/...` (double
   slash) dan helpernya bikin symlink file ke dirinya sendiri (ELOOP) →
