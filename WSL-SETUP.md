@@ -71,6 +71,28 @@ Before proceeding, ensure you have:
    sudo nixos-rebuild switch --flake .#wsl-arifinoid
    ```
 
+### SOPS key (wajib sebelum switch)
+
+`secrets/secret.yaml` di repo sudah terenkripsi. Supaya activation tidak gagal
+dengan `cannot read keyfile '/var/lib/sops-nix/key.txt'`, restore key yang sama
+dari mesin/backup yang masih punya (laptop native, VPS, atau backup):
+
+```bash
+# di mesin sumber
+sudo cat /var/lib/sops-nix/key.txt
+
+# di WSL, dari root repo
+ssh <user>@<host> 'sudo cat /var/lib/sops-nix/key.txt' | ./restore-sops-key.sh -
+# atau paste manual, lalu Ctrl-D:
+./restore-sops-key.sh -
+```
+
+Script memverifikasi public key terhadap `.sops.yaml` dan mengetes decrypt
+`secrets/secret.yaml` sebelum memasang key ke `/var/lib/sops-nix/key.txt`
+(`root:root`, mode `0400`). Jangan jalankan `setup-sops-key.sh` kalau secret
+sudah terenkripsi — key baru tidak bisa membukanya. Detail: README → Secrets
+Management.
+
 ## Configuration Details
 
 ### What's Different from Desktop
@@ -103,6 +125,7 @@ After setup, you can use:
 1. **Flake not found**: Ensure you're in the correct directory (`/etc/nixos/nixos`)
 2. **Build failures**: Check that all dependencies are available in your flake inputs
 3. **Permission errors**: Ensure you're running commands with `sudo`
+4. **SOPS key missing**: `cannot read keyfile '/var/lib/sops-nix/key.txt'` → restore the existing key with `./restore-sops-key.sh` (see above), don't generate a new one
 
 ### Getting Help
 
