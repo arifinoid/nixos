@@ -13,8 +13,6 @@ in
     delta = {
       enable = true;
     };
-    # NOTE: alias git JANGAN diawali "git " — `git gb` me-expand jadi `git <value>`,
-    # jadi value "git branch" akan jadi `git git branch` (broken).
     aliases = {
       gpo = "pull origin";
       ggpo = "push origin";
@@ -31,8 +29,6 @@ in
       gpom = "pull origin main";
       grv = "remote -v";
     };
-    # NOTE: dulu 5 aturan condition, semuanya user yang sama — collapse jadi satu.
-    # Kalau nanti butuh split work/personal, tambah condition + user berbeda di sini.
     includes = [
       {
         condition = "gitdir:~/";

@@ -31,8 +31,6 @@ let
         inherit hash;
       };
       dontBuild = true;
-      # Tarball release ini isinya binary di root (nggak ada direktori), jadi
-      # unpacker bawaan nix gagal -> diextract manual.
       dontUnpack = true;
       nativeBuildInputs = [ gnutar ];
       installPhase = ''

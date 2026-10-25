@@ -35,7 +35,7 @@ let
         url = "https://registry.npmjs.org/${pkg}/-/${builtins.baseNameOf pkg}-${version}.tgz";
         hash = tarballHash;
       };
-      postPatch = ''cp ${lock} package-lock.json'';
+      postPatch = "cp ${lock} package-lock.json";
       inherit
         npmDepsHash
         npmInstallFlags
@@ -43,9 +43,7 @@ let
         npmPackFlags
         nodejs
         ;
-      dontNpmBuild = true; # tarball registry sudah berisi hasil build (dist)
-      # postinstall 9router/omo cuma patch lokal (non-fatal); rea punya
-      # optionalDependency frida yang install script-nya butuh net.
+      dontNpmBuild = true;
       strictDeps = true;
       allowSubstitutes = true;
       meta = {

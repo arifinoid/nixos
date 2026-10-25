@@ -7,16 +7,10 @@
 }:
 let
   isWSLHost = (osConfig.networking.hostName or "") == "wsl-arifinoid";
-  # Snapshot nixpkgs unstable: claude-code & opencode di 25.05 ketuaan
-  # (1.0.85 / 0.3.112 vs unstable 2.x / 1.x).
   unstablePkgs = import inputs.nixpkgs-unstable {
     system = pkgs.stdenv.hostPlatform.system;
     config.allowUnfree = true;
   };
-  # CLI npm tanpa nixpkgs paketnya (pin tarball registry; lihat file untuk
-  # cara bump versi).
-  # NOTE: pakai inputs.self — module file komple (store) bikin ../../ relative
-  # broken.
   npmCli = pkgs.callPackage "${inputs.self}/nix/packages/npm-cli.nix" { };
   rustToolchain = pkgs.rust-bin.stable.latest.default.override {
     extensions = [
@@ -32,8 +26,6 @@ in
   home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
   home.file.".omp/agent/models.yml".source = "${inputs.self}/.config/omp/agent/models.yml";
 
-  # ~/.wakatime.cfg digenerate dari sops secret tiap aktivasi (isi secret
-  # DILARANG masuk /nix/store, jadi ditulis dari /run/secrets pas aktivasi).
   home.activation.wakatimeCfg = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     WKEY=$(cat ${osConfig.sops.secrets.wakatime_api_key.path})
     umask 077
@@ -67,9 +59,6 @@ in
       jq
       k9s
       lua5_4_compat
-      # NOTE: marksman SENGAJA tidak di sini — paket stable-nya butuh dotnet
-      # stage0 yang broken di nixpkgs rev ini (gagal build). Server LSP-nya
-      # tetap jalan dari closure nvim (unstable), jadi fungsionalitas utuh.
       meson
       minikube
       nixfmt-classic
@@ -118,10 +107,6 @@ in
   programs.go.package = pkgs.go;
 
   programs.omp.enable = true;
-  # Upstream (18.3.5+) embed-native.ts requires the post-link version stamp on
-  # pi-natives addons, but omp's Nix build (nix/package.nix) never stamps them
-  # (their bazel/npm release pipeline does). Stamp the cargo-built addon before
-  # the embedding step. Idempotent - safe once upstream fixes their Nix build.
   programs.omp.package = inputs.omp.packages.${pkgs.system}.default.overrideAttrs (old: {
     buildPhase =
       lib.replaceStrings
