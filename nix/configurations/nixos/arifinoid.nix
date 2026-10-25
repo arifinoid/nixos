@@ -19,6 +19,26 @@
 
   networking.networkmanager.enable = true;
 
+  # `sudo nixos-rebuild` jalan sebagai root dan memakai LocalStore langsung
+  # (bukan nix-daemon yang LimitNOFILE-nya sudah 1M). Sesi sudo mewarisi soft
+  # limit 1024 dari shell login, sehingga build npm-deps (`npmDepsHash`) yang
+  # membuka ribuan file gagal dengan "Too many open files".
+  # Naikkan limit fd di host ini saja; WSL & VPS tidak ikut berubah.
+  security.pam.loginLimits = [
+    {
+      domain = "*";
+      type = "soft";
+      item = "nofile";
+      value = "524288";
+    }
+    {
+      domain = "*";
+      type = "hard";
+      item = "nofile";
+      value = "524288";
+    }
+  ];
+
   # SSH: selain akses remote, enable=true bikin sops-nix baru happy
   # (opsi openssh.generateHostKeys sudah dihapus upstream; short-circuit
   # hanya saat enable=true).
