@@ -15,6 +15,7 @@ in
       ack
       fastfetch
       ripgrep
+      btop
       trash-cli
       pass
       speedtest-cli

@@ -52,7 +52,7 @@
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Secret Ops: SENGAJA tidak follows — butuh nixpkgs bawaannya sendiri
+    # Secret Ops
     # (unstable) karena helper Go-nya butuh toolchain >= 1.26.
     sops.url = "github:Mic92/sops-nix";
 
@@ -62,11 +62,6 @@
     ez-configs.inputs.flake-parts.follows = "flake-parts";
 
     # Nixvim
-    # NOTE: nixvim main WAJIB nixpkgs yang module system-nya support
-    # `valueMeta` (fitur 2026). Stable kita ketuaan, jadi follows DICABUT:
-    # nixvim pakai nixos-unstable bawaannya, sistem tetap stable.
-    # Konsekuensi: pkgs di dalam config nvim = stable (di-inject manual
-    # di nix/nixvim/default.nix), tapi lib/schema = baru.
     nixvim = {
       url = "github:nix-community/nixvim";
     };

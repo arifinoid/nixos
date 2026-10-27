@@ -13,9 +13,6 @@
     inputs.nixos-wsl.nixosModules.wsl
   ];
 
-  # Build OpenSSH with GSSAPI support. Without it, `GSSAPIAuthentication`
-  # is an unknown option and ssh warns on every Lima/Colima generated
-  # ssh_config. (rust overlay comes from common.nix)
   nixpkgs.overlays = [
     (_final: prev: { openssh = prev.openssh_gssapi; })
   ];
@@ -34,7 +31,6 @@
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";
     WSL_INTEROP = "1";
-    # nvim = daily driver (nano tetap terinstall sebagai fallback darurat)
     EDITOR = "nvim";
     VISUAL = "nvim";
     PAGER = "less";

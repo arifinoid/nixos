@@ -283,24 +283,6 @@ otomatis aktif untuk host yang memakai home-manager.
 2. **Plugin not found**: cek plugin-nya ada di nixpkgs unstable
 3. **Build failures**: cek flake inputs & dependencies
 
-### Gotchas (yang sering kepeleset)
-
-- **File baru harus `git add` sebelum rebuild.** Flake 읽 dari git tree, jadi file
-  yang belum di-track nggak ikut—even kalau referenced via `${inputs.self}`.
-  Gejalanya: `path '...-source/nix/...nix' does not exist`.
-- **`nix fmt` tanpa argumen gagal** (`expecting expression`) — formatter-nya binary
-  mentah. Pakai alias `nfmt` yang mengoper daftar file.
-- **Jangan generate key SOPS baru kalau `secrets/secret.yaml` sudah berisi
-  `ENC[...]`.** Key baru tidak bisa decrypt secret lama. Restore key yang cocok
-  dengan `./restore-sops-key.sh`, atau re-key lewat mesin yang masih bisa decrypt
-  (`sops updatekeys`).
-- **`sops.templates` name harus relatif** (`root/...`, bukan `/root/...`). Kalau
-  absolut, path default sops-nix jadi `/run/secrets/rendered//root/...` (double
-  slash) dan helpernya bikin symlink file ke dirinya sendiri (ELOOP) →
-  activation gagal dengan `setupSecrets failed`.
-- **NixOS 25.05**: `programs.ssh.knownHosts` pakai `publicKey = "ssh-ed25519 AAAA..."`
-  (baris penuh), dan `programs.ssh.extraConfig` sudah jadi string freeform.
-
 ### Getting Help
 
 - Check NixOS manual: `nixos-help`

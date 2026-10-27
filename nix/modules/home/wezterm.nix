@@ -35,7 +35,5 @@ in
     ''
   );
 
-  # wezterm GUI gak guna di WSL (terminal ada di sisi Windows; config-nya
-  # dicopy ke sana via aktivasi di atas)
   home.packages = lib.mkIf (!isWSLHost) [ pkgs.wezterm ];
 }
