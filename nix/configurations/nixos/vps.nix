@@ -158,6 +158,16 @@ in
 
   environment.etc."profile.d/nine-router.sh".source = "${inputs.self}/nix/scripts/nine-router-env.sh";
 
+  # Hermes lives outside the closure (/root/.local/bin/hermes) and rewrites its
+  # own config at runtime — the /model picker writes back to it — so a read-only
+  # store symlink is not an option. Copy the tracked version over on every
+  # activation instead: writable for Hermes, but a deploy always lands on the
+  # config committed in nix/scripts/hermes-config.yaml.
+  system.activationScripts.hermes-config = ''
+    install -D -m 0600 -o root -g root \
+      ${inputs.self}/nix/scripts/hermes-config.yaml /root/.hermes/config.yaml
+  '';
+
   sops = {
     defaultSopsFile = "${inputs.self}/secrets/secret.yaml";
     age.keyFile = "/var/lib/sops-nix/key.txt";
