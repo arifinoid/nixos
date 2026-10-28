@@ -82,6 +82,16 @@ in
     npmInstallFlags = [ "--omit=dev" ];
   };
 
+  codebuddy = mkNpmCli {
+    pname = "codebuddy";
+    pkg = "@tencent-ai/codebuddy-code";
+    version = "2.177.0";
+    tarballHash = "sha256-Nl3bDjeryB222FAuTWNSOF0jJkxDAASUjrw6gsPjiP4=";
+    npmDepsHash = "sha256-TcQ8BXj56PKjEZF+9dMQ8DwMXDBoShyRUS8szFqCBkQ=";
+    lock = ./locks/codebuddy-code-lock.json;
+    npmInstallFlags = [ "--omit=dev" ];
+  };
+
   rea = mkNpmCli {
     pname = "rea";
     pkg = "rea-agents";
