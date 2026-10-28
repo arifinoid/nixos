@@ -9,7 +9,7 @@ This is my personal NixOS configuration using flakes, home-manager, and nixvim. 
 - 🏠 **Home Manager**: User environment and application configuration
 - 🎨 **NixVim**: Neovim configuration with AI integration
 - 🔐 **Secrets Management**: SOPS + age (multi-recipient: laptop & VPS)
-- 🤖 **Agent Tooling**: `rtk` & `icm` as Nix packages, Claude Code / OpenCode / omp wired declaratively
+- 🤖 **Agent Tooling**: `rtk` & `icm` as Nix packages, Claude Code / CodeBuddy / OpenCode / omp wired declaratively
 - 🖥️ **VPS Host**: `vps` config (9router gateway + hermes-agent, no home-manager)
 
 ## Structure
@@ -227,6 +227,9 @@ The configuration includes AI-powered Neovim features:
 - **Avante**: AI code assistant, provider default `copilot` (ubah di `ai/default.nix`
   kalau mau `claude`/`groq`/`grok`)
 - **Claude Code**: hook `rtk` + `icm` terpasang lewat `.config/claude/settings.json`
+- **CodeBuddy**: hook `rtk` + `icm` terpasang lewat `.config/codebuddy/settings.json`
+  (wrapper di `nix/modules/home/codebuddy.nix`, karena keduanya cuma punya integrasi
+  native buat Claude Code)
 
 ### Key Bindings
 - `<leader>ca`: Open AI Ask

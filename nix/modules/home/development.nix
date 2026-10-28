@@ -39,8 +39,10 @@ in
       npmCli."9router"
       npmCli.omo
       npmCli.rea
+      npmCli.codebuddy
       bun
       unstablePkgs.claude-code
+      bash-language-server
       cmake
       colima
       docker
@@ -59,6 +61,7 @@ in
       jq
       k9s
       lua5_4_compat
+      lua-language-server
       meson
       minikube
       nixfmt-classic
@@ -98,6 +101,8 @@ in
       zlib.dev
       typescript
       typescript-language-server
+      uv
+      yaml-language-server
       yarn
       zig
     ]
