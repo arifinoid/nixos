@@ -69,10 +69,15 @@ in
       serverName = "arifinoid.web.id";
       forceSSL = true;
       enableACME = true;
-      root = "/var/www/personal-web";
       locations."/" = {
-        tryFiles = "$uri $uri/ /index.html";
-        extraConfig = "index index.html;";
+        proxyPass = "http://127.0.0.1:3000";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
       };
     };
   };
@@ -95,10 +100,18 @@ in
   # Personal web disajikan langsung oleh Nginx (static export di out/).
   # PM2 tetap terpasang untuk kebutuhan lain.
   # Bind mount supaya Nginx (user nginx) bisa baca output build di /root/...
-  fileSystems."/var/www/personal-web" = {
-    device = "/root/Documents/personal-web/out";
-    fsType = "none";
-    options = [ "bind" "nofail" ];
+  # Serve personal web via Python http.server (root, port 3000) -- Nginx reverse-proxies.
+  systemd.services.personal-web = {
+    description = "Personal web (python http.server)";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      WorkingDirectory = "/root/Documents/personal-web/out";
+      ExecStart = "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
+      Restart = "always";
+      RestartSec = 3;
+    };
   };
 
   services.openssh = {
