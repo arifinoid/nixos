@@ -69,7 +69,7 @@ in
       serverName = "arifinoid.web.id";
       forceSSL = true;
       enableACME = true;
-      root = "/root/Documents/personal-web/out";
+      root = "/var/www/personal-web";
       locations."/" = {
         tryFiles = "$uri $uri.html $uri/ =404";
       };
@@ -89,6 +89,8 @@ in
   systemd.tmpfiles.rules = [
     "d /Documents/personal-web 0755 root root -"
     "d /root/Documents/personal-web 0755 root root -"
+    "d /var/www 0755 root root -"
+    "L+ /var/www/personal-web - - - - /root/Documents/personal-web/out"
   ];
 
   # Personal web disajikan langsung oleh Nginx (static export di out/).
