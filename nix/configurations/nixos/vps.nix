@@ -69,7 +69,7 @@ in
       serverName = "arifinoid.web.id";
       forceSSL = true;
       enableACME = true;
-      root = "/root/Documents/personal-web/out";
+      root = "/var/www/personal-web";
       locations."/" = {
         tryFiles = "$uri $uri/ /index.html";
         extraConfig = "index index.html;";
@@ -94,8 +94,12 @@ in
 
   # Personal web disajikan langsung oleh Nginx (static export di out/).
   # PM2 tetap terpasang untuk kebutuhan lain.
-  # Nginx worker jalan sebagai root agar bisa baca /root/Documents/personal-web.
-  services.nginx.user = "root";
+  # Bind mount supaya Nginx (user nginx) bisa baca output build di /root/...
+  fileSystems."/var/www/personal-web" = {
+    device = "/root/Documents/personal-web/out";
+    fsType = "none";
+    options = [ "bind" "nofail" ];
+  };
 
   services.openssh = {
     enable = true;
