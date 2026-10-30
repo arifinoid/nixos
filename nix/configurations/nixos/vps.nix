@@ -96,6 +96,8 @@ in
 
   # Personal web disajikan langsung oleh Nginx (static export di out/).
   # PM2 tetap terpasang untuk kebutuhan lain.
+  # Nginx butuh akses ke /root/Documents/personal-web, jadi ProtectHome dimatikan.
+  systemd.services.nginx.serviceConfig.ProtectHome = false;
 
   services.openssh = {
     enable = true;
