@@ -90,14 +90,12 @@ in
   systemd.tmpfiles.rules = [
     "d /Documents/personal-web 0755 root root -"
     "d /root/Documents/personal-web 0755 root root -"
-    "d /root 0711 root root -"
-    "d /root/Documents 0755 root root -"
   ];
 
   # Personal web disajikan langsung oleh Nginx (static export di out/).
   # PM2 tetap terpasang untuk kebutuhan lain.
-  # Nginx butuh akses ke /root/Documents/personal-web, jadi ProtectHome dimatikan.
-  systemd.services.nginx.serviceConfig.ProtectHome = false;
+  # Nginx worker jalan sebagai root agar bisa baca /root/Documents/personal-web.
+  services.nginx.user = "root";
 
   services.openssh = {
     enable = true;
