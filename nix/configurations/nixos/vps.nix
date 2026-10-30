@@ -49,7 +49,69 @@ in
         }
       ];
     };
-    firewall.allowedTCPPorts = [ 22 ];
+    firewall.allowedTCPPorts = [
+      22
+      80
+      443
+    ];
+  };
+
+  # Docker
+  virtualisation.docker.enable = true;
+
+  # Nginx + reverse proxy ke PM2 (personal web di 127.0.0.1:3000)
+  services.nginx = {
+    enable = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+    recommendedGzipSettings = true;
+    virtualHosts."arifinoid.web.id" = {
+      serverName = "arifinoid.web.id";
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:3000";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+    };
+  };
+
+  # Let's Encrypt via NixOS native ACME (pengganti certbot standalone)
+  security.acme = {
+    acceptTerms = true;
+    certs."arifinoid.web.id" = {
+      email = "rohmadarifin007@gmail.com";
+      domain = "arifinoid.web.id";
+    };
+  };
+
+  # Buat direktori web personal
+  systemd.tmpfiles.rules = [
+    "d /Documents/personal-web 0755 root root -"
+    "d /root/Documents/personal-web 0755 root root -"
+  ];
+
+  # Personal web disajikan langsung oleh Nginx (static export di out/).
+  # PM2 tetap terpasang untuk kebutuhan lain.
+  # Bind mount supaya Nginx (user nginx) bisa baca output build di /root/...
+  # Serve personal web via Python http.server (root, port 3000) -- Nginx reverse-proxies.
+  systemd.services.personal-web = {
+    description = "Personal web (python http.server)";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      WorkingDirectory = "/root/Documents/personal-web/out";
+      ExecStart = "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
+      Restart = "always";
+      RestartSec = 3;
+    };
   };
 
   services.openssh = {
@@ -71,6 +133,10 @@ in
     neovim
     python3
     nodejs
+    bun
+    pm2
+    certbot
+    nginx
 
     bat
     eza
