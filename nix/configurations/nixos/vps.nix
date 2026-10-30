@@ -103,11 +103,12 @@ in
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
+      Type = "simple";
       WorkingDirectory = "/root/Documents/personal-web";
-      ExecStart = "${pkgs.pm2}/bin/pm2 serve /root/Documents/personal-web/out 3000 --name personal-web --spa";
-      ExecStop = "${pkgs.pm2}/bin/pm2 delete personal-web";
+      Environment = [ "HOME=/root" "PM2_HOME=/root/.pm2" ];
+      ExecStart = "${pkgs.pm2}/bin/pm2 --no-daemon serve /root/Documents/personal-web/out 3000 --name personal-web --spa";
+      Restart = "on-failure";
+      RestartSec = 5;
     };
   };
 
