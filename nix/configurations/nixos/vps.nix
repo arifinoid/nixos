@@ -70,7 +70,6 @@ in
       forceSSL = true;
       enableACME = true;
       root = "/root/Documents/personal-web/out";
-      index = "index.html";
       locations."/" = {
         tryFiles = "$uri $uri.html $uri/ =404";
       };
