@@ -69,15 +69,10 @@ in
       serverName = "arifinoid.web.id";
       forceSSL = true;
       enableACME = true;
+      root = "/root/Documents/personal-web/out";
+      index = "index.html";
       locations."/" = {
-        proxyPass = "http://127.0.0.1:3000";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-        '';
+        tryFiles = "$uri $uri.html $uri/ =404";
       };
     };
   };
@@ -97,20 +92,8 @@ in
     "d /root/Documents/personal-web 0755 root root -"
   ];
 
-  # Jalankan personal web via PM2 saat boot (static export di out/)
-  systemd.services.personal-web = {
-    description = "Personal web via PM2 serve";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      WorkingDirectory = "/root/Documents/personal-web";
-      Environment = [ "HOME=/root" "PM2_HOME=/root/.pm2" ];
-      ExecStart = "${pkgs.pm2}/bin/pm2 --no-daemon serve /root/Documents/personal-web/out 3000 --name personal-web --spa";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-  };
+  # Personal web disajikan langsung oleh Nginx (static export di out/).
+  # PM2 tetap terpasang untuk kebutuhan lain.
 
   services.openssh = {
     enable = true;
