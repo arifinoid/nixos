@@ -23,6 +23,7 @@ in
   imports = [ inputs.omp.homeManagerModules.default ];
 
   xdg.configFile."opencode/opencode.json".source = "${inputs.self}/.config/opencode/opencode.json";
+  xdg.configFile."opencode/plugins".source = "${inputs.self}/.config/opencode/plugins";
   home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
   home.file.".omp/agent/models.yml".source = "${inputs.self}/.config/omp/agent/models.yml";
 
