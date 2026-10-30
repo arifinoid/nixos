@@ -71,7 +71,8 @@ in
       enableACME = true;
       root = "/var/www/personal-web";
       locations."/" = {
-        tryFiles = "$uri $uri.html $uri/ =404";
+        tryFiles = "$uri $uri/ /index.html";
+        extraConfig = "index index.html;";
       };
     };
   };
