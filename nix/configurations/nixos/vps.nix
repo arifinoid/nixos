@@ -94,7 +94,22 @@ in
   # Buat direktori web personal
   systemd.tmpfiles.rules = [
     "d /Documents/personal-web 0755 root root -"
+    "d /root/Documents/personal-web 0755 root root -"
   ];
+
+  # Jalankan personal web via PM2 saat boot (static export di out/)
+  systemd.services.personal-web = {
+    description = "Personal web via PM2 serve";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      WorkingDirectory = "/root/Documents/personal-web";
+      ExecStart = "${pkgs.pm2}/bin/pm2 serve /root/Documents/personal-web/out 3000 --name personal-web --spa";
+      ExecStop = "${pkgs.pm2}/bin/pm2 delete personal-web";
+    };
+  };
 
   services.openssh = {
     enable = true;
