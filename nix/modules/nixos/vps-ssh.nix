@@ -60,8 +60,6 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILuZ1G10ccT9UXtLOVbrqjqSv+/oEdz3ofM7GicHPDG1 rohmadarifin007@gmail.com"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB4SA84BWJ39p/H2/bwbXnDDj3DMGYFKq6UTfpJ23xaQ termius"
-      # Used by the personal-web deploy job in CI.
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDE0FoQckb8VMtn98pW0vvUegWm3DBqUZZU/GGbl2LhV github-actions-deploy"
     ];
   };
 
