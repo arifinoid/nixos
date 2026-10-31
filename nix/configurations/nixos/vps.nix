@@ -31,6 +31,19 @@
     }
   ];
 
+  # journald already holds 1.1 GB here and the default cap is 10% of /var.
+  services.journald.extraConfig = "SystemMaxUse=500M";
+
+  # Docker's default json-file driver has no size limit, so a long-lived deploy
+  # would slowly eat the disk. Cap it at 30 MB per container.
+  virtualisation.docker.daemon.settings = {
+    log-driver = "json-file";
+    log-opts = {
+      max-size = "10m";
+      max-file = "3";
+    };
+  };
+
   boot.loader.grub = {
     device = "/dev/vda";
     efiSupport = true;
