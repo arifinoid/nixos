@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   # Docker
   virtualisation.docker.enable = true;
 
@@ -32,10 +33,8 @@
         proxyPass = "http://127.0.0.1:8080";
         proxyWebsockets = true;
         extraConfig = ''
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_read_timeout 600s;
+          proxy_send_timeout 600s;
         '';
       };
     };
@@ -69,8 +68,7 @@
     serviceConfig = {
       Type = "simple";
       WorkingDirectory = "/root/Documents/personal-web/out";
-      ExecStart =
-        "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
+      ExecStart = "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
       Restart = "always";
       RestartSec = 3;
     };
