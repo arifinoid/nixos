@@ -1,28 +1,39 @@
 { pkgs, ... }:
+let
+  # CI uploads every commit to releases/<sha> and flips the current symlink.
+  siteRoot = "/var/www/arifinoid";
+in
 {
   # Docker
   virtualisation.docker.enable = true;
 
-  # Nginx + reverse proxy ke personal web (python http.server di 127.0.0.1:3000)
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
     recommendedGzipSettings = true;
+
+    # Static site served straight from disk: no app server, no proxy hop.
     virtualHosts."arifinoid.web.id" = {
       serverName = "arifinoid.web.id";
       forceSSL = true;
       enableACME = true;
+      root = "${siteRoot}/current";
+      extraConfig = ''
+        error_page 404 /404.html;
+        add_header Cache-Control "no-cache" always;
+      '';
       locations."/" = {
-        proxyPass = "http://127.0.0.1:3000";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-        '';
+        # The static export writes route/index.html, so /explore resolves to
+        # /explore/index.html instead of a directory listing.
+        tryFiles = "$uri $uri/index.html =404";
       };
+      locations."/_next/static/".extraConfig = ''
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+      '';
+      locations."= /404.html".extraConfig = ''
+        internal;
+      '';
     };
 
     virtualHosts."jobhooker.arifinoid.web.id" = {
@@ -54,23 +65,11 @@
     };
   };
 
-  # Direktori web personal
+  # Release directories written by the personal-web deploy job over ssh.
   systemd.tmpfiles.rules = [
-    "d /Documents/personal-web 0755 root root -"
-    "d /root/Documents/personal-web 0755 root root -"
+    "d ${siteRoot} 0755 root root -"
+    "d ${siteRoot}/releases 0755 root root -"
   ];
 
-  # Serve personal web via Python http.server (root, port 3000)
-  systemd.services.personal-web = {
-    description = "Personal web (python http.server)";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      WorkingDirectory = "/root/Documents/personal-web/out";
-      ExecStart = "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
-      Restart = "always";
-      RestartSec = 3;
-    };
-  };
+  environment.systemPackages = [ pkgs.rsync ];
 }
