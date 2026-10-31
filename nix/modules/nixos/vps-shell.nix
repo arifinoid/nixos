@@ -1,11 +1,15 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     enableLsColors = true;
     autosuggestions = {
       enable = true;
-      strategy = [ "history" "completion" ];
+      strategy = [
+        "history"
+        "completion"
+      ];
     };
     syntaxHighlighting.enable = true;
     ohMyZsh = {
@@ -76,6 +80,10 @@
 
   programs.nix-ld = {
     enable = true;
-    libraries = with pkgs; [ stdenv.cc.cc.lib zlib openssl ];
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+      zlib
+      openssl
+    ];
   };
 }

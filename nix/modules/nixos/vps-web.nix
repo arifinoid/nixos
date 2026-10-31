@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   # Docker
   virtualisation.docker.enable = true;
 
@@ -48,8 +49,7 @@
     serviceConfig = {
       Type = "simple";
       WorkingDirectory = "/root/Documents/personal-web/out";
-      ExecStart =
-        "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
+      ExecStart = "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
       Restart = "always";
       RestartSec = 3;
     };
