@@ -1,4 +1,9 @@
-{ config, modulesPath, pkgs, ezModules, inputs, ... }:
+{
+  modulesPath,
+  ezModules,
+  inputs,
+  ...
+}:
 
 {
   imports = [

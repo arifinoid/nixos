@@ -2,7 +2,8 @@
 let
   npmCli = pkgs.callPackage "${inputs.self}/nix/packages/npm-cli.nix" { };
   nineRouterApp = "${npmCli."9router"}/lib/node_modules/9router/app";
-in {
+in
+{
   environment.systemPackages = with pkgs; [
     git
     gh
@@ -28,8 +29,7 @@ in {
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      ExecStart =
-        "${pkgs.nodejs_24}/bin/node --dns-result-order=ipv4first ${nineRouterApp}/custom-server.js";
+      ExecStart = "${pkgs.nodejs_24}/bin/node --dns-result-order=ipv4first ${nineRouterApp}/custom-server.js";
       WorkingDirectory = nineRouterApp;
       Environment = [
         "HOME=/root"
