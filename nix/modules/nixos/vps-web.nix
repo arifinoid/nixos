@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   # Docker
   virtualisation.docker.enable = true;
 
@@ -24,6 +23,22 @@
         '';
       };
     };
+
+    virtualHosts."jobhooker.arifinoid.web.id" = {
+      serverName = "jobhooker.arifinoid.web.id";
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8080";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+    };
   };
 
   # Let's Encrypt via NixOS native ACME
@@ -32,6 +47,11 @@
     certs."arifinoid.web.id" = {
       email = "rohmadarifin007@gmail.com";
       domain = "arifinoid.web.id";
+    };
+
+    certs."jobhooker.arifinoid.web.id" = {
+      email = "rohmadarifin007@gmail.com";
+      domain = "jobhooker.arifinoid.web.id";
     };
   };
 
@@ -49,7 +69,8 @@
     serviceConfig = {
       Type = "simple";
       WorkingDirectory = "/root/Documents/personal-web/out";
-      ExecStart = "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
+      ExecStart =
+        "${pkgs.python3}/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /root/Documents/personal-web/out";
       Restart = "always";
       RestartSec = 3;
     };
