@@ -21,6 +21,16 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
+  # Swapfile on disk next to zram (vps-ssh.nix). zram is compressed RAM, so it
+  # cannot absorb a docker build or an ingest spike on its own; this spills to
+  # disk instead of letting systemd-oomd kill a container.
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 2048;
+    }
+  ];
+
   boot.loader.grub = {
     device = "/dev/vda";
     efiSupport = true;

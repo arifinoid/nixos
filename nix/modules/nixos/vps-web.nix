@@ -24,6 +24,20 @@
         '';
       };
     };
+
+    virtualHosts."jobhooker.arifinoid.web.id" = {
+      serverName = "jobhooker.arifinoid.web.id";
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8080";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_read_timeout 600s;
+          proxy_send_timeout 600s;
+        '';
+      };
+    };
   };
 
   # Let's Encrypt via NixOS native ACME
@@ -32,6 +46,11 @@
     certs."arifinoid.web.id" = {
       email = "rohmadarifin007@gmail.com";
       domain = "arifinoid.web.id";
+    };
+
+    certs."jobhooker.arifinoid.web.id" = {
+      email = "rohmadarifin007@gmail.com";
+      domain = "jobhooker.arifinoid.web.id";
     };
   };
 
