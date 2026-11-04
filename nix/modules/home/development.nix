@@ -26,6 +26,26 @@ in
   xdg.configFile."opencode/plugins".source = "${inputs.self}/.config/opencode/plugins";
   home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
   home.file.".omp/agent/models.yml".source = "${inputs.self}/.config/omp/agent/models.yml";
+  home.file.".omp/agent/mcp.json".source = "${inputs.self}/.config/omp/agent/mcp.json";
+
+  # Claude Code stores user-scoped MCP servers in ~/.claude.json (stateful, not
+  # a plain config file), so merge the pencil server in without clobbering the
+  # rest of that file.
+  home.activation.claudeMcpPencil = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    CLAUDE_JSON="$HOME/.claude.json"
+    if [ ! -f "$CLAUDE_JSON" ]; then
+      printf '%s\n' '{"mcpServers":{}}' > "$CLAUDE_JSON"
+      chmod 600 "$CLAUDE_JSON"
+    fi
+    ${pkgs.jq}/bin/jq '
+      .mcpServers = ((.mcpServers // {}) | .pencil = {
+        "type": "stdio",
+        "command": "/mnt/c/Users/Arif Kiki/AppData/Local/Programs/Pen/resources/app.asar.unpacked/out/mcp-server-windows-x64.exe",
+        "args": ["--app", "desktop"],
+        "env": {}
+      })
+    ' "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
+  '';
 
   home.activation.wakatimeCfg = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     WKEY=$(cat ${osConfig.sops.secrets.wakatime_api_key.path})

@@ -37,4 +37,5 @@ in
   # Same read-only symlink trick as ~/.claude/settings.json: the file is owned
   # by Nix, so CodeBuddy cannot drift it. `/model` changes will not persist.
   home.file.".codebuddy/settings.json".source = "${inputs.self}/.config/codebuddy/settings.json";
+  home.file.".codebuddy/.mcp.json".source = "${inputs.self}/.config/codebuddy/.mcp.json";
 }
