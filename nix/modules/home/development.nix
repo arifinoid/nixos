@@ -40,7 +40,7 @@ in
     ${pkgs.jq}/bin/jq '
       .mcpServers = ((.mcpServers // {}) | .pencil = {
         "type": "stdio",
-        "command": "C:\\Users\\Arif Kiki\\AppData\\Local\\Programs\\Pen\\resources\\app.asar.unpacked\\out\\mcp-server-windows-x64.exe",
+        "command": "/mnt/c/Users/Arif Kiki/AppData/Local/Programs/Pen/resources/app.asar.unpacked/out/mcp-server-windows-x64.exe",
         "args": ["--app", "desktop"],
         "env": {}
       })
