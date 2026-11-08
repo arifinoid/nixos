@@ -15,9 +15,9 @@ let
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
   '';
 
-  # Same-origin API: the browser talks to https://takar.arifinoid.web.id and
-  # nginx forwards these prefixes to the loopback service, so the hardcoded
-  # CORS allow-list (localhost + Tauri) never matters in production.
+  # Same-origin API, namespaced under /api so it can never shadow a static
+  # route: the browser calls /api/dashboard while the app page lives at
+  # /dashboard. The trailing slash on proxyPass makes nginx strip the prefix.
   apiLocation = {
     proxyPass = "http://127.0.0.1:${toString apiPort}";
     extraConfig = ''
@@ -25,6 +25,10 @@ let
       proxy_send_timeout 30s;
       proxy_read_timeout 30s;
     '';
+  };
+
+  apiPrefixLocation = apiLocation // {
+    proxyPass = "http://127.0.0.1:${toString apiPort}/";
   };
 in
 {
@@ -48,17 +52,14 @@ in
     '';
 
     # `= /me` stays exact: a prefix `/me` would also swallow `/members`.
-    # Master data lives at the root (/units, /suppliers, /materials), not under
-    # /master; mirror the axum router exactly.
-    locations."= /me" = apiLocation;
+    # /api/* -> 127.0.0.1:3001/* (prefix stripped). Everything else stays
+    # static, so /dashboard/, /stock/ and /login/ can never collide with the
+    # API routes of the same name.
+    locations."/api/" = apiPrefixLocation;
+
+    # Kept at the root for the deploy health check and uptime monitors.
     locations."/healthz" = apiLocation;
     locations."/api-docs/" = apiLocation;
-    locations."/auth/" = apiLocation;
-    locations."/members" = apiLocation;
-    locations."/materials" = apiLocation;
-    locations."/stock" = apiLocation;
-    locations."/suppliers" = apiLocation;
-    locations."/units" = apiLocation;
   };
 
   security.acme.certs."takar.arifinoid.web.id" = {
