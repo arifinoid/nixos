@@ -48,13 +48,17 @@ in
     '';
 
     # `= /me` stays exact: a prefix `/me` would also swallow `/members`.
+    # Master data lives at the root (/units, /suppliers, /materials), not under
+    # /master; mirror the axum router exactly.
     locations."= /me" = apiLocation;
     locations."/healthz" = apiLocation;
     locations."/api-docs/" = apiLocation;
     locations."/auth/" = apiLocation;
     locations."/members" = apiLocation;
+    locations."/materials" = apiLocation;
     locations."/stock" = apiLocation;
-    locations."/master" = apiLocation;
+    locations."/suppliers" = apiLocation;
+    locations."/units" = apiLocation;
   };
 
   security.acme.certs."takar.arifinoid.web.id" = {
