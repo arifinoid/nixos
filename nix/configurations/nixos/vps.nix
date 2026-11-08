@@ -18,6 +18,7 @@
     ezModules.vps-networking
     ezModules.vps-backup
     ezModules.vps-web
+    ezModules.vps-takar
     ezModules.vps-shell
     ezModules.vps-packages
     ezModules.vps-secrets
