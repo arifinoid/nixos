@@ -1,12 +1,32 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 let
-  # CI uploads every commit to releases/<sha> and flips the current symlink.
+  # CI (personal-web) uploads every commit to releases/<sha> and flips the
+  # current symlink; nginx serves straight from disk.
   siteRoot = "/var/www/arifinoid";
+
+  # v0.6.1: the connectors need safari15_5/ff117, which newer nixpkgs builds
+  # no longer ship.
+  curlImpersonate = pkgs.callPackage "${inputs.self}/nix/packages/curl-impersonate.nix" { };
+
+  # Deploy job (job-hooker) uploads a Bun release to releases/<sha> and flips
+  # `current`. The API runs from there; the SPA is served by nginx; restarting
+  # jobhooker pins the new release. Rollback = re-point the symlink + restart.
+  jobhookerRoot = "/srv/jobhooker";
+
+  # Persistent state that must survive releases: PII key, render artifacts.
+  # releases/<sha>/var is symlinked here by the deploy job.
+  jobhookerData = "/var/lib/jobhooker";
+
+  # nginx drops parent add_header directives as soon as a location defines its
+  # own, so every location that adds headers repeats these (gixy rejects the
+  # config otherwise).
+  jobhookerSecurityHeaders = ''
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+  '';
 in
 {
-  # Docker
-  virtualisation.docker.enable = true;
-
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
@@ -36,16 +56,35 @@ in
       '';
     };
 
+    # SPA from the release + /api proxied to the native Bun service. This
+    # replaces the old web container (nginx + /api proxy) and its extra hop.
     virtualHosts."jobhooker.arifinoid.web.id" = {
       serverName = "jobhooker.arifinoid.web.id";
       forceSSL = true;
       enableACME = true;
+      root = "${jobhookerRoot}/current/apps/web/dist";
+
+      extraConfig = jobhookerSecurityHeaders;
+
       locations."/" = {
-        proxyPass = "http://127.0.0.1:8080";
+        tryFiles = "$uri $uri/ /index.html";
+      };
+
+      locations."/api/" = {
+        # Long calls (ingest walks every source, tailor calls the LLM) answer
+        # in minutes; the proxy default of 60s would cut them off at 504.
+        proxyPass = "http://127.0.0.1:3000";
         proxyWebsockets = true;
         extraConfig = ''
-          proxy_read_timeout 600s;
+          proxy_connect_timeout 30s;
           proxy_send_timeout 600s;
+          proxy_read_timeout 600s;
+        '';
+      };
+
+      locations."~* \\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$" = {
+        extraConfig = jobhookerSecurityHeaders + ''
+          add_header Cache-Control "public, max-age=31536000, immutable" always;
         '';
       };
     };
@@ -65,10 +104,92 @@ in
     };
   };
 
-  # Release directories written by the personal-web deploy job over ssh.
+  # A static system user (not DynamicUser) because the app needs a stable
+  # owner for the PII key and render artifacts under ${jobhookerData}.
+  users.users.jobhooker = {
+    isSystemUser = true;
+    group = "jobhooker";
+    home = jobhookerData;
+  };
+  users.groups.jobhooker = { };
+
+  # Native systemd service instead of the api container. Hardening gives it
+  # container-like isolation without a container runtime.
+  systemd.services.jobhooker = {
+    description = "job-hooker API (Bun)";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    unitConfig.ConditionPathExists = "${jobhookerRoot}/current";
+    environment = {
+      NODE_ENV = "production";
+      PORT = "3000";
+      HOME = jobhookerData;
+      # Deploy job symlinks releases/<sha>/var -> ${jobhookerData}/var, so the
+      # key lives outside the release tree and survives rollbacks.
+      PII_KEY_FILE = "${jobhookerData}/var/pii-key";
+      CURL_IMPERSONATE_DIR = "${curlImpersonate}/bin";
+      SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+    };
+    serviceConfig = {
+      WorkingDirectory = "${jobhookerRoot}/current";
+      ExecStart = "${pkgs.bun}/bin/bun run apps/api/src/index.ts";
+      # DATABASE_URL, API_TOKEN and connector/LLM settings live here (0600
+      # root); created once by hand or rendered from sops later.
+      EnvironmentFile = "/etc/jobhooker.env";
+      Restart = "on-failure";
+      RestartSec = 5;
+
+      User = "jobhooker";
+      Group = "jobhooker";
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      PrivateDevices = true;
+      ProtectKernelTunables = true;
+      ProtectControlGroups = true;
+      RestrictSUIDSGID = true;
+      LockPersonality = true;
+      RestrictAddressFamilies = [
+        "AF_UNIX"
+        "AF_INET"
+        "AF_INET6"
+      ];
+      ReadWritePaths = [ jobhookerData ];
+    };
+  };
+
+  # Forward-only migrations, run by the deploy job before restarting the API.
+  # Not wantedBy anything: a failed migration must stop the deploy instead of
+  # letting the API serve a half-migrated schema.
+  systemd.services.jobhooker-migrate = {
+    description = "job-hooker database migrations";
+    after = [ "network.target" ];
+    unitConfig.ConditionPathExists = "${jobhookerRoot}/current";
+    serviceConfig = {
+      Type = "oneshot";
+      WorkingDirectory = "${jobhookerRoot}/current";
+      ExecStart = "${pkgs.bun}/bin/bun run packages/db/src/migrate.ts";
+      EnvironmentFile = "/etc/jobhooker.env";
+      User = "jobhooker";
+      Group = "jobhooker";
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      ReadWritePaths = [ jobhookerData ];
+    };
+  };
+
+  # Release directories written by the deploy jobs over ssh.
   systemd.tmpfiles.rules = [
     "d ${siteRoot} 0755 root root -"
     "d ${siteRoot}/releases 0755 root root -"
+    "d ${jobhookerRoot} 0755 root root -"
+    "d ${jobhookerRoot}/releases 0755 root root -"
+    "d ${jobhookerData} 0750 jobhooker jobhooker -"
+    "d ${jobhookerData}/var 0750 jobhooker jobhooker -"
+    "d ${jobhookerData}/var/artifacts 0750 jobhooker jobhooker -"
   ];
 
   environment.systemPackages = [ pkgs.rsync ];

@@ -8,10 +8,15 @@
 {
   imports = [
     inputs.sops.nixosModules.sops
+
+    # Pin Bun to the version CI deploys with (job-hooker needs 1.4.x).
+    ezModules.bun-overlay
+
     ezModules.vps-disko
     (modulesPath + "/profiles/qemu-guest.nix")
 
     ezModules.vps-networking
+    ezModules.vps-backup
     ezModules.vps-web
     ezModules.vps-shell
     ezModules.vps-packages
@@ -22,8 +27,8 @@
   nixpkgs.hostPlatform = "x86_64-linux";
 
   # Swapfile on disk next to zram (vps-ssh.nix). zram is compressed RAM, so it
-  # cannot absorb a docker build or an ingest spike on its own; this spills to
-  # disk instead of letting systemd-oomd kill a container.
+  # cannot absorb a deploy or an ingest spike on its own; this spills to
+  # disk instead of letting systemd-oomd kill the app servers.
   swapDevices = [
     {
       device = "/swapfile";
@@ -33,16 +38,6 @@
 
   # journald already holds 1.1 GB here and the default cap is 10% of /var.
   services.journald.extraConfig = "SystemMaxUse=500M";
-
-  # Docker's default json-file driver has no size limit, so a long-lived deploy
-  # would slowly eat the disk. Cap it at 30 MB per container.
-  virtualisation.docker.daemon.settings = {
-    log-driver = "json-file";
-    log-opts = {
-      max-size = "10m";
-      max-file = "3";
-    };
-  };
 
   boot.loader.grub = {
     device = "/dev/vda";
