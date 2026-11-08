@@ -2,6 +2,11 @@
 let
   npmCli = pkgs.callPackage "${inputs.self}/nix/packages/npm-cli.nix" { };
   nineRouterApp = "${npmCli."9router"}/lib/node_modules/9router/app";
+
+  # pg_dump/pg_restore/psql for deploy/vps/backup.sh. Must be at least the
+  # Neon server major version (18); 25.05 only ships 17.
+  postgresql =
+    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.postgresql_18;
 in
 {
   environment.systemPackages = with pkgs; [
@@ -13,6 +18,7 @@ in
     python3
     nodejs
     bun
+    postgresql
     pm2
     certbot
     nginx
