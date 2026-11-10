@@ -156,6 +156,52 @@ in
     };
   };
 
+  # Daily alert job: fills and resolves alerts, then sends one digest per
+  # tenant. It walks every tenant, so it uses the owner role; DATABASE_URL is
+  # the RLS-bound runtime role and would only ever see one tenant. Delivery
+  # state lives in the alerts table, so a failed send is retried on the next
+  # run instead of being lost.
+  systemd.services.takar-alert-job = {
+    description = "Takar daily alert job";
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+    unitConfig.ConditionPathExists = [
+      "${takarRoot}/current"
+      "/etc/takar.env"
+    ];
+    serviceConfig = {
+      Type = "oneshot";
+      WorkingDirectory = "${takarRoot}/current";
+      EnvironmentFile = "/etc/takar.env";
+      Environment = "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt";
+      ExecStart = pkgs.writeShellScript "takar-alert-job" ''
+        set -euo pipefail
+
+        export DATABASE_URL="$MIGRATE_DATABASE_URL"
+        exec ${takarRoot}/current/bin/alert_job
+      '';
+      User = "takar";
+      Group = "takar";
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+    };
+  };
+
+  systemd.timers.takar-alert-job = {
+    description = "Daily Takar alert job";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      # 00:10 UTC is 07:10 WIB. The job compares expiry against the UTC date,
+      # so running earlier would alert on yesterday's date.
+      OnCalendar = "*-*-* 00:10:00 UTC";
+      RandomizedDelaySec = "5m";
+      # Catch up after downtime instead of skipping the day.
+      Persistent = true;
+    };
+  };
+
   # Release directories written by the deploy job over ssh.
   systemd.tmpfiles.rules = [
     "d ${takarRoot} 0755 root root -"
