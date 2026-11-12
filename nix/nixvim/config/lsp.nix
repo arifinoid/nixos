@@ -143,7 +143,6 @@
       enable = true;
       setupLspCapabilities = true;
       settings = {
-        # super-tab + navigasi eksplisit: Tab next, S-Tab prev, Enter accept
         keymap = {
           preset = "super-tab";
           "<Tab>" = [
@@ -160,9 +159,11 @@
             "accept"
             "fallback"
           ];
+          "<A-y>".__raw = "require('minuet').make_blink_map()";
         };
 
         completion = {
+          trigger.prefetch_on_insert = false;
           documentation.auto_show = true;
           list.selection = {
             preselect = true;
@@ -187,9 +188,18 @@
             "snippets"
             "buffer"
             "copilot"
+            "minuet"
             "emoji"
           ];
           providers = {
+            minuet = {
+              name = "minuet";
+              module = "minuet.blink";
+              async = true;
+              score_offset = 8;
+              # Samakan dengan minuet request_timeout (detik -> ms).
+              timeout_ms = 20000;
+            };
             copilot = {
               async = true;
               module = "blink-cmp-copilot";

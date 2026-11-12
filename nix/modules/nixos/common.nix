@@ -19,6 +19,13 @@ in
   services.ollama = {
     enable = true;
     package = unstablePkgs.ollama;
+    # CPU-only (WSL): muat model sekali, tahan di RAM biar tidak reload
+    # 20-40 detik tiap kali Avante/Minuet dipakai.
+    environmentVariables = {
+      OLLAMA_KEEP_ALIVE = "30m";
+      OLLAMA_MAX_LOADED_MODELS = "2";
+      OLLAMA_NUM_PARALLEL = "1";
+    };
   };
 
   nix.settings = {
