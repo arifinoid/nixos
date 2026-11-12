@@ -34,8 +34,16 @@ in
   home.file.".codebuddy/hooks/rtk-pretool.sh".source = rtkPretool;
   home.file.".codebuddy/hooks/icm-hook.sh".source = icmHook;
 
-  # Same read-only symlink trick as ~/.claude/settings.json: the file is owned
-  # by Nix, so CodeBuddy cannot drift it. `/model` changes will not persist.
-  home.file.".codebuddy/settings.json".source = "${inputs.self}/.config/codebuddy/settings.json";
-  home.file.".codebuddy/.mcp.json".source = "${inputs.self}/.config/codebuddy/.mcp.json";
+  # CodeBuddy rewrites these files with a temp-file + rename, which replaces
+  # the Nix symlink with a regular file (it does not respect the read-only
+  # bit like Claude Code does). `force` makes activation relink them instead
+  # of failing on a backup collision. App-side edits are reverted on rebuild.
+  home.file.".codebuddy/settings.json" = {
+    source = "${inputs.self}/.config/codebuddy/settings.json";
+    force = true;
+  };
+  home.file.".codebuddy/.mcp.json" = {
+    source = "${inputs.self}/.config/codebuddy/.mcp.json";
+    force = true;
+  };
 }

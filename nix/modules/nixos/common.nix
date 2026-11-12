@@ -19,6 +19,11 @@ in
   services.ollama = {
     enable = true;
     package = unstablePkgs.ollama;
+    environmentVariables = {
+      OLLAMA_KEEP_ALIVE = "30m";
+      OLLAMA_MAX_LOADED_MODELS = "2";
+      OLLAMA_NUM_PARALLEL = "1";
+    };
   };
 
   nix.settings = {

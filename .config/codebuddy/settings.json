@@ -3,7 +3,8 @@
     "/home/arifinoid/Documents/repos/nixos/**",
     "/home/arifinoid/Documents/repos/aksaraku/**",
     "/home/arifinoid/Documents/repos/job-hooker/**",
-    "/home/arifinoid/Documents/contribute/herdr"
+    "/home/arifinoid/Documents/contribute/herdr",
+    "/home/arifinoid/Documents/repos/takar/**"
   ],
   "model": "deepseek-v4.1-flash",
   "hooks": {

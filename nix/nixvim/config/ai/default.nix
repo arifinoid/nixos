@@ -32,9 +32,15 @@ rec {
         "AvanteToggle"
       ];
       settings = {
-        # default: copilot (copilot-lua aktif = diasumsikan ada langganan).
-        # Ganti ke "groq"/"grok"/"claude" kalau itu yang dipakai.
-        provider = "copilot";
+        # available options: "copilot"/"groq"/"grok"/"claude".
+        provider = "ollama";
+        mode = "legacy";
+        system_prompt = ''
+          There are NO tools available in this session. Ignore every tool-use
+          instruction above; never output <tool_use> blocks.
+          Answer the user's question directly, concisely, in the same language
+          they use. For code changes, use *SEARCH/REPLACE* blocks.
+        '';
 
         diff = {
           autojump = true;
@@ -64,6 +70,22 @@ rec {
         copilot.max_tokens = 20000;
 
         providers = rec {
+          ollama = {
+            endpoint = "http://127.0.0.1:11434";
+            model = "deepseek-r1:1.5b";
+            timeout = 180000;
+            disable_tools = true;
+            extra_request_body = {
+              keep_alive = "30m";
+              # deepseek-r1 default is "thinking";
+              think = false;
+              options = {
+                num_ctx = 8192;
+                num_predict = 512;
+                temperature = 0.4;
+              };
+            };
+          };
           copilot37 = {
             model = "claude-3.7-sonnet";
             __inherited_from = "copilot";
@@ -87,7 +109,51 @@ rec {
     copilot-lua.enable = true;
     copilot-lua.settings.suggestion.enabled = false;
     copilot-lua.settings.panel.enabled = false;
-    # copilot disalurkan via blink-cmp-copilot (lihat lsp.nix), bukan cmp
+
+    minuet = {
+      enable = true;
+      settings = {
+        provider = "openai_fim_compatible";
+        n_completions = 1;
+        context_window = 512;
+        request_timeout = 20;
+        debounce = 300;
+        provider_options = {
+          openai_fim_compatible = {
+            api_key = "TERM";
+            name = "Ollama";
+            end_point = "http://127.0.0.1:11434/v1/completions";
+            model = "qwen2.5-coder:1.5b";
+            stream = true;
+            optional = {
+              max_tokens = 96;
+              top_p = 0.9;
+              temperature = 0.2;
+            };
+          };
+        };
+        virtualtext = {
+          auto_trigger_ft = [ "*" ];
+          auto_trigger_ignore_ft = [
+            "oil"
+            "NvimTree"
+            "neo-tree"
+            "TelescopePrompt"
+            "Avante"
+            "AvanteInput"
+            "markdown"
+          ];
+          keymap = {
+            accept = "<A-a>";
+            accept_line = "<A-l>";
+            accept_n_lines = "<A-z>";
+            prev = "<A-[>";
+            next = "<A-]>";
+            dismiss = "<A-e>";
+          };
+        };
+      };
+    };
 
     which-key.settings.spec = [
       {
@@ -118,33 +184,51 @@ rec {
       }
       {
         __unkeyed-1 = "<leader>cpo";
-        __unkeyed-2 = "<cmd>AvanteSwitchProvider openai<cr>";
+        __unkeyed-2 = "<cmd>lua require('avante.api').switch_provider('openai')<cr>";
         icon = icons.robotFace;
         desc = "Provider: OpenAI";
       }
       {
         __unkeyed-1 = "<leader>cpa";
-        __unkeyed-2 = "<cmd>AvanteSwitchProvider anthropic<cr>";
+        __unkeyed-2 = "<cmd>lua require('avante.api').switch_provider('claude')<cr>";
         icon = icons.robotFace;
         desc = "Provider: Anthropic";
       }
       {
         __unkeyed-1 = "<leader>cpg";
-        __unkeyed-2 = "<cmd>AvanteSwitchProvider groq<cr>";
+        __unkeyed-2 = "<cmd>lua require('avante.api').switch_provider('groq')<cr>";
         icon = icons.robotFace;
         desc = "Provider: Groq";
       }
       {
         __unkeyed-1 = "<leader>cpd";
-        __unkeyed-2 = "<cmd>AvanteSwitchProvider deepseek<cr>";
+        __unkeyed-2 = "<cmd>lua require('avante.api').switch_provider('deepseek')<cr>";
         icon = icons.robotFace;
         desc = "Provider: DeepSeek";
       }
       {
         __unkeyed-1 = "<leader>cpc";
-        __unkeyed-2 = "<cmd>AvanteSwitchProvider copilot<cr>";
+        __unkeyed-2 = "<cmd>lua require('avante.api').switch_provider('copilot')<cr>";
         icon = icons.robotFace;
         desc = "Provider: Copilot";
+      }
+      {
+        __unkeyed-1 = "<leader>cpl";
+        __unkeyed-2 = "<cmd>lua require('avante.api').switch_provider('ollama')<cr>";
+        icon = icons.robotFace;
+        desc = "Provider: Ollama (DeepSeek-R1)";
+      }
+      {
+        __unkeyed-1 = "<leader>cmt";
+        __unkeyed-2 = "<cmd>Minuet virtualtext toggle<cr>";
+        icon = icons.robotFace;
+        desc = "Minuet: Toggle Virtualtext";
+      }
+      {
+        __unkeyed-1 = "<leader>cmb";
+        __unkeyed-2 = "<cmd>Minuet blink toggle<cr>";
+        icon = icons.robotFace;
+        desc = "Minuet: Toggle Blink Auto-cmp";
       }
     ];
   };

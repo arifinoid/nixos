@@ -25,8 +25,6 @@
 
         html.enable = true;
 
-        # jdtls dimatikan di sini — di-handle nvim-jdtls di java.nix
-        # (workspace per-project + extended capabilities, bukan /tmp shared)
         jdtls.enable = false;
 
         jsonls.enable = true;
@@ -143,7 +141,6 @@
       enable = true;
       setupLspCapabilities = true;
       settings = {
-        # super-tab + navigasi eksplisit: Tab next, S-Tab prev, Enter accept
         keymap = {
           preset = "super-tab";
           "<Tab>" = [
@@ -160,9 +157,11 @@
             "accept"
             "fallback"
           ];
+          "<A-y>".__raw = "require('minuet').make_blink_map()";
         };
 
         completion = {
+          trigger.prefetch_on_insert = false;
           documentation.auto_show = true;
           list.selection = {
             preselect = true;
@@ -187,9 +186,17 @@
             "snippets"
             "buffer"
             "copilot"
+            "minuet"
             "emoji"
           ];
           providers = {
+            minuet = {
+              name = "minuet";
+              module = "minuet.blink";
+              async = true;
+              score_offset = 8;
+              timeout_ms = 20000;
+            };
             copilot = {
               async = true;
               module = "blink-cmp-copilot";
@@ -209,9 +216,6 @@
       };
     };
   };
-  # NOTE: typescript-tools-nvim sengaja TIDAK dipasang — rangkap dengan
-  # lsp.servers.ts_ls (dua TS server = diagnostik dobel + boros).
-  # nvim-lspconfig juga tidak perlu di extraPlugins (sudah dibawa modul lsp).
 
   diagnostic.settings = {
     virtual_text = {
