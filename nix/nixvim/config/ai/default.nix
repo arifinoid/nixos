@@ -32,14 +32,9 @@ rec {
         "AvanteToggle"
       ];
       settings = {
-        # default: ollama (deepseek-r1:1.5b via local Ollama).
-        # Bisa switch ke "copilot"/"groq"/"grok"/"claude" kalau dibutuhkan.
+        # available options: "copilot"/"groq"/"grok"/"claude".
         provider = "ollama";
-        # "agentic" (default) menyuntik prompt tool-use ~10k token; di CPU
-        # itu puluhan detik cuma untuk prompt eval. "legacy" lebih ringan.
         mode = "legacy";
-        # Prompt bawaan Avante masih menyisakan instruksi tool-use. Model
-        # 1.5B di CPU tidak sanggup tool-calling, jadi tegas dinonaktifkan.
         system_prompt = ''
           There are NO tools available in this session. Ignore every tool-use
           instruction above; never output <tool_use> blocks.
@@ -75,23 +70,16 @@ rec {
         copilot.max_tokens = 20000;
 
         providers = rec {
-          # CPU-only WSL: model load bisa 20-40 detik, jadi timeout default
-          # Avante (30 detik) selalu kehabisan waktu -> balasan tidak muncul.
           ollama = {
             endpoint = "http://127.0.0.1:11434";
             model = "deepseek-r1:1.5b";
             timeout = 180000;
-            # Model 1.5B di CPU tidak sanggup tool-calling; definisi tool juga
-            # menambah prompt puluhan ribu karakter.
             disable_tools = true;
             extra_request_body = {
               keep_alive = "30m";
-              # deepseek-r1 default-nya "thinking"; di CPU itu lambat banget.
+              # deepseek-r1 default is "thinking";
               think = false;
               options = {
-                # Prompt Avante (legacy, tool dimatikan) ~2.5k token. 8192
-                # cukup untuk prompt + output + file context, dan tidak
-                # memaksa reload model sesering 32768.
                 num_ctx = 8192;
                 num_predict = 512;
                 temperature = 0.4;
@@ -121,17 +109,13 @@ rec {
     copilot-lua.enable = true;
     copilot-lua.settings.suggestion.enabled = false;
     copilot-lua.settings.panel.enabled = false;
-    # copilot disalurkan via blink-cmp-copilot (lihat lsp.nix), bukan cmp
 
     minuet = {
       enable = true;
       settings = {
         provider = "openai_fim_compatible";
         n_completions = 1;
-        # Context kecil = prompt eval cepat di CPU.
         context_window = 512;
-        # Default 3 detik: terlalu pendek untuk model lokal di CPU,
-        # request di-cancel sebelum Ollama selesai -> seolah "tidak respon".
         request_timeout = 20;
         debounce = 300;
         provider_options = {
@@ -149,8 +133,6 @@ rec {
           };
         };
         virtualtext = {
-          # Default Minuet kosong = tidak pernah auto-trigger.
-          # "*" = aktif di semua filetype, lalu kecualikan buffer besar/UI.
           auto_trigger_ft = [ "*" ];
           auto_trigger_ignore_ft = [
             "oil"
@@ -162,8 +144,6 @@ rec {
             "markdown"
           ];
           keymap = {
-            # Di terminal <A-A> dan <A-a> sama-sama terkirim sebagai Alt+a,
-            # jadi accept utuh dipasang di <A-a>.
             accept = "<A-a>";
             accept_line = "<A-l>";
             accept_n_lines = "<A-z>";

@@ -28,6 +28,34 @@
 
   services.openssh.enable = true;
 
+  # systemd's fstab generator ignores swap entries when running in a container
+  # (WSL2 counts as one), so `swapDevices` alone never activates this file.
+  # Extra headroom so nixos-rebuild is not OOM-killed while cargo/clippy runs.
+  systemd.services.swapfile = {
+    description = "Enable 4 GiB swapfile";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "local-fs.target" ];
+    path = [
+      pkgs.util-linux
+      pkgs.e2fsprogs
+    ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStop = "${pkgs.util-linux}/bin/swapoff /swapfile";
+    };
+    script = ''
+      if [ ! -e /swapfile ]; then
+        dd if=/dev/zero of=/swapfile bs=1M count=4096 status=none
+        chmod 600 /swapfile
+        mkswap /swapfile
+      fi
+      if ! grep -q '^/swapfile ' /proc/swaps; then
+        swapon /swapfile
+      fi
+    '';
+  };
+
   environment.variables = {
     WSL_DISTRO_NAME = "NixOS";
     WSL_INTEROP = "1";

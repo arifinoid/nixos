@@ -25,8 +25,6 @@
 
         html.enable = true;
 
-        # jdtls dimatikan di sini — di-handle nvim-jdtls di java.nix
-        # (workspace per-project + extended capabilities, bukan /tmp shared)
         jdtls.enable = false;
 
         jsonls.enable = true;
@@ -197,7 +195,6 @@
               module = "minuet.blink";
               async = true;
               score_offset = 8;
-              # Samakan dengan minuet request_timeout (detik -> ms).
               timeout_ms = 20000;
             };
             copilot = {
@@ -219,9 +216,6 @@
       };
     };
   };
-  # NOTE: typescript-tools-nvim sengaja TIDAK dipasang — rangkap dengan
-  # lsp.servers.ts_ls (dua TS server = diagnostik dobel + boros).
-  # nvim-lspconfig juga tidak perlu di extraPlugins (sudah dibawa modul lsp).
 
   diagnostic.settings = {
     virtual_text = {
