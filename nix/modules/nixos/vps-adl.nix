@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 let
   # ADL is three independently deployed services. Each one is published to
   # releases/<id> by nix/scripts/deploy-adl.sh, which then flips `current`.
@@ -30,6 +30,33 @@ let
   };
 in
 {
+  # Env files are rendered at activation from sops, not written by hand. The
+  # values never enter /nix/store and a `nixos-rebuild switch` is the only
+  # thing that changes them.
+  sops.templates."adl-api-env" = {
+    path = "/etc/adl-api.env";
+    mode = "0400";
+    content = ''
+      DATABASE_URL=${config.sops.placeholder.adl_database_url}
+      JWT_SECRET=${config.sops.placeholder.adl_jwt_secret}
+      CORS_ORIGIN=https://adl.arifinoid.web.id
+      FILE_SERVICE_URL=http://127.0.0.1:${toString filePort}
+    '';
+  };
+
+  sops.templates."adl-file-service-env" = {
+    path = "/etc/adl-file-service.env";
+    mode = "0400";
+    content = ''
+      R2_ACCOUNT_ID=${config.sops.placeholder.adl_r2_account_id}
+      R2_ACCESS_KEY_ID=${config.sops.placeholder.adl_r2_access_key_id}
+      R2_SECRET_ACCESS_KEY=${config.sops.placeholder.adl_r2_secret_access_key}
+      R2_BUCKET_NAME=file-service
+      R2_PUBLIC_URL=https://file-service.arifinoid.workers.dev
+      RUST_LOG=info
+    '';
+  };
+
   # One origin for the PWA, the API and the upload proxy. The FE is a real Next
   # server (next start), not a static export, so every non-/api request is
   # proxied to it.
@@ -90,9 +117,8 @@ in
   };
   users.groups.adl-files = { };
 
-  # DATABASE_URL, JWT_SECRET and CORS_ORIGIN live in /etc/adl-api.env (root
-  # 0400), created once by hand. They are deliberately not rendered from sops
-  # or inlined here so they never enter the world-readable nix store.
+  # DATABASE_URL and JWT_SECRET are rendered into /etc/adl-api.env from sops
+  # (see the templates above), so they never enter the world-readable store.
   systemd.services.adl-api = {
     description = "ADL API (Bun/Elysia)";
     wants = [ "network-online.target" ];

@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   # CI (personal-web) uploads every commit to releases/<sha> and flips the
   # current symlink; nginx serves straight from disk.
@@ -27,6 +32,38 @@ let
   '';
 in
 {
+  # Rendered at activation from sops. The API and the migrate unit both read
+  # this file; credentials never sit in a hand-edited /etc file or the store.
+  sops.templates."jobhooker-env" = {
+    path = "/etc/jobhooker.env";
+    mode = "0400";
+    content = ''
+      DOMAIN=jobhooker.arifinoid.web.id
+      API_TOKEN=${config.sops.placeholder.jobhooker_api_token}
+      AUTH_DISABLED=0
+      CORS_ORIGINS=https://jobhooker.arifinoid.web.id
+      # Empty = connector disabled / LLM off. They are plain config on purpose:
+      # a filled-in token should move to sops as jobhooker_greenhouse_tokens /
+      # jobhooker_llm_api_key instead of being committed here.
+      GREENHOUSE_TOKENS=
+      ASHBY_ORGS=
+      LEVER_SLUGS=
+      SMARTRECRUITERS_IDS=BoschGroup
+      BAYT_COUNTRIES=uae
+      INDEED_COUNTRIES=
+      LLM_OPT_IN=0
+      LLM_API_KEY=
+      LLM_BASE_URL=https://integrate.api.nvidia.com/v1
+      LLM_MODEL=nvidia/nemotron-3-super-120b-a12b
+      LLM_EMBED_ENABLED=0
+      PII_KEY_FILE=var/pii-key
+      PORT=3000
+      RATE_LIMIT_MAX=120
+      RATE_LIMIT_WINDOW_MS=60000
+      DATABASE_URL=${config.sops.placeholder.jobhooker_database_url}
+    '';
+  };
+
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
@@ -133,8 +170,8 @@ in
     serviceConfig = {
       WorkingDirectory = "${jobhookerRoot}/current";
       ExecStart = "${pkgs.bun}/bin/bun run apps/api/src/index.ts";
-      # DATABASE_URL, API_TOKEN and connector/LLM settings live here (0600
-      # root); created once by hand or rendered from sops later.
+      # DATABASE_URL, API_TOKEN and connector/LLM settings live here, rendered
+      # from sops at activation (see the jobhooker-env template above).
       EnvironmentFile = "/etc/jobhooker.env";
       Restart = "on-failure";
       RestartSec = 5;
