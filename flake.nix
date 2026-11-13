@@ -31,14 +31,14 @@
     nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
     nixpkgs.follows = "nixpkgs-stable";
 
-    # Unstable: cuma buat package yang di 25.05 udah ketuaan
-    # (saat ini: claude-code & opencode). Lihat development.nix.
+    # Unstable: only for packages that are too old in 25.05
+    # (currently claude-code & opencode). See development.nix.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Partitioning (disks), dipakai host vps
+    # Partitioning (disks), used by the vps host
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -53,7 +53,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # Secret Ops
-    # (unstable) karena helper Go-nya butuh toolchain >= 1.26.
+    # (unstable) because its Go helper needs a toolchain >= 1.26.
     sops.url = "github:Mic92/sops-nix";
 
     # Ez

@@ -181,8 +181,8 @@
         desc = "Move to top window";
       };
     }
-    # NOTE: <C-m> sengaja tidak di-map (di terminal == Enter).
-    # Butuh git UI? enable plugins.neogit dulu, baru tambah keymap.
+    # NOTE: <C-m> is deliberately unmapped (in a terminal it is Enter).
+    # Need a git UI? Enable plugins.neogit first, then add the keymap.
     {
       key = "ss";
       mode = "n";
@@ -582,7 +582,7 @@
       };
     }
 
-    # Text manipulation (Alt-based biar K/J standar tetap bebas: K hover, J join)
+    # Text manipulation (Alt-based so the standard K/J stay free: K hover, J join)
     {
       key = "<A-j>";
       mode = "n";
@@ -706,8 +706,9 @@
       };
     }
 
-    # NOTE: keymap Obsidian dibuang — plugin obsidian-nvim belum di-enable
-    # dan ~/Documents/obsidian belum ada. Pasang plugin + workspace dulu kalau mau.
+    # NOTE: the Obsidian keymap was dropped — obsidian-nvim is not enabled
+    # and ~/Documents/obsidian does not exist yet. Install the plugin and a
+    # workspace first if you want it.
 
     {
       key = "<leader>s";

@@ -18,16 +18,16 @@
       plugins = [ "git" ];
     };
     interactiveShellInit = ''
-      # Key API 9router buat hermes, dibaca dari file hasil render sops.
+      # 9router API key for Hermes, read from the sops-rendered file.
       if [ -r /root/.9router/hermes-api-key ]; then
         export NINE_ROUTER_API_KEY="$(cat /root/.9router/hermes-api-key)"
       fi
 
-      # Alias daily dari shell laptop (herdr/yarn/pnpm gak relevan di VPS).
+      # Daily aliases from the laptop shell (herdr/yarn/pnpm are irrelevant on the VPS).
       alias vim='nvim'
       alias cl='clear'
 
-      # Warna & listing modern.
+      # Colors and modern listings.
       alias cat='bat'
       alias ls='eza --group-directories-first'
       alias ll='eza -l --group-directories-first'
@@ -55,14 +55,14 @@
 
       alias nixgens='nix-env -p /nix/var/nix/profiles/system --list-generations'
 
-      # Delete old generations + collect garbage (disk/memory kecil).
+      # Delete old generations + collect garbage (small disk/memory).
       nixclean() {
-        echo "Hapus semua generasi lama + collect garbage? (y/N)"
+        echo "Delete all old generations + collect garbage? (y/N)"
         read -r confirmation
-        [[ "$confirmation" == y* ]] || { echo "batal"; return 1; }
+        [[ "$confirmation" == y* ]] || { echo "cancelled"; return 1; }
         nix-env -p /nix/var/nix/profiles/system --delete-generations old
         nix-collect-garbage -d
-        echo "selesai. generasi yang tersisa:"
+        echo "done. remaining generations:"
         nix-env -p /nix/var/nix/profiles/system --list-generations
       }
     '';

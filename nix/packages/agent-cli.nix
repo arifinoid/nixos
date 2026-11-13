@@ -1,13 +1,13 @@
-# CLI agent yang binary-nya diambil dari GitHub release (nixpkgs gak punya):
-# rtk & icm. Dipakai asset musl (statis) dari release resmi, jadi:
-#   - start instan tanpa compile Rust,
-#   - aman di NixOS tanpa nix-ld ( Linking glibc builtin gak kepakai),
-#   - hash = sha256 dari checksums.txt di halaman release yang sama.
+# Agent CLIs whose binaries come from GitHub releases (not in nixpkgs):
+# rtk & icm. They use the static musl assets from the official releases, so:
+#   - instant startup with no Rust compile,
+#   - safe on NixOS without nix-ld (the glibc builtin is not used),
+#   - hash = sha256 from checksums.txt on the same release page.
 #
-# Cara bump versi:
-#   1. Buka release terbaru, ambil sha256 asset x86_64-unknown-linux-musl.tar.gz
-#      dari checksums.txt.
-#   2. Update version + hash di bawah.
+# To bump a version:
+#   1. Open the latest release and take the sha256 of the
+#      x86_64-unknown-linux-musl.tar.gz asset from checksums.txt.
+#   2. Update version + hash below.
 {
   lib,
   fetchurl,

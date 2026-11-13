@@ -38,7 +38,7 @@ in
       enable = true;
       lazyLoad = {
         enable = true;
-        # load pas command dipanggil (fw/fhh), bukan tiap startup
+        # load when the command is invoked (fw/fhh), not at every startup
         settings.cmd = [
           "HopWord"
           "HopPattern"

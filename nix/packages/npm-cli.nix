@@ -1,16 +1,16 @@
-# Derivasi CLI npm yang TIDAK ada di nixpkgs.
+# npm CLI derivations that are NOT in nixpkgs.
 #
-# Semua di-pin ke tarball registry npm + package-lock.json di ./locks/:
-# binary masuk /nix/store sehingga start instan + offline, menggantikan
-# wrapper npx/bunx yang nge-resolve registry tiap launch (painful abis
-# restart laptop).
+# Everything is pinned to the npm registry tarball + package-lock.json in
+# ./locks/: binaries land in /nix/store, so startup is instant and offline,
+# replacing npx/bunx wrappers that resolve the registry on every launch
+# (painful after a laptop restart).
 #
-# Cara bump versi:
-#   1. `nix shell nixpkgs#nodejs -c npm install <pkg>@<versi>
-#      --package-lock-only --omit=dev --ignore-scripts` lalu timpa
-#      ./locks/<nama>-lock.json
-#   2. Set tarballHash & npmDepsHash ke lib.fakeHash, `nix build`, copy
-#      hash "got:" yang muncul ke masing-masing field, rebuild.
+# To bump a version:
+#   1. `nix shell nixpkgs#nodejs -c npm install <pkg>@<version>
+#      --package-lock-only --omit=dev --ignore-scripts`, then overwrite
+#      ./locks/<name>-lock.json
+#   2. Set tarballHash & npmDepsHash to lib.fakeHash, run `nix build`, copy the
+#      "got:" hash that appears into each field, rebuild.
 {
   lib,
   pkgs,
@@ -24,7 +24,7 @@ let
       tarballHash,
       npmDepsHash,
       lock,
-      nodejs ? pkgs.nodejs_24, # runtime: memenuhi engines rea ^24.11 & omo >=24
+      nodejs ? pkgs.nodejs_24, # runtime: satisfies the engines of rea ^24.11 & omo >=24
       npmInstallFlags ? [ ],
       npmRebuildFlags ? [ ],
       npmPackFlags ? [ ],
@@ -101,7 +101,7 @@ in
     lock = ./locks/rea-agents-lock.json;
     npmInstallFlags = [
       "--omit=dev"
-      "--ignore-scripts" # frida (optional dep) butuh net
+      "--ignore-scripts" # frida (optional dep) needs network
     ];
     npmRebuildFlags = [ "--ignore-scripts" ];
   };

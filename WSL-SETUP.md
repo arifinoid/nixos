@@ -40,8 +40,8 @@ Before proceeding, ensure you have:
 
 1. **Copy the setup script** to your NixOS-WSL machine:
    ```bash
-   # From Windows, copy setup-wsl.sh ke environment WSL
-   # (ganti path di bawah dengan lokasi repo lo di Windows)
+   # From Windows, copy setup-wsl.sh into the WSL environment
+   # (replace the path below with your repo location on Windows)
    cp /mnt/c/Users/<user>/Documents/repos/nixos/setup-wsl.sh ~/
    ```
 
@@ -71,27 +71,27 @@ Before proceeding, ensure you have:
    sudo nixos-rebuild switch --flake .#wsl-arifinoid
    ```
 
-### SOPS key (wajib sebelum switch)
+### SOPS key (required before switching)
 
-`secrets/secret.yaml` di repo sudah terenkripsi. Supaya activation tidak gagal
-dengan `cannot read keyfile '/var/lib/sops-nix/key.txt'`, restore key yang sama
-dari mesin/backup yang masih punya (laptop native, VPS, atau backup):
+`secrets/secret.yaml` in the repo is already encrypted. To keep activation from
+failing with `cannot read keyfile '/var/lib/sops-nix/key.txt'`, restore the same
+key from a machine or backup that still has it (native laptop, VPS, or backup):
 
 ```bash
-# di mesin sumber
+# on the source machine
 sudo cat /var/lib/sops-nix/key.txt
 
-# di WSL, dari root repo
+# in WSL, from the repo root
 ssh <user>@<host> 'sudo cat /var/lib/sops-nix/key.txt' | ./restore-sops-key.sh -
-# atau paste manual, lalu Ctrl-D:
+# or paste it manually, then press Ctrl-D:
 ./restore-sops-key.sh -
 ```
 
-Script memverifikasi public key terhadap `.sops.yaml` dan mengetes decrypt
-`secrets/secret.yaml` sebelum memasang key ke `/var/lib/sops-nix/key.txt`
-(`root:root`, mode `0400`). Jangan jalankan `setup-sops-key.sh` kalau secret
-sudah terenkripsi — key baru tidak bisa membukanya. Detail: README → Secrets
-Management.
+The script verifies the public key against `.sops.yaml` and tests decryption of
+`secrets/secret.yaml` before installing the key to `/var/lib/sops-nix/key.txt`
+(`root:root`, mode `0400`). Do not run `setup-sops-key.sh` while the secrets are
+already encrypted — a new key cannot decrypt them. See README → Secrets
+Management for details.
 
 ## Configuration Details
 

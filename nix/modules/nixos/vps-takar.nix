@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 let
   # Deploy job (takar) uploads each commit to releases/<sha> and flips the
   # `current` symlink. nginx serves the static Next export straight from disk;
@@ -32,6 +32,30 @@ let
   };
 in
 {
+  # Rendered at activation from sops: the API, the migration unit and the
+  # alert job all read the same file, and nothing is hand-edited on the host.
+  sops.templates."takar-env" = {
+    path = "/etc/takar.env";
+    mode = "0400";
+    content = ''
+      DATABASE_URL=${config.sops.placeholder.takar_database_url}
+      MIGRATE_DATABASE_URL=${config.sops.placeholder.takar_migrate_database_url}
+      TAKAR_APP_PASSWORD=${config.sops.placeholder.takar_app_password}
+      JWT_SECRET=${config.sops.placeholder.takar_jwt_secret}
+      PORT=${toString apiPort}
+      RUST_LOG=info,tower_http=info
+      JWT_TTL_SECONDS=86400
+      EMAIL_FROM_NAME=Takar
+      EMAIL_FROM=rohmadarifin007@gmail.com
+      BREVO_API_KEY=${config.sops.placeholder.takar_brevo_api_key}
+      APP_URL=https://takar.arifinoid.web.id
+      EMAIL_PROVIDER=brevo
+      OTP_TTL_SECONDS=300
+      FONNTE_TOKEN=${config.sops.placeholder.takar_fonnte_token}
+      WHATSAPP_PROVIDER=fonnte
+    '';
+  };
+
   services.nginx.virtualHosts."takar.arifinoid.web.id" = {
     serverName = "takar.arifinoid.web.id";
     forceSSL = true;
@@ -93,8 +117,8 @@ in
     serviceConfig = {
       ExecStart = "${takarRoot}/current/bin/takar-api";
       WorkingDirectory = "${takarRoot}/current";
-      # DATABASE_URL, JWT_SECRET and the rest live here (0600 root); created
-      # once by hand or rendered from sops later.
+      # DATABASE_URL, JWT_SECRET and the rest live here, rendered from sops at
+      # activation (see the takar-env template above).
       EnvironmentFile = "/etc/takar.env";
       Restart = "on-failure";
       RestartSec = 5;

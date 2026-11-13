@@ -11,13 +11,15 @@
 #   FILE_SERVICE_BIN=./file-service \
 #     bash nix/scripts/deploy-adl.sh file-service
 #
-# Secrets are NOT uploaded. The services read them from /etc on the VPS:
+# Secrets are NOT uploaded. The services read them from /etc on the VPS, where
+# sops-nix renders the files at activation (see vps-adl.nix / vps-secrets.nix):
 #   /etc/adl-api.env            DATABASE_URL, JWT_SECRET, CORS_ORIGIN,
 #                               FILE_SERVICE_URL
 #   /etc/adl-file-service.env   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID,
 #                               R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME,
 #                               R2_PUBLIC_URL, RUST_LOG
-# Create both as root with mode 0400 before the first deploy.
+# Do not create or edit them by hand: change secrets/secret.yaml with
+# `sops secrets/secret.yaml` and rebuild the VPS.
 
 set -euo pipefail
 

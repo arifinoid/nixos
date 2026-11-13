@@ -17,8 +17,8 @@ jobs:
       with:
         name: arifinoid-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    # pipefail: tanpa ini, `nix build ... | cachix push` selalu hijau
-    # walaupun nix build-nya gagal (exit code yang dipakai = cachix).
+    # pipefail: without this, `nix build ... | cachix push` always goes green
+    # even when the nix build fails (the exit code used is cachix's).
     - run: |
         set -o pipefail
         nix flake check

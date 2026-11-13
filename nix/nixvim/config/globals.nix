@@ -4,8 +4,8 @@ in
 {
   config = {
     performance = {
-      # combinePlugins DINONAKTIFKAN: eksperimental + tabrakan file massal
-      # (doc/recipes.md di blink/conform/oil/..., queries/*.scm di treesitter/snacks).
+      # combinePlugins is DISABLED: experimental + mass file collisions
+      # (doc/recipes.md in blink/conform/oil/..., queries/*.scm in treesitter/snacks).
       combinePlugins.enable = false;
       byteCompileLua = {
         enable = true;

@@ -206,8 +206,8 @@ in
         L = "| less";
       };
       initContent = ''
-        # NOTE: spaceship-prompt SENGAJA tidak dipakai — starship sudah aktif
-        # (programs.starship.enable). Dua-duanya on = prompt dobel/broken.
+        # NOTE: spaceship-prompt is deliberately unused — starship is already
+        # enabled (programs.starship.enable). Both on = duplicate/broken prompt.
         if [[ -o interactive && -z "$HERDR_PANE_ID" ]]; then
           exec herdr
         fi
