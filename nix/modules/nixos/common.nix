@@ -1,4 +1,4 @@
-# Shared base untuk semua NixOS hosts (bare metal + WSL).
+# Shared base for all NixOS hosts (bare metal + WSL).
 {
   pkgs,
   inputs,
@@ -52,8 +52,8 @@ in
   };
 
   nixpkgs.config.allowUnfree = true;
-  # lima via colima: versi ini ditandai insecure di nixpkgs baru.
-  # Hapus baris ini kalau colima sudah pindah ke lima yang fixed.
+  # lima via colima: this version is marked insecure in recent nixpkgs.
+  # Remove this line once colima moves to a fixed lima.
   nixpkgs.config.permittedInsecurePackages = [
     "lima-1.0.7"
   ];

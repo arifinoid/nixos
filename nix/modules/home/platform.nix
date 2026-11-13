@@ -25,7 +25,7 @@ in
       unzip
     ]
     ++ lib.optionals (!isWSLHost) [
-      # X11 clipboard: tidak berguna di WSL
+      # X11 clipboard: useless in WSL
       xclip
       xsel
       openssh

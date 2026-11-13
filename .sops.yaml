@@ -1,6 +1,6 @@
 keys:
   - &arifinoid age1n05p386lf08e7e8h4q7065nv9enycz25hr8t4sjh6cx344l9z3ksrnnrjq
-  # VPS (private key di /var/lib/sops-nix/key.txt di mesin VPS)
+  # VPS (private key at /var/lib/sops-nix/key.txt on the VPS)
   - &vps age1yu0qygxwjalrhmarvxkuheszas8pkyrxptz0vwj657p2az8xndzqzqcy0v
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env)$

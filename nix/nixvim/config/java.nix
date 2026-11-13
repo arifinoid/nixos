@@ -5,8 +5,9 @@
       enable = true;
       adapters = { };
       configurations = {
-        # Launch config diisi otomatis oleh nvim-jdtls (main class picker).
-        # Template attach di bawah untuk debug proses yang sudah jalan (-agentlib:jdwp ...=:5005).
+        # Launch configs are filled in automatically by nvim-jdtls (main class
+        # picker). The attach template below debugs an already-running process
+        # (-agentlib:jdwp ...=:5005).
         java = [
           {
             type = "java";
@@ -102,8 +103,8 @@
 
   extraConfigLua = ''
 
-    -- nvim-jdtls attach per-project (ganti lsp.servers.jdtls yang di-disable).
-    -- Workspace unik per project di ~/.cache, bukan /tmp shared.
+    -- nvim-jdtls attach per-project (replaces the disabled lsp.servers.jdtls).
+    -- Unique workspace per project under ~/.cache, not shared /tmp.
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "java",
       callback = function()
@@ -138,7 +139,7 @@
               end,
             })
 
-            -- Spring Boot: jalankan/debug via DAP (pilih main class)
+            -- Spring Boot: run/debug via DAP (pick a main class)
             vim.api.nvim_create_autocmd("BufRead", {
               pattern = "*application*.properties",
               callback = function()

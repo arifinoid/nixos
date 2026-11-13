@@ -17,7 +17,7 @@ This is my personal NixOS configuration using flakes, home-manager, and nixvim. 
 ```
 nixos/
 ├── flake.nix                    # flake-parts + ez-configs
-├── .sops.yaml                   # Recipient age (laptop + VPS)
+├── .sops.yaml                   # age recipients (laptop + VPS)
 ├── secrets/secret.yaml          # Encrypted secrets (SOPS)
 ├── restore-sops-key.sh          # Restore existing age key (SOPS)
 ├── setup-sops-key.sh            # Generate new age key (re-key only)
@@ -25,12 +25,12 @@ nixos/
 ├── nix/
 │   ├── configurations/
 │   │   ├── nixos/               # arifinoid.nix, wsl-arifinoid.nix, vps.nix
-│   │   └── home/                # Home-manager config (import semua modul di bawah)
+│   │   └── home/                # Home-manager config (imports every module below)
 │   ├── modules/
 │   │   ├── home/                # shells, git, development, agent-tools, ...
 │   │   └── nixos/               # common, hardware per host, vps-disko
-│   ├── packages/                # Derivasi CLI non-nixpkgs (npm-cli, agent-cli)
-│   ├── scripts/                 # Skrip yang dipakai service (9router env)
+│   ├── packages/                # Non-nixpkgs CLI derivations (npm-cli, agent-cli)
+│   ├── scripts/                 # Scripts used by services (9router env)
 │   └── nixvim/                  # Neovim (NixVim) config
 └── README.md
 ```
@@ -46,18 +46,18 @@ nixos/
 
 ### Building and Switching
 
-Pakai alias biar ringkas (lihat `nix/modules/home/shells.nix`):
+Use the aliases to keep it short (see `nix/modules/home/shells.nix`):
 
 ```bash
-nxbw   # WSL   → sudo nixos-rebuild switch --flake .#wsl-arifinoid
-nxb    # native→ sudo nixos-rebuild switch --flake .#arifinoid
-# <vps-ip> = IP publik VPS lo (lihat shellAliases di nix/modules/home/shells.nix)
-nxbv   # VPS   → nixos-rebuild switch --flake ~/Documents/repos/nixos#vps \
-              #            --target-host root@<vps-ip>
+nxbw   # WSL    → sudo nixos-rebuild switch --flake .#wsl-arifinoid
+nxb    # native → sudo nixos-rebuild switch --flake .#arifinoid
+# <vps-ip> = your VPS public IP (see shellAliases in nix/modules/home/shells.nix)
+nxbv   # VPS    → nixos-rebuild switch --flake ~/Documents/repos/nixos#vps \
+               #           --target-host root@<vps-ip>
 svps   # ssh root@<vps-ip>
 ```
 
-Tanpa alias:
+Without the aliases:
 
 ```bash
 sudo nixos-rebuild switch --flake .#arifinoid        # native
@@ -67,14 +67,15 @@ nixos-rebuild switch --flake .#vps --target-host root@<vps-ip>
 
 ### Formatting & Lint
 
-Formatter repo (`nixfmt`) adalah binary mentah yang butuh daftar file eksplisit —
-dipanggil tanpa argumen dia membaca stdin kosong lalu error. Makanya ada alias:
+The repo formatter (`nixfmt`) is a raw binary that needs an explicit file list —
+called without arguments it reads empty stdin and errors. That is why there is
+an alias:
 
 ```bash
 nfmt   # git ls-files '*.nix' | xargs -r nix run .#formatter.x86_64-linux --
 ```
 
-CI memakai `deadnix --fail` + `nixfmt --check`, jadi jalankan `nfmt` sebelum commit.
+CI runs `deadnix --fail` + `nixfmt --check`, so run `nfmt` before committing.
 
 ### Development
 
@@ -91,59 +92,60 @@ nix build .#arifinoid
 
 ## Secrets Management
 
-Semua secret pakai **SOPS + age** (pass sudah tidak dipakai).
+All secrets use **SOPS + age** (pass is no longer used).
 
-- **Recipients** (`.sops.yaml`): `arifinoid` (laptop) + `vps`. Keduanya bisa decrypt `secrets/secret.yaml`.
-- **Private key**: `/var/lib/sops-nix/key.txt` di tiap mesin (mode 0400). Kalau hilang, restore dengan `./restore-sops-key.sh`; jangan generate ulang setelah file dienkripsi.
+- **Recipients** (`.sops.yaml`): `arifinoid` (laptop) + `vps`. Both can decrypt `secrets/secret.yaml`.
+- **Private key**: `/var/lib/sops-nix/key.txt` on each machine (mode 0400). If it is lost, restore it with `./restore-sops-key.sh`; never generate a new key after the file is encrypted.
 - **Edit**: `sops secrets/secret.yaml`
 - **Rebuild**: `nxbw` (WSL), `nxb` (native), `nxbv` (VPS)
-- **Pakai**: NixOS decrypt ke `/run/secrets/<nama>` saat activation. Di VPS, `sops.templates` juga merender file persisten di `/root/...` (mis. key 9router) supaya tidak hilang saat reboot.
+- **Usage**: NixOS decrypts to `/run/secrets/<name>` at activation. On the VPS, `sops.templates` also render files under `/root/...` (e.g. the 9router key) so they survive a reboot.
+- **VPS service env**: `/etc/adl-api.env`, `/etc/adl-file-service.env`, `/etc/takar.env` and `/etc/jobhooker.env` are rendered from `secrets/secret.yaml` via `sops.templates` (symlinked to `/run/secrets/rendered/`, mode 0400 root). Do not edit them by hand: change `sops secrets/secret.yaml` and rebuild. Non-secret values (PORT, CORS, feature flags) stay in the Nix modules.
 
-### Restore key vs generate key baru
+### Restore an existing key vs generate a new one
 
-`secrets/secret.yaml` sudah terenkripsi untuk recipient di `.sops.yaml`. Kalau
-`/var/lib/sops-nix/key.txt` hilang, **restore key yang lama** — jangan generate
-key baru, karena key baru tidak bisa membuka secret yang sudah ada.
+`secrets/secret.yaml` is already encrypted for the recipients in `.sops.yaml`.
+If `/var/lib/sops-nix/key.txt` is lost, **restore the existing key** — do not
+generate a new one, because a new key cannot decrypt existing secrets.
 
-| Situasi | Pakai |
+| Situation | Use |
 |---|---|
-| Key masih ada di mesin lain / backup | `./restore-sops-key.sh` |
-| Mesin benar-benar baru & secret akan di-rekey | `bash setup-sops-key.sh`, lalu `sops updatekeys` dari mesin yang masih bisa decrypt |
+| The key still exists on another machine / in a backup | `./restore-sops-key.sh` |
+| Brand-new machine and the secrets will be re-keyed | `bash setup-sops-key.sh`, then `sops updatekeys` from a machine that can still decrypt |
 
-#### Restore dari mesin lain (mis. WSL)
+#### Restoring from another machine (e.g. WSL)
 
-Di mesin sumber, ambil isi key:
+On the source machine, read the key:
 
 ```bash
 sudo cat /var/lib/sops-nix/key.txt
 ```
 
-Di mesin tujuan (dari root repo), pipe langsung tanpa menulis key ke file lain:
+On the target machine (from the repo root), pipe it directly without writing it to another file:
 
 ```bash
-# dari file lokal
+# from a local file
 ./restore-sops-key.sh ~/key.txt
 
-# dari stdin / hasil paste (Ctrl-D untuk selesai)
+# from stdin / pasted input (Ctrl-D to finish)
 ./restore-sops-key.sh -
 
-# langsung dari mesin lain lewat SSH
+# straight from another machine over SSH
 ssh <user>@<host> 'sudo cat /var/lib/sops-nix/key.txt' | ./restore-sops-key.sh -
 ```
 
-Script akan:
+The script will:
 
-1. mengambil baris `AGE-SECRET-KEY-1...` dari input,
-2. menampilkan public key dan mencocokkannya dengan recipient di `.sops.yaml`,
-3. mengetes decrypt `secrets/secret.yaml` sebelum memasang apa pun,
-4. memasang `/var/lib/sops-nix/key.txt` sebagai `root:root` mode `0400`.
+1. extract the `AGE-SECRET-KEY-1...` line from the input,
+2. print the public key and match it against the recipients in `.sops.yaml`,
+3. test decryption of `secrets/secret.yaml` before installing anything,
+4. install `/var/lib/sops-nix/key.txt` as `root:root` with mode `0400`.
 
-Key yang sudah ada tidak ditimpa tanpa `--force`; kalau ditimpa, versi lama
-disimpan sebagai `key.txt.bak.<timestamp>`. Kalau key yang dipasang sama persis,
-script keluar tanpa mengubah apa pun. Pakai `--skip-verify` hanya kalau `sops`
-tidak tersedia (tidak disarankan).
+An existing key is not overwritten without `--force`; when overwritten, the old
+version is kept as `key.txt.bak.<timestamp>`. If the installed key is identical,
+the script exits without changing anything. Use `--skip-verify` only when `sops`
+is unavailable (not recommended).
 
-Setelah restore, rebuild lalu cek:
+After restoring, rebuild and check:
 
 ```bash
 nxb
@@ -151,18 +153,23 @@ test -s /run/secrets/wakatime_api_key && echo "secret loaded"
 systemctl status home-manager-arifinoid.service --no-pager
 ```
 
-Public key yang diharapkan untuk recipient `arifinoid`:
+The expected public key for the `arifinoid` recipient is:
 `age1n05p386lf08e7e8h4q7065nv9enycz25hr8t4sjh6cx344l9z3ksrnnrjq`.
 
-Jangan pernah commit private key atau menaruhnya di repo — cukup di
+Never commit the private key or put it in the repo — keep it only in
 `/var/lib/sops-nix/key.txt`.
 
-### Secret yang ada sekarang
+### Current secrets
 
-| Nama | Dipakai di |
+| Name | Used by |
 |---|---|
-| `wakatime_api_key` | activity logger (semua host ber-HM) |
-| `nine_router_api_key` | VPS: auth key 9router untuk hermes |
+| `wakatime_api_key` | activity logger (every host with HM) |
+| `nine_router_api_key` | VPS: 9router auth key for hermes |
+| `adl_database_url`, `adl_jwt_secret` | VPS: ADL API |
+| `adl_r2_account_id`, `adl_r2_access_key_id`, `adl_r2_secret_access_key` | VPS: ADL file service (Cloudflare R2) |
+| `takar_database_url`, `takar_migrate_database_url`, `takar_jwt_secret` | VPS: Takar API (runtime + migration) |
+| `takar_fonnte_token`, `takar_brevo_api_key`, `takar_app_password` | VPS: Takar integrations |
+| `jobhooker_database_url`, `jobhooker_api_token` | VPS: jobhooker |
 
 ### Add an API key
 
@@ -180,8 +187,8 @@ Add this field in the editor:
 <secret_name>: paste-api-key-here
 ```
 
-2. Register the secret di `sops.secrets` pada `nix/modules/nixos/common.nix`
-   (modul itu di-import oleh **kedua** host laptop, WSL maupun native):
+2. Register the secret in `sops.secrets` in `nix/modules/nixos/common.nix`
+   (that module is imported by **both** laptop hosts, WSL and native):
 
 ```nix
 sops.secrets.<secret_name> = {
@@ -191,7 +198,7 @@ sops.secrets.<secret_name> = {
 };
 ```
 
-Kalau secret cuma buat VPS, daftarkan di `nix/configurations/nixos/vps.nix` (owner `root`).
+If the secret is only for the VPS, register it in `nix/modules/nixos/vps-secrets.nix` (owner `root`).
 
 3. Apply configuration:
 
@@ -200,7 +207,7 @@ nxbw  # WSL
 nxb   # native NixOS
 ```
 
-SOPS decrypts the key to `/run/secrets/<secret_name>`. Check file existence without printing the key:
+SOPS decrypts the secret to `/run/secrets/<secret_name>`. Check that the file exists without printing its contents:
 
 ```bash
 test -s /run/secrets/<secret_name> && echo "secret loaded"
@@ -224,12 +231,12 @@ Home Manager links `.config/opencode/opencode.json` to `~/.config/opencode/openc
 
 The configuration includes AI-powered Neovim features:
 
-- **Avante**: AI code assistant, provider default `copilot` (ubah di `ai/default.nix`
-  kalau mau `claude`/`groq`/`grok`)
-- **Claude Code**: hook `rtk` + `icm` terpasang lewat `.config/claude/settings.json`
-- **CodeBuddy**: hook `rtk` + `icm` terpasang lewat `.config/codebuddy/settings.json`
-  (wrapper di `nix/modules/home/codebuddy.nix`, karena keduanya cuma punya integrasi
-  native buat Claude Code)
+- **Avante**: AI code assistant, default provider `copilot` (change it in
+  `ai/default.nix` if you want `claude`/`groq`/`grok`)
+- **Claude Code**: `rtk` + `icm` hooks are installed through `.config/claude/settings.json`
+- **CodeBuddy**: `rtk` + `icm` hooks are installed through `.config/codebuddy/settings.json`
+  (wrapper in `nix/modules/home/codebuddy.nix`, since both only have a native
+  integration for Claude Code)
 
 ### Key Bindings
 - `<leader>ca`: Open AI Ask
@@ -252,36 +259,36 @@ The configuration includes AI-powered Neovim features:
 - Cross-platform compatibility
 
 ### vps (Sumopod/Hermes, Tencent Cloud)
-- **Tanpa home-manager** — modul home tidak kepakai di sini; paket/tools dideklarasi sendiri
-- Boot hybrid (grub MBR + removable EFI) karena firmware VPS ternyata BIOS legacy
-- Jaringan statis via systemd-networkd (DHCP cuma dipakai cloud-init)
-- hermes-agent + rtk terpasang imperatif di `/root/.local/bin`, dibungkus script supaya
-  ada di PATH system
+- **No home-manager** — the home modules are not used here; packages/tools are declared directly
+- Hybrid boot (grub MBR + removable EFI) because the VPS firmware turned out to be legacy BIOS
+- Static networking via systemd-networkd (DHCP is only used by cloud-init)
+- hermes-agent + rtk are installed imperatively in `/root/.local/bin`, wrapped by a script so
+  they are on the system PATH
 
 ## Customization
 
 ### Adding Packages
 - System packages: `nix/configurations/nixos/<host>.nix`
-- User packages: modul home yang relevan di `nix/modules/home/` (`platform.nix`, `development.nix`, `agent-tools.nix`, ...)
-- CLI non-nixpkgs (npm/Rust): tambah derivasi di `nix/packages/` (`npm-cli.nix`, `agent-cli.nix`)
+- User packages: the relevant home module in `nix/modules/home/` (`platform.nix`, `development.nix`, `agent-tools.nix`, ...)
+- Non-nixpkgs CLIs (npm/Rust): add a derivation in `nix/packages/` (`npm-cli.nix`, `agent-cli.nix`)
 
-Modul home baru **tidak perlu didaftarkan** — `nix/configurations/home/arifinoid.nix`
-meng-import `lib.attrValues ezModules`, jadi semua file di `nix/modules/home/`
-otomatis aktif untuk host yang memakai home-manager.
+New home modules are **not registered manually** — `nix/configurations/home/arifinoid.nix`
+imports `lib.attrValues ezModules`, so every file in `nix/modules/home/` is
+automatically active for hosts that use home-manager.
 
 ### Neovim Configuration
 - Main config: `nix/nixvim/config/default.nix`
 - AI (Avante, provider `copilot`): `nix/nixvim/config/ai/default.nix`
 - Editor settings: `nix/nixvim/config/editor/default.nix`
-- Keymaps: `nix/nixvim/config/keys.nix` (+ `navigations.nix` untuk navigasi)
+- Keymaps: `nix/nixvim/config/keys.nix` (+ `navigations.nix` for navigation)
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **SOPS decryption errors** (`cannot read keyfile '/var/lib/sops-nix/key.txt'`, `/run/secrets/<nama>` tidak ada): key belum terpasang atau tidak cocok dengan recipient di `.sops.yaml`. Restore key lama dengan `./restore-sops-key.sh <key-file|->` dan pastikan public key-nya `age1n05p386...`. Jangan pakai `setup-sops-key.sh` kecuali sedang re-key.
-2. **Plugin not found**: cek plugin-nya ada di nixpkgs unstable
-3. **Build failures**: cek flake inputs & dependencies
+1. **SOPS decryption errors** (`cannot read keyfile '/var/lib/sops-nix/key.txt'`, missing `/run/secrets/<name>`): the key is not installed or does not match the recipient in `.sops.yaml`. Restore the old key with `./restore-sops-key.sh <key-file|->` and make sure its public key is `age1n05p386...`. Do not use `setup-sops-key.sh` unless you are re-keying.
+2. **Plugin not found**: check that the plugin exists in nixpkgs unstable
+3. **Build failures**: check flake inputs & dependencies
 
 ### Getting Help
 

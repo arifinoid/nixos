@@ -103,13 +103,14 @@
           typescriptreact = [ "biome" ];
           json = [ "biome" ];
           jsonc = [ "biome" ];
-          # NOTE: css TIDAK ikut — biome 1.9.4 (nixpkgs 25.05) belum support CSS
-          # (stabil di Biome 2.x). CSS diformat via lsp_fallback (= tidak ada),
-          # jadi save CSS = no-op sampai nixpkgs diupdate.
+          # NOTE: css is NOT included — biome 1.9.4 (nixpkgs 25.05) does not
+          # support CSS yet (stable in Biome 2.x). CSS is formatted via
+          # lsp_fallback (= none), so saving CSS is a no-op until nixpkgs is
+          # updated.
         };
         format_on_save = {
           timeout_ms = 5000;
-          # ft tanpa formatter conform -> pakai LSP (gopls, rust-analyzer, ...)
+          # filetypes without a conform formatter -> use LSP (gopls, rust-analyzer, ...)
           lsp_fallback = true;
         };
       };
@@ -170,7 +171,7 @@
         };
         signature.enabled = true;
         appearance = {
-          # fallback ke highlight nvim-cmp biar catppuccin tetap cocok
+          # fall back to nvim-cmp highlights so catppuccin still matches
           use_nvim_cmp_as_default = true;
           nerd_font_variant = "normal";
         };

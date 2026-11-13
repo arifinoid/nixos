@@ -1,5 +1,5 @@
-# Sumopod/Hermes (Tencent Cloud), disk virtio 40G.
-# ESP buat removable-EFI + EF02 buat legacy BIOS boot (hybrid).
+# Sumopod/Hermes (Tencent Cloud), 40G virtio disk.
+# ESP for removable EFI + EF02 for legacy BIOS boot (hybrid).
 
 { inputs, ... }:
 

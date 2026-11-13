@@ -1,8 +1,8 @@
-# Nixvim via flake-parts API modern (nixvim >= 2026):
-# - `flakeModules.nixvimConfigurations` (TANPA `.default`, supaya tidak
-#   menyeret `partitions` nixvim yang akan memindahkan checks/devShells/
-#   formatter kita ke partition nixvim).
-# - packages/checks di-wire manual dari `config.nixvimConfigurations`.
+# Nixvim via the modern flake-parts API (nixvim >= 2026):
+# - `flakeModules.nixvimConfigurations` (WITHOUT `.default`, so it does not
+#   drag in nixvim's `partitions`, which would move our checks/devShells/
+#   formatter into a nixvim partition).
+# - packages/checks are wired manually from `config.nixvimConfigurations`.
 { inputs, ... }:
 {
   imports = [
@@ -13,8 +13,8 @@
     { config, system, ... }:
     let
       nixvimLib = inputs.nixvim.lib;
-      # NOTE: pakai .extend, JANGAN `//`. `//` memutus fixpoint makeExtensible
-      # sehingga helper custom hilang saat test.nix me-re-eval via .extend.
+      # NOTE: use .extend, NOT `//`. `//` breaks the makeExtensible fixpoint,
+      # so custom helpers disappear when test.nix re-evaluates through .extend.
       helpers = nixvimLib.nixvim.extend (
         _final: _prev: {
           mkLuaFunWithName =
@@ -42,13 +42,13 @@
       nixvimConfigurations.nvim = nixvimLib.evalNixvim {
         inherit system;
         modules = [
-          # TANPA override nixpkgs.pkgs: pakai unstable bawaan nixvim supaya
-          # versi paket (LSP servers, plugins) cocok dengan skema modul baru.
-          # Unfree dibutuhkan (copilot-language-server).
+          # Do NOT override nixpkgs.pkgs: use nixvim's bundled unstable so
+          # package versions (LSP servers, plugins) match the new module schema.
+          # Unfree is required (copilot-language-server).
           { nixpkgs.config.allowUnfree = true; }
-          # nixpkgs.source eksplisit = input nixvim sendiri (nilai identik
-          # dengan default). Tanpa ini, check `nix flake check` gagal hanya
-          # karena warning skew-rev lockfile (bukan error beneran).
+          # nixpkgs.source is set explicitly to nixvim's own input (identical
+          # to the default). Without this, `nix flake check` fails only because
+          # of a lockfile skew-rev warning (not a real error).
           (
             { inputs, ... }:
             {

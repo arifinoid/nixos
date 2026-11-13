@@ -62,7 +62,7 @@ sudo mkdir -p /etc/nixos
 
 # Copy your flake configuration
 echo "📁 Setting up flake configuration..."
-# Ganti dengan lokasi repo lo di Windows (WSL expose drive C via /mnt/c).
+# Replace with your repo path on Windows (WSL exposes drive C via /mnt/c).
 WIN_REPO="${WIN_REPO:-/mnt/c/Users/<user>/Documents/repos/nixos}"
 
 if [ -d "$WIN_REPO" ]; then

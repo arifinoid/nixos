@@ -106,7 +106,7 @@ in
     wakatime.enable = true;
     wakatime.autoLoad = true;
 
-    # backend untuk <leader>v MarkdownPreviewToggle di keys.nix
+    # backend for <leader>v MarkdownPreviewToggle in keys.nix
     markdown-preview.enable = true;
 
     presence = { };
@@ -258,8 +258,8 @@ in
             pkgs.vimPlugins.nvim-treesitter.builtGrammars.${x} or pkgs.tree-sitter-grammars."tree-sitter-${x}"
           )
           [
-            # NOTE: daftar dipangkas ke bahasa yang dipakai (dulu ~70).
-            # Tambah lagi kalau butuh — nama invalid ketahuan pas eval.
+            # NOTE: the list is trimmed to the languages actually used (was ~70).
+            # Add more when needed — invalid names are caught during evaluation.
             "bash"
             "c"
             "cpp"
@@ -337,7 +337,7 @@ in
       settings = {
         lsp = {
           override = {
-            # blink.cmp punya dokumentasi sendiri, jangan pakai override cmp
+            # blink.cmp has its own documentation; do not use the cmp override
             "cmp.entry.get_documentation" = false;
             "vim.lsp.util.convert_input_to_markdown_lines" = true;
             "vim.lsp.util.stylize_markdown" = true;
