@@ -99,7 +99,7 @@ All secrets use **SOPS + age** (pass is no longer used).
 - **Edit**: `sops secrets/secret.yaml`
 - **Rebuild**: `nxbw` (WSL), `nxb` (native), `nxbv` (VPS)
 - **Usage**: NixOS decrypts to `/run/secrets/<name>` at activation. On the VPS, `sops.templates` also render files under `/root/...` (e.g. the 9router key) so they survive a reboot.
-- **VPS service env**: `/etc/adl-api.env`, `/etc/adl-file-service.env`, `/etc/takar.env` and `/etc/jobhooker.env` are rendered from `secrets/secret.yaml` via `sops.templates` (symlinked to `/run/secrets/rendered/`, mode 0400 root). Do not edit them by hand: change `sops secrets/secret.yaml` and rebuild. Non-secret values (PORT, CORS, feature flags) stay in the Nix modules.
+- **VPS service env**: `/etc/adl-api.env`, `/etc/adl-file-service.env`, `/etc/takar.env`, `/etc/jobhooker.env` and `/etc/ask-api.env` are rendered from `secrets/secret.yaml` via `sops.templates` (symlinked to `/run/secrets/rendered/`, mode 0400 root). Do not edit them by hand: change `sops secrets/secret.yaml` and rebuild. Non-secret values (PORT, CORS, feature flags) stay in the Nix modules.
 
 ### Restore an existing key vs generate a new one
 
