@@ -23,6 +23,7 @@
     ezModules.vps-shell
     ezModules.vps-packages
     ezModules.vps-secrets
+    ezModules.vps-ask-api
     ezModules.vps-ssh
   ];
 
