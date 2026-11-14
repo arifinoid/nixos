@@ -70,6 +70,14 @@ in
     extraConfig = securityHeaders;
   };
 
+  # The ask panel cites uploaded documents as /docs/<name>; serve them from the
+  # same directory the service indexes. autoindex stays off, so a file is only
+  # reachable by its exact name.
+  services.nginx.virtualHosts."arifinoid.web.id".locations."/docs/" = {
+    alias = "${askApiData}/docs/";
+    extraConfig = securityHeaders;
+  };
+
   # Static system user (not DynamicUser) because it owns the docs directory.
   users.users.ask-api = {
     isSystemUser = true;
@@ -77,6 +85,10 @@ in
     home = askApiData;
   };
   users.groups.ask-api = { };
+
+  # nginx serves /docs/ straight from the service's 0750 docs directory, so it
+  # joins the group instead of the directory being widened to world-readable.
+  users.users.nginx.extraGroups = [ "ask-api" ];
 
   # Native systemd service instead of a container. Hardening gives it
   # container-like isolation without a container runtime.
