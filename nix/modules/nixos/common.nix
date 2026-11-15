@@ -85,6 +85,11 @@ in
         group = "users";
         mode = "0400";
       };
+      longcat_api_key = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
     };
   };
 

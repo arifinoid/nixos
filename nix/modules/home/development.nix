@@ -24,7 +24,6 @@ in
 
   xdg.configFile."opencode/opencode.json".source = "${inputs.self}/.config/opencode/opencode.json";
   xdg.configFile."opencode/plugins".source = "${inputs.self}/.config/opencode/plugins";
-  home.file.".claude/settings.json".source = "${inputs.self}/.config/claude/settings.json";
   home.file.".omp/agent/models.yml".source = "${inputs.self}/.config/omp/agent/models.yml";
   home.file.".omp/agent/mcp.json".source = "${inputs.self}/.config/omp/agent/mcp.json";
 
@@ -45,6 +44,20 @@ in
         "env": {}
       })
     ' "$CLAUDE_JSON" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
+  '';
+
+  # The LongCat token is not committed. .config/claude/settings.json holds a
+  # placeholder and the real ANTHROPIC_AUTH_TOKEN is injected at activation
+  # from sops, so the secret never ends up in the repo or the nix store.
+  home.activation.claudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    SECRET_FILE=${lib.escapeShellArg osConfig.sops.secrets.longcat_api_key.path}
+    SETTINGS="$HOME/.claude/settings.json"
+    install -d -m 0755 "$HOME/.claude"
+    umask 077
+    ${pkgs.jq}/bin/jq --rawfile token "$SECRET_FILE" \
+      '.env.ANTHROPIC_AUTH_TOKEN = ($token | rtrimstr("\n"))' \
+      ${lib.escapeShellArg "${inputs.self}/.config/claude/settings.json"} > "$SETTINGS.tmp"
+    mv "$SETTINGS.tmp" "$SETTINGS"
   '';
 
   home.activation.wakatimeCfg = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
