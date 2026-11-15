@@ -35,7 +35,7 @@ in
   services.goatcounter = {
     enable = true;
     address = "127.0.0.1";
-    port = 8081;
+    port = 8082;
     # TLS terminates at nginx; GoatCounter trusts X-Forwarded-* from it.
     proxy = true;
     extraArgs = [
@@ -113,7 +113,7 @@ in
     enableACME = true;
 
     locations."/" = {
-      proxyPass = "http://127.0.0.1:8081";
+      proxyPass = "http://127.0.0.1:8082";
       extraConfig = ''
         add_header X-Frame-Options "DENY" always;
         add_header X-Content-Type-Options "nosniff" always;
