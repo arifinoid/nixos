@@ -7,7 +7,7 @@
 
 let
   # App env files are rendered from these at activation (see the sops.templates
-  # in vps-adl.nix, vps-takar.nix and vps-web.nix). restartUnits means a value
+  # in vps-adl.nix, vps-nata.nix and vps-web.nix). restartUnits means a value
   # change only needs `sops edit` + rebuild: sops-nix re-renders the file and
   # restarts the consumer, so no hand-edited /etc/*.env survives anywhere.
   mkSecret = restartUnits: {
@@ -48,14 +48,14 @@ in
       adl_r2_access_key_id = mkSecret [ "adl-file-service.service" ];
       adl_r2_secret_access_key = mkSecret [ "adl-file-service.service" ];
 
-      # Takar API (/etc/takar.env). takar-migrate and takar-alert-job read the
+      # Nata API (/etc/nata.env). nata-migrate and nata-alert-job read the
       # same file on every run, so only the long-running API needs a restart.
-      takar_database_url = mkSecret [ "takar-api.service" ];
-      takar_migrate_database_url = mkSecret [ "takar-api.service" ];
-      takar_app_password = mkSecret [ "takar-api.service" ];
-      takar_jwt_secret = mkSecret [ "takar-api.service" ];
-      takar_brevo_api_key = mkSecret [ "takar-api.service" ];
-      takar_fonnte_token = mkSecret [ "takar-api.service" ];
+      nata_database_url = mkSecret [ "nata-api.service" ];
+      nata_migrate_database_url = mkSecret [ "nata-api.service" ];
+      nata_app_password = mkSecret [ "nata-api.service" ];
+      nata_jwt_secret = mkSecret [ "nata-api.service" ];
+      nata_brevo_api_key = mkSecret [ "nata-api.service" ];
+      nata_fonnte_token = mkSecret [ "nata-api.service" ];
 
       # job-hooker API (/etc/jobhooker.env)
       jobhooker_api_token = mkSecret [ "jobhooker.service" ];

@@ -3,7 +3,7 @@
 #
 # The NixOS module (nix/modules/nixos/vps-adl.nix) only declares nginx, the
 # systemd units and /srv/adl/*/releases. This script fills those directories
-# and flips the `current` symlink, mirroring how jobhooker/takar are deployed.
+# and flips the `current` symlink, mirroring how jobhooker/nata are deployed.
 #
 # Usage:
 #   bash nix/scripts/deploy-adl.sh                 # api + web + file-service

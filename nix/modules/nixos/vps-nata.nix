@@ -1,9 +1,9 @@
 { config, pkgs, ... }:
 let
-  # Deploy job (takar) uploads each commit to releases/<sha> and flips the
+  # Deploy job (nata) uploads each commit to releases/<sha> and flips the
   # `current` symlink. nginx serves the static Next export straight from disk;
   # only the Rust API is a systemd service.
-  takarRoot = "/srv/takar";
+  nataRoot = "/srv/nata";
 
   apiPort = 3001;
 
@@ -34,33 +34,33 @@ in
 {
   # Rendered at activation from sops: the API, the migration unit and the
   # alert job all read the same file, and nothing is hand-edited on the host.
-  sops.templates."takar-env" = {
-    path = "/etc/takar.env";
+  sops.templates."nata-env" = {
+    path = "/etc/nata.env";
     mode = "0400";
     content = ''
-      DATABASE_URL=${config.sops.placeholder.takar_database_url}
-      MIGRATE_DATABASE_URL=${config.sops.placeholder.takar_migrate_database_url}
-      TAKAR_APP_PASSWORD=${config.sops.placeholder.takar_app_password}
-      JWT_SECRET=${config.sops.placeholder.takar_jwt_secret}
+      DATABASE_URL=${config.sops.placeholder.nata_database_url}
+      MIGRATE_DATABASE_URL=${config.sops.placeholder.nata_migrate_database_url}
+      NATA_APP_PASSWORD=${config.sops.placeholder.nata_app_password}
+      JWT_SECRET=${config.sops.placeholder.nata_jwt_secret}
       PORT=${toString apiPort}
       RUST_LOG=info,tower_http=info
       JWT_TTL_SECONDS=86400
-      EMAIL_FROM_NAME=Takar
+      EMAIL_FROM_NAME=Nata
       EMAIL_FROM=rohmadarifin007@gmail.com
-      BREVO_API_KEY=${config.sops.placeholder.takar_brevo_api_key}
-      APP_URL=https://takar.arifinoid.web.id
+      BREVO_API_KEY=${config.sops.placeholder.nata_brevo_api_key}
+      APP_URL=https://nata.arifinoid.web.id
       EMAIL_PROVIDER=brevo
       OTP_TTL_SECONDS=300
-      FONNTE_TOKEN=${config.sops.placeholder.takar_fonnte_token}
+      FONNTE_TOKEN=${config.sops.placeholder.nata_fonnte_token}
       WHATSAPP_PROVIDER=fonnte
     '';
   };
 
-  services.nginx.virtualHosts."takar.arifinoid.web.id" = {
-    serverName = "takar.arifinoid.web.id";
+  services.nginx.virtualHosts."nata.arifinoid.web.id" = {
+    serverName = "nata.arifinoid.web.id";
     forceSSL = true;
     enableACME = true;
-    root = "${takarRoot}/current/out";
+    root = "${nataRoot}/current/out";
 
     extraConfig = securityHeaders;
 
@@ -86,28 +86,28 @@ in
     locations."/api-docs/" = apiLocation;
   };
 
-  security.acme.certs."takar.arifinoid.web.id" = {
+  security.acme.certs."nata.arifinoid.web.id" = {
     email = "rohmadarifin007@gmail.com";
-    domain = "takar.arifinoid.web.id";
+    domain = "nata.arifinoid.web.id";
   };
 
   # Static system user because the service path is fixed; no writable state is
   # needed yet (Neon owns the database).
-  users.users.takar = {
+  users.users.nata = {
     isSystemUser = true;
-    group = "takar";
-    home = "/var/lib/takar";
+    group = "nata";
+    home = "/var/lib/nata";
   };
-  users.groups.takar = { };
+  users.groups.nata = { };
 
-  systemd.services.takar-api = {
-    description = "Takar API (Rust)";
+  systemd.services.nata-api = {
+    description = "Nata API (Rust)";
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
     unitConfig.ConditionPathExists = [
-      "${takarRoot}/current"
-      "/etc/takar.env"
+      "${nataRoot}/current"
+      "/etc/nata.env"
     ];
     environment = {
       PORT = toString apiPort;
@@ -115,16 +115,16 @@ in
       SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     };
     serviceConfig = {
-      ExecStart = "${takarRoot}/current/bin/takar-api";
-      WorkingDirectory = "${takarRoot}/current";
+      ExecStart = "${nataRoot}/current/bin/nata-api";
+      WorkingDirectory = "${nataRoot}/current";
       # DATABASE_URL, JWT_SECRET and the rest live here, rendered from sops at
-      # activation (see the takar-env template above).
-      EnvironmentFile = "/etc/takar.env";
+      # activation (see the nata-env template above).
+      EnvironmentFile = "/etc/nata.env";
       Restart = "on-failure";
       RestartSec = 5;
 
-      User = "takar";
-      Group = "takar";
+      User = "nata";
+      Group = "nata";
       NoNewPrivileges = true;
       ProtectSystem = "strict";
       ProtectHome = true;
@@ -146,20 +146,20 @@ in
   # Not wantedBy anything: a failed migration must stop the deploy instead of
   # letting the API serve a half-migrated schema. Migrations run as the owner
   # role; grant.sql then creates/refreshes the least-privilege runtime role.
-  systemd.services.takar-migrate = {
-    description = "Takar database migrations and grants";
+  systemd.services.nata-migrate = {
+    description = "Nata database migrations and grants";
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
     unitConfig.ConditionPathExists = [
-      "${takarRoot}/current"
-      "/etc/takar.env"
+      "${nataRoot}/current"
+      "/etc/nata.env"
     ];
     serviceConfig = {
       Type = "oneshot";
-      WorkingDirectory = "${takarRoot}/current";
-      EnvironmentFile = "/etc/takar.env";
+      WorkingDirectory = "${nataRoot}/current";
+      EnvironmentFile = "/etc/nata.env";
       Environment = "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt";
-      ExecStart = pkgs.writeShellScript "takar-migrate" ''
+      ExecStart = pkgs.writeShellScript "nata-migrate" ''
         set -euo pipefail
 
         ${pkgs.sqlx-cli}/bin/sqlx migrate run \
@@ -168,11 +168,11 @@ in
 
         ${pkgs.postgresql_17}/bin/psql "$MIGRATE_DATABASE_URL" \
           -v ON_ERROR_STOP=1 \
-          -v app_password="$TAKAR_APP_PASSWORD" \
+          -v app_password="$NATA_APP_PASSWORD" \
           -f deploy/vps/grant.sql
       '';
-      User = "takar";
-      Group = "takar";
+      User = "nata";
+      Group = "nata";
       NoNewPrivileges = true;
       ProtectSystem = "strict";
       ProtectHome = true;
@@ -185,27 +185,27 @@ in
   # the RLS-bound runtime role and would only ever see one tenant. Delivery
   # state lives in the alerts table, so a failed send is retried on the next
   # run instead of being lost.
-  systemd.services.takar-alert-job = {
-    description = "Takar daily alert job";
+  systemd.services.nata-alert-job = {
+    description = "Nata daily alert job";
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
     unitConfig.ConditionPathExists = [
-      "${takarRoot}/current"
-      "/etc/takar.env"
+      "${nataRoot}/current"
+      "/etc/nata.env"
     ];
     serviceConfig = {
       Type = "oneshot";
-      WorkingDirectory = "${takarRoot}/current";
-      EnvironmentFile = "/etc/takar.env";
+      WorkingDirectory = "${nataRoot}/current";
+      EnvironmentFile = "/etc/nata.env";
       Environment = "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt";
-      ExecStart = pkgs.writeShellScript "takar-alert-job" ''
+      ExecStart = pkgs.writeShellScript "nata-alert-job" ''
         set -euo pipefail
 
         export DATABASE_URL="$MIGRATE_DATABASE_URL"
-        exec ${takarRoot}/current/bin/alert_job
+        exec ${nataRoot}/current/bin/alert_job
       '';
-      User = "takar";
-      Group = "takar";
+      User = "nata";
+      Group = "nata";
       NoNewPrivileges = true;
       ProtectSystem = "strict";
       ProtectHome = true;
@@ -213,8 +213,8 @@ in
     };
   };
 
-  systemd.timers.takar-alert-job = {
-    description = "Daily Takar alert job";
+  systemd.timers.nata-alert-job = {
+    description = "Daily Nata alert job";
     wantedBy = [ "timers.target" ];
     timerConfig = {
       # 00:10 UTC is 07:10 WIB. The job compares expiry against the UTC date,
@@ -228,8 +228,8 @@ in
 
   # Release directories written by the deploy job over ssh.
   systemd.tmpfiles.rules = [
-    "d ${takarRoot} 0755 root root -"
-    "d ${takarRoot}/releases 0755 root root -"
-    "d /var/lib/takar 0750 takar takar -"
+    "d ${nataRoot} 0755 root root -"
+    "d ${nataRoot}/releases 0755 root root -"
+    "d /var/lib/nata 0750 nata nata -"
   ];
 }
