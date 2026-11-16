@@ -99,7 +99,7 @@ All secrets use **SOPS + age** (pass is no longer used).
 - **Edit**: `sops secrets/secret.yaml`
 - **Rebuild**: `nxbw` (WSL), `nxb` (native), `nxbv` (VPS)
 - **Usage**: NixOS decrypts to `/run/secrets/<name>` at activation. On the VPS, `sops.templates` also render files under `/root/...` (e.g. the 9router key) so they survive a reboot.
-- **VPS service env**: `/etc/adl-api.env`, `/etc/adl-file-service.env`, `/etc/takar.env`, `/etc/jobhooker.env` and `/etc/ask-api.env` are rendered from `secrets/secret.yaml` via `sops.templates` (symlinked to `/run/secrets/rendered/`, mode 0400 root). Do not edit them by hand: change `sops secrets/secret.yaml` and rebuild. Non-secret values (PORT, CORS, feature flags) stay in the Nix modules.
+- **VPS service env**: `/etc/adl-api.env`, `/etc/adl-file-service.env`, `/etc/nata.env`, `/etc/jobhooker.env` and `/etc/ask-api.env` are rendered from `secrets/secret.yaml` via `sops.templates` (symlinked to `/run/secrets/rendered/`, mode 0400 root). Do not edit them by hand: change `sops secrets/secret.yaml` and rebuild. Non-secret values (PORT, CORS, feature flags) stay in the Nix modules.
 
 ### Restore an existing key vs generate a new one
 
@@ -167,8 +167,8 @@ Never commit the private key or put it in the repo — keep it only in
 | `nine_router_api_key` | VPS: 9router auth key for hermes |
 | `adl_database_url`, `adl_jwt_secret` | VPS: ADL API |
 | `adl_r2_account_id`, `adl_r2_access_key_id`, `adl_r2_secret_access_key` | VPS: ADL file service (Cloudflare R2) |
-| `takar_database_url`, `takar_migrate_database_url`, `takar_jwt_secret` | VPS: Takar API (runtime + migration) |
-| `takar_fonnte_token`, `takar_brevo_api_key`, `takar_app_password` | VPS: Takar integrations |
+| `nata_database_url`, `nata_migrate_database_url`, `nata_jwt_secret` | VPS: Nata API (runtime + migration) |
+| `nata_fonnte_token`, `nata_brevo_api_key`, `nata_app_password` | VPS: Nata integrations |
 | `jobhooker_database_url`, `jobhooker_api_token` | VPS: jobhooker |
 
 ### Add an API key

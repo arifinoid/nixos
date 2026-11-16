@@ -20,7 +20,7 @@
     ezModules.vps-adl
     ezModules.vps-aksaraku
     ezModules.vps-web
-    ezModules.vps-takar
+    ezModules.vps-nata
     ezModules.vps-shell
     ezModules.vps-packages
     ezModules.vps-secrets
