@@ -25,6 +25,7 @@
     ezModules.vps-packages
     ezModules.vps-secrets
     ezModules.vps-ask-api
+    ezModules.vps-enggeek
     ezModules.vps-ssh
   ];
 
