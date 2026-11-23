@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   # Deploy script (deploy/vps/deploy.sh in the eng-geek repo) uploads a release
   # to releases/<sha> and flips `current`. The Go binary serves /api/v1 and the
