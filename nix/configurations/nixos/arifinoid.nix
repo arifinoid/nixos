@@ -5,6 +5,12 @@
   ...
 }:
 
+let
+  unstablePkgs = import inputs.nixpkgs-unstable {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
+in
 {
   imports = [
     ezModules.arifinoid-hardware
