@@ -59,7 +59,7 @@ in
   # in the 1.11.0 package set from nixpkgs-unstable while the rest of the system
   # stays on stable. Host-local, so the VPS and WSL hosts are unaffected.
   nixpkgs.overlays = [
-    (_final: prev: {
+    (_final: _prev: {
       cosmic-comp = unstablePkgs.cosmic-comp;
       cosmic-session = unstablePkgs.cosmic-session;
       cosmic-settings = unstablePkgs.cosmic-settings;
