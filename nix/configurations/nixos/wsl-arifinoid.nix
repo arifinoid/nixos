@@ -13,10 +13,6 @@
     inputs.nixos-wsl.nixosModules.wsl
   ];
 
-  nixpkgs.overlays = [
-    (_final: prev: { openssh = prev.openssh_gssapi; })
-  ];
-
   wsl.enable = true;
   wsl.defaultUser = "arifinoid";
 
