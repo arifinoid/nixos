@@ -49,6 +49,38 @@
   # services.displayManager.sddm.enable = true;
   # services.desktopManager.plasma6.enable = true;
 
+  # The pinned stable nixpkgs only ships COSMIC 1.0.0-alpha.7; the overlay swaps
+  # in the 1.11.0 package set from nixpkgs-unstable while the rest of the system
+  # stays on stable. Host-local, so the VPS and WSL hosts are unaffected.
+  nixpkgs.overlays = [
+    (_final: prev: {
+      cosmic-comp = unstablePkgs.cosmic-comp;
+      cosmic-session = unstablePkgs.cosmic-session;
+      cosmic-settings = unstablePkgs.cosmic-settings;
+      cosmic-settings-daemon = unstablePkgs.cosmic-settings-daemon;
+      cosmic-applets = unstablePkgs.cosmic-applets;
+      cosmic-app-library = unstablePkgs.cosmic-app-library;
+      cosmic-applibrary = unstablePkgs.cosmic-app-library;
+      cosmic-bg = unstablePkgs.cosmic-bg;
+      cosmic-edit = unstablePkgs.cosmic-edit;
+      cosmic-files = unstablePkgs.cosmic-files;
+      cosmic-greeter = unstablePkgs.cosmic-greeter;
+      cosmic-icons = unstablePkgs.cosmic-icons;
+      cosmic-idle = unstablePkgs.cosmic-idle;
+      cosmic-launcher = unstablePkgs.cosmic-launcher;
+      cosmic-notifications = unstablePkgs.cosmic-notifications;
+      cosmic-osd = unstablePkgs.cosmic-osd;
+      cosmic-panel = unstablePkgs.cosmic-panel;
+      cosmic-player = unstablePkgs.cosmic-player;
+      cosmic-randr = unstablePkgs.cosmic-randr;
+      cosmic-screenshot = unstablePkgs.cosmic-screenshot;
+      cosmic-term = unstablePkgs.cosmic-term;
+      cosmic-wallpapers = unstablePkgs.cosmic-wallpapers;
+      cosmic-workspaces-epoch = unstablePkgs.cosmic-workspaces-epoch;
+      xdg-desktop-portal-cosmic = unstablePkgs.xdg-desktop-portal-cosmic;
+    })
+  ];
+
   services.xserver.xkb = {
     layout = "us";
     variant = "";
