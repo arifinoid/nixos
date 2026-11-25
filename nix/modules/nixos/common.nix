@@ -59,6 +59,10 @@ in
   ];
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
+    # Colima/Lima writes GSSAPIAuthentication into its generated ssh_config,
+    # but nixpkgs openssh is built without GSSAPI, so ssh aborts on the unknown
+    # option. Use the GSSAPI-enabled build everywhere.
+    (_final: prev: { openssh = prev.openssh_gssapi; })
   ];
 
   users.users.arifinoid = {
