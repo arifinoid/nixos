@@ -124,7 +124,7 @@ in
     cachix
     fzf
     zoom-us
-    (discord.override {
+    (unstablePkgs.discord.override {
       withOpenASAR = true;
       withVencord = true;
     })
