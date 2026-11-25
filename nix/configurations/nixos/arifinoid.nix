@@ -42,8 +42,12 @@
 
   services.xserver.enable = true;
 
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  # COSMIC desktop environment (try-out). Plasma 6 + SDDM kept commented so the
+  # switch back is a one-line change; only one display manager can own the VT.
+  services.displayManager.cosmic-greeter.enable = true;
+  services.desktopManager.cosmic.enable = true;
+  # services.displayManager.sddm.enable = true;
+  # services.desktopManager.plasma6.enable = true;
 
   services.xserver.xkb = {
     layout = "us";
