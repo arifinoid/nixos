@@ -238,11 +238,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795683908,
-        "narHash": "sha256-WTmxH2mrA8gGA8Wb9Ka0Ecf/uKN9zpU7+fveRfJwU4U=",
+        "lastModified": 1795698880,
+        "narHash": "sha256-a6R/YQidXLqwo//TfuVC2XWqWzvEevA8UKbGQHiI2F4=",
         "owner": "arifinoid",
         "repo": "icm-sync",
-        "rev": "c509c354976e2224e1b73089186bcf646ef9b231",
+        "rev": "942ac764ee3871f4d9a52b7405566dcb46654eb6",
         "type": "github"
       },
       "original": {
