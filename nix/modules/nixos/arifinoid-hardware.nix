@@ -36,6 +36,22 @@
     ];
   };
 
+  # Secondary SATA SSD (RX7 512GB), single NTFS partition labelled "Multimedia".
+  # Mounted on demand via systemd automount so a missing/unplugged disk never
+  # blocks boot; ntfs3 is the in-kernel read-write driver.
+  fileSystems."/mnt/multimedia" = {
+    device = "/dev/disk/by-uuid/3408B8C008B88302";
+    fsType = "ntfs3";
+    options = [
+      "uid=1000"
+      "gid=100"
+      "umask=0022"
+      "nofail"
+      "x-systemd.automount"
+      "x-systemd.device-timeout=10s"
+    ];
+  };
+
   swapDevices = [ ];
 
   networking.useDHCP = lib.mkDefault true;
