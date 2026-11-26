@@ -103,6 +103,7 @@ in
       nodePackages.typescript
       nodePackages.typescript-language-server
       unstablePkgs.opencode
+      openssl
       openssl.dev
       pgsync
       pkg-config

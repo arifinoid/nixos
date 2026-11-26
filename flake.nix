@@ -77,5 +77,12 @@
 
     # Oh My Pi coding agent
     omp.url = "github:can1357/oh-my-pi";
+
+    # ICM memory sync: canonical store on the VPS, client on every host.
+    # Only needs nixpkgs, so it follows this flake's pin.
+    icm-sync = {
+      url = "github:arifinoid/icm-sync";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }

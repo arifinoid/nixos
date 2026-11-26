@@ -94,6 +94,12 @@ in
         group = "users";
         mode = "0400";
       };
+      # ICM sync client (~/.config/icm-sync/env, written at activation).
+      icm_sync_token = {
+        owner = "arifinoid";
+        group = "users";
+        mode = "0400";
+      };
     };
   };
 

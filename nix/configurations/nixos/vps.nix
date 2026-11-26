@@ -20,6 +20,7 @@
     ezModules.vps-adl
     ezModules.vps-aksaraku
     ezModules.vps-web
+    ezModules.vps-icm-sync
     ezModules.vps-nata
     ezModules.vps-shell
     ezModules.vps-packages
