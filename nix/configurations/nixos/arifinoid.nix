@@ -116,6 +116,13 @@ in
     vim
     wget
     git
+    # HEIC/HEIF support: Loupe views them via glycin + libheif, and
+    # `heif-dec` comes from libheif.bin for quick conversions.
+    # Loupe comes from unstable: the stable 48.1 build uses GTK 4.18.6, which
+    # segfaults in linux_dmabuf_tranche_done when opening a Wayland display on
+    # COSMIC. GTK 4.22 (Loupe 50.0) is unaffected.
+    unstablePkgs.loupe
+    libheif.bin
     kdePackages.partitionmanager
     code-cursor
     vscode
@@ -153,5 +160,12 @@ in
   xdg.icons.enable = true;
   xdg.menus.enable = true;
   xdg.sounds.enable = true;
+
+  # shared-mime-info maps .heic to image/heif (image/heic is an alias), so both
+  # need an explicit handler; Loupe is not picked automatically otherwise.
+  xdg.mime.defaultApplications = {
+    "image/heic" = "org.gnome.Loupe.desktop";
+    "image/heif" = "org.gnome.Loupe.desktop";
+  };
 
 }
