@@ -76,9 +76,13 @@ config.window_padding = {
 config.initial_cols = 110
 config.initial_rows = 30
 
--- config.window_decorations = "TITLE | RESIZE"
--- config.window_decorations = "RESIZE"
-config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+-- COSMIC (Wayland) already draws server-side title buttons, so requesting
+-- INTEGRATED_BUTTONS there renders a second duplicate button row. Only enable
+-- them on Windows/WSL, where they give the native look; Linux keeps the
+-- default ("TITLE | RESIZE").
+if wezterm.target_triple:find("windows") then
+	config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+end
 
 -- add opacity
 config.window_background_opacity = 1
