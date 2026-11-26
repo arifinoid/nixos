@@ -124,10 +124,9 @@ in
     cachix
     fzf
     zoom-us
-    (unstablePkgs.discord.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
+    # Vesktop ships Vencord built in. The discord package with withVencord
+    # injects an asar patch that leaves a black window on COSMIC/Wayland.
+    unstablePkgs.vesktop
     inputs.self.packages.${pkgs.system}.nvim
     inputs.zen-browser.packages.${pkgs.system}.default
   ];
