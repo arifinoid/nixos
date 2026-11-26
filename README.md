@@ -10,6 +10,7 @@ This is my personal NixOS configuration using flakes, home-manager, and nixvim. 
 - 🎨 **NixVim**: Neovim configuration with AI integration
 - 🔐 **Secrets Management**: SOPS + age (multi-recipient: laptop & VPS)
 - 🤖 **Agent Tooling**: `rtk` & `icm` as Nix packages, Claude Code / CodeBuddy / OpenCode / omp wired declaratively
+- 🧠 **ICM Sync**: `icm-sync` keeps the ICM memories of every host aligned with a canonical store on the VPS
 - 🖥️ **VPS Host**: `vps` config (9router gateway + hermes-agent, no home-manager)
 
 ## Structure
@@ -170,6 +171,7 @@ Never commit the private key or put it in the repo — keep it only in
 | `nata_database_url`, `nata_migrate_database_url`, `nata_jwt_secret` | VPS: Nata API (runtime + migration) |
 | `nata_fonnte_token`, `nata_brevo_api_key`, `nata_app_password` | VPS: Nata integrations |
 | `jobhooker_database_url`, `jobhooker_api_token` | VPS: jobhooker |
+| `icm_sync_token` | VPS: ICM sync API, and every host's ICM sync client |
 
 ### Add an API key
 
