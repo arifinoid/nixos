@@ -226,10 +226,89 @@ in
     };
   };
 
-  # Release directories written by the deploy job over ssh.
+  # Weekly backup drill. Neon keeps its own backup and PITR, but a dump nobody
+  # has restored is a guess. The script dumps, restores into a throwaway copy
+  # beside the source, compares the schema, the RLS policies, an exact row count
+  # and every column's value, then drops the copy. It creates that scratch
+  # database, so it runs as the owner role: MIGRATE_DATABASE_URL, not the
+  # RLS-bound DATABASE_URL. Dumps stay on the VPS for 14 days.
+  systemd.services.nata-backup-drill = {
+    description = "Nata weekly backup drill";
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+    # A scheduled drill nobody watches is worse than none: it quietly becomes
+    # the backup you trust. This runs on a non-zero exit, so a failure leaves a
+    # line to find. There is no notification channel yet.
+    onFailure = [ "nata-backup-drill-failure.service" ];
+    unitConfig.ConditionPathExists = [
+      "${nataRoot}/current"
+      "/etc/nata.env"
+    ];
+    serviceConfig = {
+      Type = "oneshot";
+      WorkingDirectory = "${nataRoot}/current";
+      EnvironmentFile = "/etc/nata.env";
+      Environment = "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt";
+      ExecStart = pkgs.writeShellScript "nata-backup-drill" ''
+        set -euo pipefail
+
+        # pg_dump, pg_restore and psql, pinned to the server's major version.
+        export PATH="${pkgs.postgresql_17}/bin:$PATH"
+
+        exec ${nataRoot}/current/deploy/vps/backup.sh \
+          --url "$MIGRATE_DATABASE_URL" \
+          --keep --retain 14 \
+          --output /var/lib/nata/backups
+      '';
+      User = "nata";
+      Group = "nata";
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      # The dump directory is the only thing the drill writes.
+      ReadWritePaths = [ "/var/lib/nata/backups" ];
+    };
+  };
+
+  # Appends one line per failed drill. systemd runs it through OnFailure, which
+  # also catches a kill, not just a non-zero exit.
+  systemd.services.nata-backup-drill-failure = {
+    description = "Nata backup drill failure log";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "nata";
+      Group = "nata";
+      NoNewPrivileges = true;
+      PrivateTmp = true;
+      ReadWritePaths = [ "/var/lib/nata" ];
+      ExecStart = pkgs.writeShellScript "nata-backup-drill-failure" ''
+        set -euo pipefail
+        printf '%s backup drill failed\n' \
+          "$(${pkgs.coreutils}/bin/date -u +%Y-%m-%dT%H:%M:%SZ)" \
+          >> /var/lib/nata/backup-failures.log
+      '';
+    };
+  };
+
+  systemd.timers.nata-backup-drill = {
+    description = "Weekly Nata backup drill";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      # Sunday 03:10 UTC is 10:10 WIB, well clear of the alert job at 00:10.
+      OnCalendar = "Sun *-*-* 03:10:00 UTC";
+      RandomizedDelaySec = "10m";
+      # Catch up after downtime instead of skipping the week.
+      Persistent = true;
+    };
+  };
+
+  # Release directories written by the deploy job over ssh, and the drill's dump
+  # directory.
   systemd.tmpfiles.rules = [
     "d ${nataRoot} 0755 root root -"
     "d ${nataRoot}/releases 0755 root root -"
     "d /var/lib/nata 0750 nata nata -"
+    "d /var/lib/nata/backups 0750 nata nata -"
   ];
 }
