@@ -62,6 +62,8 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB4SA84BWJ39p/H2/bwbXnDDj3DMGYFKq6UTfpJ23xaQ termius"
       # Used by the personal-web deploy job in CI.
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDE0FoQckb8VMtn98pW0vvUegWm3DBqUZZU/GGbl2LhV github-actions-deploy"
+      # NixOS PC (arifinoid): needed so `nxbv` can deploy the VPS from there too.
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILpMZ+G/OvytIkxmF/qp0fwwjo1do02U5fYJ02UjP2DP rohmadarifin007@gmail.com"
     ];
   };
 
